@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<h2>{{ titulo }}</h2>
+
+<form method="post" enctype="multipart/form-data" class="card">
+    {% csrf_token %}
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        {% for field in form %}
+        <div class="form-group" style="display: flex; flex-direction: column;">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+
+            {% if field.name == 'foto_perfil' and form.instance.foto_perfil %}
+            <div style="margin: 0.5rem 0;">
+                <p style="font-size: 0.8rem; margin: 0 0 0.5rem 0;">Actual:</p>
+                <img src="{{ form.instance.foto_perfil.url }}" alt="Foto actual"
+                    style="width: 75px; height: 100px; object-fit: cover; border: 1px solid #ccc;">
+            </div>
+            {% endif %}
+
+            {{ field }}
+
+            {% if field.errors %}
+            <div style="color: red; font-size: 0.9em;">
+                {% for error in field.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div style="margin-top: 1rem;">
+        <button type="submit" class="btn">Guardar</button>
+        <a href="{% url 'atleta_list' %}" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

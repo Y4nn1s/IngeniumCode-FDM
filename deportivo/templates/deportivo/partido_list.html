@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Partidos{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Gestión de Partidos</h2>
+    <a href="{% url 'partido_create' %}" class="btn">Programar Partido</a>
+</div>
+
+<!-- Partidos Pendientes -->
+<div class="card" style="margin-top: 1.5rem;">
+    <h3>📅 Partidos Programados (Pendientes)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha y Hora</th>
+                <th>Rival</th>
+                <th>Tipo</th>
+                <th>Condición</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for partido in partidos_pendientes %}
+            <tr>
+                <td>{{ partido.fecha_hora|date:"d/m/Y H:i" }}</td>
+                <td>{{ partido.equipo_rival }}</td>
+                <td>{{ partido.get_tipo_display }}</td>
+                <td>{{ partido.get_condicion_display }}</td>
+                <td>
+                    <a href="{% url 'partido_resultado' partido.pk %}" class="btn">Registrar Resultado</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center; color: #666;">No hay partidos programados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Partidos Jugados -->
+<div class="card" style="margin-top: 1.5rem;">
+    <h3>✅ Partidos Jugados (Historial)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Rival</th>
+                <th>Tipo</th>
+                <th>Resultado</th>
+                <th>Marcador</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for partido in partidos_jugados %}
+            <tr>
+                <td>{{ partido.fecha_hora|date:"d/m/Y" }}</td>
+                <td>{{ partido.equipo_rival }}</td>
+                <td>{{ partido.get_tipo_display }}</td>
+                <td>
+                    <span
+                        style="font-weight: bold; color: {% if partido.resultado == 'VICTORIA' %}green{% elif partido.resultado == 'DERROTA' %}red{% else %}orange{% endif %};">
+                        {{ partido.get_resultado_display }}
+                    </span>
+                </td>
+                <td>{{ partido.goles_favor_escuela }} - {{ partido.goles_contra_rival }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center; color: #666;">No hay partidos registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

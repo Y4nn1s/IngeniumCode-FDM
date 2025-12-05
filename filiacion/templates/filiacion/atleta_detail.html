@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle del Atleta{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between;">
+        <h2>{{ atleta.nombres }} {{ atleta.apellidos }}</h2>
+        <div>
+            <a href="{% url 'atleta_update' atleta.pk %}" class="btn btn-secondary">Editar</a>
+            <a href="{% url 'atleta_delete' atleta.pk %}" class="btn btn-danger">Eliminar</a>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        {% if atleta.foto_perfil %}
+        <div style="grid-column: 1 / -1; text-align: center;">
+            <img src="{{ atleta.foto_perfil.url }}" alt="Foto de {{ atleta.nombres }}"
+                style="width: 113px; height: 151px; object-fit: cover; border: 1px solid #ccc; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <p style="font-size: 0.8rem; color: #666; margin-top: 0.2rem;">Foto Carnet</p>
+        </div>
+        {% endif %}
+        <p><strong>Cédula Escolar:</strong> {{ atleta.cedula_escolar|default:"-" }}</p>
+        <p><strong>Fecha de Nacimiento:</strong> {{ atleta.fecha_nacimiento }}</p>
+        <p><strong>Categoría:</strong> {{ atleta.categoria|default:"Sin Asignar" }}</p>
+        <p><strong>Representante:</strong> {{ atleta.representante }}</p>
+        <p><strong>Peso:</strong> {{ atleta.peso_kg|default:"-" }} kg</p>
+        <p><strong>Altura:</strong> {{ atleta.altura_mts|default:"-" }} mts</p>
+        <p><strong>Posición:</strong> {{ atleta.get_posicion_display }}</p>
+        <p><strong>Lateralidad:</strong> {{ atleta.get_lateralidad_display }}</p>
+        <p><strong>Estado:</strong> {{ atleta.activo|yesno:"Activo,Inactivo" }}</p>
+        <p><strong>Becado:</strong> {{ atleta.becado|yesno:"Sí,No" }}</p>
+    </div>
+</div>
+
+<div style="margin-top: 1rem;">
+    <a href="{% url 'atleta_list' %}" class="btn btn-secondary">Volver al listado</a>
+</div>
+{% endblock %}

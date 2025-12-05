@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Atleta{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto; text-align: center;">
+    <h2>¿Estás seguro?</h2>
+    <p>Estás a punto de eliminar al atleta <strong>{{ atleta.nombres }} {{ atleta.apellidos }}</strong>.</p>
+    <p style="color: red;">Esta acción no se puede deshacer.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-top: 1.5rem;">
+            <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+            <a href="{% url 'atleta_detail' atleta.pk %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

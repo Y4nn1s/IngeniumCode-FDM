@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Representantes{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Representantes Registrados</h2>
+    <a href="{% url 'representante_create' %}" class="btn">Nuevo Representante</a>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nombre Completo</th>
+            <th>Cédula</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rep in representantes %}
+        <tr>
+            <td>{{ rep.nombres }} {{ rep.apellidos }}</td>
+            <td>{{ rep.cedula_identidad }}</td>
+            <td>{{ rep.telefono_principal }}</td>
+            <td>{{ rep.correo_electronico }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4" style="text-align: center;">No hay representantes registrados.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

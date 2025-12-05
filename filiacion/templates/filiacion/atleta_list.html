@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Atletas{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Atletas Registrados</h2>
+    <a href="{% url 'atleta_create' %}" class="btn">Nuevo Atleta</a>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nombre Completo</th>
+            <th>Cédula Escolar</th>
+            <th>Fecha Nacimiento</th>
+            <th>Categoría</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for atleta in atletas %}
+        <tr>
+            <td>{{ atleta.nombres }} {{ atleta.apellidos }}</td>
+            <td>{{ atleta.cedula_escolar|default:"-" }}</td>
+            <td>{{ atleta.fecha_nacimiento }}</td>
+            <td>{{ atleta.categoria|default:"Sin Asignar" }}</td>
+            <td>
+                <a href="{% url 'atleta_detail' atleta.pk %}" class="btn">Ver</a>
+                <a href="{% url 'atleta_update' atleta.pk %}" class="btn btn-secondary">Editar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" style="text-align: center;">No hay atletas registrados.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

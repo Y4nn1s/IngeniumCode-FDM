@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<h2>{{ titulo }}</h2>
+
+<div class="card">
+    <p><strong>Fecha:</strong> {{ partido.fecha_hora|date:"d/m/Y H:i" }}</p>
+    <p><strong>Tipo:</strong> {{ partido.get_tipo_display }}</p>
+    <p><strong>Condición:</strong> {{ partido.get_condicion_display }}</p>
+</div>
+
+<form method="post" class="card" style="margin-top: 1rem;">
+    {% csrf_token %}
+    <h3>Ingrese el Marcador Final</h3>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; text-align: center; margin: 2rem 0;">
+        <div class="form-group">
+            <label style="font-size: 1.2rem;">FDM (Nosotros)</label>
+            {{ form.goles_favor_escuela }}
+            {% if form.goles_favor_escuela.errors %}
+            <div style="color: red;">{{ form.goles_favor_escuela.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label style="font-size: 1.2rem;">{{ partido.equipo_rival }}</label>
+            {{ form.goles_contra_rival }}
+            {% if form.goles_contra_rival.errors %}
+            <div style="color: red;">{{ form.goles_contra_rival.errors }}</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div style="margin-top: 1rem; text-align: center;">
+        <button type="submit" class="btn">Guardar Resultado</button>
+        <a href="{% url 'partido_list' %}" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

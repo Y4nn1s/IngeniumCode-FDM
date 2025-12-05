@@ -34,7 +34,7 @@ class Atleta(models.Model):
     nombres = models.CharField(max_length=100)
     apellidos = models.CharField(max_length=100)
     fecha_nacimiento = models.DateField()
-    foto_perfil_url = models.URLField(max_length=255, blank=True, null=True)
+    foto_perfil = models.ImageField(upload_to='atletas/fotos/', blank=True, null=True)
     peso_kg = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     altura_mts = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
     lateralidad = models.CharField(max_length=11, choices=LATERALIDAD_CHOICES)
