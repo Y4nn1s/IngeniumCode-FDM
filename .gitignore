@@ -1,9 +1,26 @@
-venv/
-venvfdm/
+# Environments
+/venv/
+/venvfdm/
+.env
+
+# Dependencies
+/node_modules/
+
+# Python cache
 __pycache__/
 *.pyc
+
+# Database
 db.sqlite3
+
+# Build artifacts / Generated files
+/core/static/css/output.css
+
+# Media files
+/media/
+
+# OS-specific
 .DS_Store
-.env
-media/atletas/fotos/*
+
+# Project documents
 Contexto Documento PST.md
