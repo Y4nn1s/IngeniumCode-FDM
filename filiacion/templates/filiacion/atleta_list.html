@@ -3,38 +3,70 @@
 {% block title %}Lista de Atletas{% endblock %}
 
 {% block content %}
-<div style="display: flex; justify-content: space-between; align-items: center;">
-    <h2>Atletas Registrados</h2>
-    <a href="{% url 'atleta_create' %}" class="btn">Nuevo Atleta</a>
+<div class="flex justify-between items-center mb-6">
+    <h2 class="text-3xl font-bold text-gray-800">Atletas Registrados</h2>
+    <a href="{% url 'atleta_create' %}" class="inline-block bg-blue-600 text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-300">
+        <span class="font-semibold">+ Nuevo Atleta</span>
+    </a>
 </div>
 
-<table>
-    <thead>
-        <tr>
-            <th>Nombre Completo</th>
-            <th>Cédula Escolar</th>
-            <th>Fecha Nacimiento</th>
-            <th>Categoría</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for atleta in atletas %}
-        <tr>
-            <td>{{ atleta.nombres }} {{ atleta.apellidos }}</td>
-            <td>{{ atleta.cedula_escolar|default:"-" }}</td>
-            <td>{{ atleta.fecha_nacimiento }}</td>
-            <td>{{ atleta.categoria|default:"Sin Asignar" }}</td>
-            <td>
-                <a href="{% url 'atleta_detail' atleta.pk %}" class="btn">Ver</a>
-                <a href="{% url 'atleta_update' atleta.pk %}" class="btn btn-secondary">Editar</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="5" style="text-align: center;">No hay atletas registrados.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <table class="w-full min-w-full">
+        <thead class="bg-gray-50">
+            <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nombre Completo
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Cédula Escolar
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Fecha Nacimiento
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Categoría
+                </th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Acciones
+                </th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            {% for atleta in atletas %}
+            <tr class="hover:bg-gray-100 transition-colors duration-200">
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">{{ atleta.nombres }} {{ atleta.apellidos }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-700">{{ atleta.cedula_escolar|default:"-" }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="text-sm text-gray-700">{{ atleta.fecha_nacimiento|date:"d/m/Y" }}</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        {{ atleta.categoria|default:"Sin Asignar" }}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <a href="{% url 'atleta_detail' atleta.pk %}" class="text-blue-600 hover:text-blue-900 font-semibold">Ver</a>
+                    <a href="{% url 'atleta_update' atleta.pk %}" class="text-gray-600 hover:text-gray-900 ml-4 font-semibold">Editar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="px-6 py-12 text-center">
+                    <div class="text-center">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">No hay atletas</h3>
+                        <p class="mt-1 text-sm text-gray-500">Comienza por registrar un nuevo atleta.</p>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

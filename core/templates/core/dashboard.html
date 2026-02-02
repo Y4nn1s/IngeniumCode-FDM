@@ -3,33 +3,49 @@
 {% block title %}Dashboard - Sistema FDM{% endblock %}
 
 {% block content %}
-<h2>Panel Principal</h2>
+<h2 class="text-3xl font-bold text-gray-800 mb-8">Panel Principal</h2>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-    <div class="card">
-        <h3>⚽ Gestión Deportivo</h3>
-        <p>Administra partidos, estadísticas y resultados.</p>
-        <a href="{% url 'partido_list' %}" class="btn">Ver Partidos</a>
+    <!-- Card: Gestión Deportiva -->
+    <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+        <h3 class="text-xl font-semibold text-gray-800 mb-3">⚽ Gestión Deportiva</h3>
+        <p class="text-gray-600 mb-4">Administra partidos, estadísticas y resultados.</p>
+        <a href="{% url 'partido_list' %}" class="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-300">
+            Ver Partidos
+        </a>
     </div>
 
-    <div class="card">
-        <h3>🏃‍♂️ Gestión de Atletas</h3>
-        <p>Registra nuevos atletas, actualiza fichas y consulta perfiles.</p>
-        <a href="{% url 'atleta_list' %}" class="btn">Ver Atletas</a>
-        <a href="{% url 'atleta_create' %}" class="btn btn-secondary" style="margin-top: 0.5rem;">Nuevo Atleta</a>
+    <!-- Card: Gestión de Atletas -->
+    <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+        <h3 class="text-xl font-semibold text-gray-800 mb-3">🏃‍♂️ Gestión de Atletas</h3>
+        <p class="text-gray-600 mb-4">Registra nuevos atletas, actualiza fichas y consulta perfiles.</p>
+        <div class="flex flex-wrap gap-2">
+            <a href="{% url 'atleta_list' %}" class="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-300">
+                Ver Atletas
+            </a>
+            <a href="{% url 'atleta_create' %}" class="inline-block bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-colors duration-300">
+                Nuevo Atleta
+            </a>
+        </div>
     </div>
 
-    <div class="card">
-        <h3>👨‍👩‍👦 Gestión de Representantes</h3>
-        <p>Base de datos de padres y representantes.</p>
-        <a href="{% url 'representante_list' %}" class="btn">Ver Representantes</a>
+    <!-- Card: Gestión de Representantes -->
+    <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+        <h3 class="text-xl font-semibold text-gray-800 mb-3">👨‍👩‍👦 Gestión de Representantes</h3>
+        <p class="text-gray-600 mb-4">Base de datos de padres y representantes.</p>
+        <a href="{% url 'representante_list' %}" class="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-300">
+            Ver Representantes
+        </a>
     </div>
 
-    <div class="card">
-        <h3>⚙️ Administración</h3>
-        <p>Panel avanzado para coordinadores y configuración.</p>
-        <a href="/admin/" class="btn btn-secondary">Ir al Admin</a>
+    <!-- Card: Administración -->
+    <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+        <h3 class="text-xl font-semibold text-gray-800 mb-3">⚙️ Administración</h3>
+        <p class="text-gray-600 mb-4">Panel avanzado para coordinadores y configuración.</p>
+        <a href="/admin/" class="inline-block bg-gray-600 text-white px-5 py-2 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-colors duration-300">
+            Ir al Admin
+        </a>
     </div>
 
 </div>
