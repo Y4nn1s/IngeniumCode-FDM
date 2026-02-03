@@ -3,7 +3,7 @@
 {% block title %}Escuela de Fútbol FDM{% endblock %}
 
 {% block content %}
-<h2 class="text-3xl font-bold text-gray-800 mb-8">Panel Principal</h2>
+<h2 class="text-3xl font-bold text-navy mb-8">Panel Principal</h2>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
@@ -11,7 +11,7 @@
     <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
         <h3 class="text-xl font-semibold text-gray-800 mb-3">⚽ Gestión Deportiva</h3>
         <p class="text-gray-600 mb-4">Administra partidos, estadísticas y resultados.</p>
-        <a href="{% url 'partido_list' %}" class="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-300">
+        <a href="{% url 'partido_list' %}" class="inline-block bg-primary text-white px-5 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-300">
             Ver Partidos
         </a>
     </div>
@@ -21,7 +21,7 @@
         <h3 class="text-xl font-semibold text-gray-800 mb-3">🏃‍♂️ Gestión de Atletas</h3>
         <p class="text-gray-600 mb-4">Registra nuevos atletas, actualiza fichas y consulta perfiles.</p>
         <div class="flex flex-wrap gap-2">
-            <a href="{% url 'atleta_list' %}" class="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-300">
+            <a href="{% url 'atleta_list' %}" class="inline-block bg-primary text-white px-5 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-300">
                 Ver Atletas
             </a>
             <a href="{% url 'atleta_create' %}" class="inline-block bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-colors duration-300">
@@ -34,7 +34,7 @@
     <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
         <h3 class="text-xl font-semibold text-gray-800 mb-3">👨‍👩‍👦 Gestión de Representantes</h3>
         <p class="text-gray-600 mb-4">Base de datos de padres y representantes.</p>
-        <a href="{% url 'representante_list' %}" class="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-300">
+        <a href="{% url 'representante_list' %}" class="inline-block bg-primary text-white px-5 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-300">
             Ver Representantes
         </a>
     </div>
@@ -43,7 +43,7 @@
     <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
         <h3 class="text-xl font-semibold text-gray-800 mb-3">⚙️ Administración</h3>
         <p class="text-gray-600 mb-4">Panel avanzado para coordinadores y configuración.</p>
-        <a href="/admin/" class="inline-block bg-gray-600 text-white px-5 py-2 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-colors duration-300">
+        <a href="/admin/" class="inline-block bg-danger text-white px-5 py-2 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-colors duration-300">
             Ir al Admin
         </a>
     </div>
