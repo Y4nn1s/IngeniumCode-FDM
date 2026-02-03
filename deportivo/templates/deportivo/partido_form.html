@@ -3,29 +3,45 @@
 {% block title %}{{ titulo }}{% endblock %}
 
 {% block content %}
-<h2>{{ titulo }}</h2>
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-4">{{ titulo }}</h2>
 
-<form method="post" class="card">
-    {% csrf_token %}
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-        {% for field in form %}
-        <div class="form-group">
-            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {{ field }}
-            {% if field.errors %}
-            <div style="color: red; font-size: 0.9em;">
-                {% for error in field.errors %}
-                <p>{{ error }}</p>
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900">
+                        {{ field.label }}
+                        {% if field.field.required %}
+                            <span class="text-red-500 font-bold">*</span>
+                        {% endif %}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <p class="mt-1.5 text-xs text-gray-500">{{ field.help_text|safe }}</p>
+                    {% endif %}
+                    
+                    {% for error in field.errors %}
+                        <p class="mt-1.5 text-sm text-red-600 font-semibold">{{ error }}</p>
+                    {% endfor %}
+                </div>
                 {% endfor %}
             </div>
-            {% endif %}
-        </div>
-        {% endfor %}
-    </div>
 
-    <div style="margin-top: 1rem;">
-        <button type="submit" class="btn">Guardar</button>
-        <a href="{% url 'partido_list' %}" class="btn btn-secondary">Cancelar</a>
+            <div class="mt-8 pt-6 border-t flex justify-end space-x-4">
+                <a href="{% url 'partido_list' %}" class="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-800 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200">
+                    Cancelar
+                </a>
+                <button type="submit" class="px-8 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                    Guardar
+                </button>
+            </div>
+        </form>
     </div>
-</form>
+</div>
 {% endblock %}

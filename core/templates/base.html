@@ -1,54 +1,40 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Sistema FDM{% endblock %}</title>
-    <style>
-        body { font-family: sans-serif; margin: 0; padding: 0; background-color: #f4f4f9; color: #333; }
-        header { background-color: #003366; color: white; padding: 1rem; }
-        nav ul { list-style: none; padding: 0; display: flex; gap: 20px; }
-        nav a { color: white; text-decoration: none; font-weight: bold; }
-        nav a:hover { text-decoration: underline; }
-        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
-        .card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1rem; }
-        .btn { display: inline-block; padding: 0.5rem 1rem; background-color: #0056b3; color: white; text-decoration: none; border-radius: 4px; border: none; cursor: pointer; }
-        .btn:hover { background-color: #004494; }
-        .btn-secondary { background-color: #6c757d; }
-        .btn-danger { background-color: #dc3545; }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .form-group { margin-bottom: 1rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; }
-        .alert { padding: 1rem; margin-bottom: 1rem; border-radius: 4px; }
-        .alert-success { background-color: #d4edda; color: #155724; }
-        .alert-error { background-color: #f8d7da; color: #721c24; }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
 </head>
-<body>
+<body class="bg-gray-100 text-gray-800 font-sans flex flex-col min-h-screen">
 
-<header>
-    <div class="container" style="margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
-        <h1>Escuela Francisco de Miranda</h1>
+<header class="bg-white shadow-md sticky top-0 z-10">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-blue-800">
+            <a href="{% url 'dashboard' %}">Escuela FDM</a>
+        </h1>
         <nav>
-            <ul>
-                <li><a href="{% url 'dashboard' %}">Inicio</a></li>
-                <li><a href="{% url 'atleta_list' %}">Atletas</a></li>
-                <li><a href="{% url 'representante_list' %}">Representantes</a></li>
-                <li><a href="{% url 'partido_list' %}">Partidos</a></li>
-                <li><a href="/admin/">Administración</a></li>
+            <ul class="flex items-center space-x-6">
+                <li><a href="{% url 'dashboard' %}" class="text-gray-600 hover:text-blue-700 transition duration-300">Inicio</a></li>
+                <li><a href="{% url 'atleta_list' %}" class="text-gray-600 hover:text-blue-700 transition duration-300">Atletas</a></li>
+                <li><a href="{% url 'representante_list' %}" class="text-gray-600 hover:text-blue-700 transition duration-300">Representantes</a></li>
+                <li><a href="{% url 'partido_list' %}" class="text-gray-600 hover:text-blue-700 transition duration-300">Partidos</a></li>
+                <li><a href="/admin/" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">Admin</a></li>
             </ul>
         </nav>
     </div>
 </header>
 
-<main class="container">
+<main class="container mx-auto px-6 py-8 flex-grow">
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
+            <div class="p-4 mb-4 text-sm rounded-lg 
+                {% if message.tags == 'success' %} bg-green-100 text-green-800
+                {% elif message.tags == 'error' %} bg-red-100 text-red-800
+                {% else %} bg-blue-100 text-blue-800
+                {% endif %}" role="alert">
+                <span class="font-medium">{% if message.tags == 'success' %}Éxito{% elif message.tags == 'error' %}Error{% else %}Información{% endif %}:</span> {{ message }}
             </div>
         {% endfor %}
     {% endif %}
@@ -57,9 +43,9 @@
     {% endblock %}
 </main>
 
-<footer>
-    <div class="container" style="text-align: center; margin-top: 2rem; color: #666;">
-        <p>&copy; 2025 Escuela de Fútbol Infantil Comunitaria Francisco de Miranda</p>
+<footer class="bg-gray-800 text-white mt-12">
+    <div class="container mx-auto px-6 py-6 text-center">
+        <p>&copy; {% now "Y" %} Escuela de Fútbol Infantil Comunitaria Francisco de Miranda. Todos los derechos reservados.</p>
     </div>
 </footer>
 
