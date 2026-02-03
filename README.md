@@ -32,11 +32,11 @@ Antes de poder usar Tailwind CSS, necesitas instalar sus dependencias:
 
 Para que los estilos de Tailwind CSS se apliquen en tu navegador, su compilador debe estar funcionando en segundo plano. Este proceso genera y actualiza automáticamente el archivo CSS final (`output.css`) cada vez que guardas cambios en tus plantillas HTML.
 
-1.  Abre una nueva terminal en la raíz de tu proyecto (separada de la que usas para el servidor de Django).
+1.  Abre una **nueva terminal** en la raíz de tu proyecto (separada de la que usas para el servidor de Django).
 2.  Ejecuta el siguiente comando:
-    
-    *npm run build:css*
-    
+    ```bash
+    npm run build:css
+    ```
     **¡Importante!** Deja esta terminal abierta y ejecutándose. Si la cierras, los estilos de Tailwind dejarán de actualizarse.
 
 ### Flujo de Trabajo de Desarrollo
@@ -44,15 +44,15 @@ Para que los estilos de Tailwind CSS se apliquen en tu navegador, su compilador 
 Para ver los cambios de tu interfaz con Tailwind CSS:
 
 1.  Abre una terminal y ejecuta el compilador de Tailwind CSS:
-    
-    *npm run build:css*
-    
+    ```bash
+    npm run build:css
+    ```
 2.  En otra terminal **diferente**, activa tu entorno virtual e inicia el servidor de Django:
-    
+    ```bash
     # Activa tu entorno virtual (ej. en Windows)
-    *.\venv\Scripts\activate*
+    .\venv\Scripts\activate
     # Inicia el servidor de Django
-    *python manage.py runserver*
-    
+    python manage.py runserver
+    ```
 3.  Abre tu navegador y navega a `http://127.0.0.1:8000/`. Refresca la página para ver los cambios.
 
