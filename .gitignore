@@ -7,3 +7,4 @@ db.sqlite3
 .env
 media/atletas/fotos/*
 Contexto Documento PST.md
+.agent/

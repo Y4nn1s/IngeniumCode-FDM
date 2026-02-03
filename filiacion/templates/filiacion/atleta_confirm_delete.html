@@ -3,17 +3,28 @@
 {% block title %}Eliminar Atleta{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width: 600px; margin: 0 auto; text-align: center;">
-    <h2>¿Estás seguro?</h2>
-    <p>Estás a punto de eliminar al atleta <strong>{{ atleta.nombres }} {{ atleta.apellidos }}</strong>.</p>
-    <p style="color: red;">Esta acción no se puede deshacer.</p>
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md p-8 text-center">
+        <h2 class="text-3xl font-bold text-slate-800 mb-4">¿Estás seguro?</h2>
+        <p class="text-lg text-slate-700 mb-2">
+            Estás a punto de eliminar al atleta <strong class="font-semibold">{{ atleta.nombres }} {{ atleta.apellidos
+                }}</strong>.
+        </p>
+        <p class="text-red-600 font-semibold mb-6">Esta acción no se puede deshacer.</p>
 
-    <form method="post">
-        {% csrf_token %}
-        <div style="margin-top: 1.5rem;">
-            <button type="submit" class="btn btn-danger">Sí, eliminar</button>
-            <a href="{% url 'atleta_detail' atleta.pk %}" class="btn btn-secondary">Cancelar</a>
-        </div>
-    </form>
+        <form method="post">
+            {% csrf_token %}
+            <div class="flex justify-center gap-4">
+                <button type="submit"
+                    class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded transition-colors duration-200">
+                    Sí, eliminar
+                </button>
+                <a href="{% url 'atleta_detail' atleta.pk %}"
+                    class="bg-slate-600 hover:bg-slate-700 text-white font-semibold py-2 px-6 rounded transition-colors duration-200">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

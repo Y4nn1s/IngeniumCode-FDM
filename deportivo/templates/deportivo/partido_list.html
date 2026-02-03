@@ -3,77 +3,99 @@
 {% block title %}Partidos{% endblock %}
 
 {% block content %}
-<div style="display: flex; justify-content: space-between; align-items: center;">
-    <h2>Gestión de Partidos</h2>
-    <a href="{% url 'partido_create' %}" class="btn">Programar Partido</a>
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+    <h2 class="text-3xl font-bold text-slate-800">Gestión de Partidos</h2>
+    <a href="{% url 'partido_create' %}"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition-colors duration-200">
+        Programar Partido
+    </a>
 </div>
 
 <!-- Partidos Pendientes -->
-<div class="card" style="margin-top: 1.5rem;">
-    <h3>📅 Partidos Programados (Pendientes)</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Fecha y Hora</th>
-                <th>Rival</th>
-                <th>Tipo</th>
-                <th>Condición</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for partido in partidos_pendientes %}
-            <tr>
-                <td>{{ partido.fecha_hora|date:"d/m/Y H:i" }}</td>
-                <td>{{ partido.equipo_rival }}</td>
-                <td>{{ partido.get_tipo_display }}</td>
-                <td>{{ partido.get_condicion_display }}</td>
-                <td>
-                    <a href="{% url 'partido_resultado' partido.pk %}" class="btn">Registrar Resultado</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5" style="text-align: center; color: #666;">No hay partidos programados.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h3 class="text-xl font-semibold text-slate-800 mb-4">📅 Partidos Programados (Pendientes)</h3>
+    <div class="overflow-x-auto">
+        <table class="min-w-full">
+            <thead>
+                <tr class="bg-slate-100 border-b border-slate-200">
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Fecha
+                        y Hora</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Rival
+                    </th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Tipo
+                    </th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                        Condición</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                        Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for partido in partidos_pendientes %}
+                <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors duration-150">
+                    <td class="px-4 py-3 text-slate-800">{{ partido.fecha_hora|date:"d/m/Y H:i" }}</td>
+                    <td class="px-4 py-3 text-slate-700">{{ partido.equipo_rival }}</td>
+                    <td class="px-4 py-3 text-slate-600">{{ partido.get_tipo_display }}</td>
+                    <td class="px-4 py-3 text-slate-600">{{ partido.get_condicion_display }}</td>
+                    <td class="px-4 py-3">
+                        <a href="{% url 'partido_resultado' partido.pk %}"
+                            class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-3 rounded text-sm transition-colors duration-200">
+                            Registrar Resultado
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-4 py-8 text-center text-slate-500">No hay partidos programados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- Partidos Jugados -->
-<div class="card" style="margin-top: 1.5rem;">
-    <h3>✅ Partidos Jugados (Historial)</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Rival</th>
-                <th>Tipo</th>
-                <th>Resultado</th>
-                <th>Marcador</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for partido in partidos_jugados %}
-            <tr>
-                <td>{{ partido.fecha_hora|date:"d/m/Y" }}</td>
-                <td>{{ partido.equipo_rival }}</td>
-                <td>{{ partido.get_tipo_display }}</td>
-                <td>
-                    <span
-                        style="font-weight: bold; color: {% if partido.resultado == 'VICTORIA' %}green{% elif partido.resultado == 'DERROTA' %}red{% else %}orange{% endif %};">
-                        {{ partido.get_resultado_display }}
-                    </span>
-                </td>
-                <td>{{ partido.goles_favor_escuela }} - {{ partido.goles_contra_rival }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5" style="text-align: center; color: #666;">No hay partidos registrados.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="bg-white rounded-lg shadow-md p-6">
+    <h3 class="text-xl font-semibold text-slate-800 mb-4">✅ Partidos Jugados (Historial)</h3>
+    <div class="overflow-x-auto">
+        <table class="min-w-full">
+            <thead>
+                <tr class="bg-slate-100 border-b border-slate-200">
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Fecha
+                    </th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Rival
+                    </th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Tipo
+                    </th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                        Resultado</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                        Marcador</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for partido in partidos_jugados %}
+                <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors duration-150">
+                    <td class="px-4 py-3 text-slate-800">{{ partido.fecha_hora|date:"d/m/Y" }}</td>
+                    <td class="px-4 py-3 text-slate-700">{{ partido.equipo_rival }}</td>
+                    <td class="px-4 py-3 text-slate-600">{{ partido.get_tipo_display }}</td>
+                    <td class="px-4 py-3">
+                        <span class="font-semibold 
+                            {% if partido.resultado == 'VICTORIA' %}text-green-600
+                            {% elif partido.resultado == 'DERROTA' %}text-red-600
+                            {% else %}text-orange-600{% endif %}">
+                            {{ partido.get_resultado_display }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-slate-800 font-medium">{{ partido.goles_favor_escuela }} - {{ partido.goles_contra_rival }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-4 py-8 text-center text-slate-500">No hay partidos registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

@@ -3,17 +3,19 @@
 {% block title %}{{ titulo }}{% endblock %}
 
 {% block content %}
-<h2>{{ titulo }}</h2>
+<h2 class="text-3xl font-bold text-slate-800 mb-6">{{ titulo }}</h2>
 
-<form method="post" class="card">
+<form method="post" class="bg-white rounded-lg shadow-md p-6">
     {% csrf_token %}
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {% for field in form %}
-        <div class="form-group">
-            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        <div class="mb-4">
+            <label for="{{ field.id_for_label }}" class="block mb-2 font-semibold text-slate-700">
+                {{ field.label }}
+            </label>
             {{ field }}
             {% if field.errors %}
-            <div style="color: red; font-size: 0.9em;">
+            <div class="text-red-600 text-sm mt-1">
                 {% for error in field.errors %}
                 <p>{{ error }}</p>
                 {% endfor %}
@@ -23,9 +25,15 @@
         {% endfor %}
     </div>
 
-    <div style="margin-top: 1rem;">
-        <button type="submit" class="btn">Guardar</button>
-        <a href="{% url 'representante_list' %}" class="btn btn-secondary">Cancelar</a>
+    <div class="mt-6 flex gap-3">
+        <button type="submit"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition-colors duration-200">
+            Guardar
+        </button>
+        <a href="{% url 'representante_list' %}"
+            class="bg-slate-600 hover:bg-slate-700 text-white font-semibold py-2 px-4 rounded transition-colors duration-200">
+            Cancelar
+        </a>
     </div>
 </form>
 {% endblock %}
