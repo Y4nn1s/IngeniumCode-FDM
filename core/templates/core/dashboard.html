@@ -1,9 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}Escuela de Fútbol FDM{% endblock %}
+{% load static %}
+{% block title %}Dashboard - Sistema FDM{% endblock %} {# Reverted title to original #}
 
 {% block content %}
-<h2 class="text-3xl font-bold text-navy mb-8">Panel Principal</h2>
+<div class="mb-8 overflow-hidden rounded-xl shadow-lg">
+    <img src="{% static 'img/balon_cesped(azul-rojo).png' %}" alt="Balón en Césped" class="w-full h-auto object-cover">
+</div>
+
+<h2 class="text-3xl font-bold text-gray-800 mb-8">Panel Principal</h2>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
