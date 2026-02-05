@@ -1,7 +1,16 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.utils import timezone
-from .models import Partido
-from .forms import PartidoProgramarForm, PartidoResultadoForm
+from django.views.generic import CreateView, UpdateView
+
+from .forms import (
+    EvaluacionPsicosocialForm,
+    EvaluacionTecnicaForm,
+    PartidoProgramarForm,
+    PartidoResultadoForm,
+)
+from .models import EvaluacionPsicosocial, EvaluacionTecnica, Partido
 
 
 def partido_list(request):
@@ -60,3 +69,41 @@ def partido_registrar_resultado(request, pk):
         'titulo': f'Resultado: FDM vs {partido.equipo_rival}'
     })
 
+
+# --- Vistas para Evaluaciones ---
+
+
+class EvaluacionTecnicaCreateView(LoginRequiredMixin, CreateView):
+    model = EvaluacionTecnica
+    form_class = EvaluacionTecnicaForm
+    template_name = 'deportivo/evaluacion_tecnica_form.html'
+
+    def get_success_url(self):
+        return reverse('atleta_detail', kwargs={'pk': self.object.atleta.pk})
+
+
+class EvaluacionTecnicaUpdateView(LoginRequiredMixin, UpdateView):
+    model = EvaluacionTecnica
+    form_class = EvaluacionTecnicaForm
+    template_name = 'deportivo/evaluacion_tecnica_form.html'
+
+    def get_success_url(self):
+        return reverse('atleta_detail', kwargs={'pk': self.object.atleta.pk})
+
+
+class EvaluacionPsicosocialCreateView(LoginRequiredMixin, CreateView):
+    model = EvaluacionPsicosocial
+    form_class = EvaluacionPsicosocialForm
+    template_name = 'deportivo/evaluacion_psicosocial_form.html'
+
+    def get_success_url(self):
+        return reverse('atleta_detail', kwargs={'pk': self.object.atleta.pk})
+
+
+class EvaluacionPsicosocialUpdateView(LoginRequiredMixin, UpdateView):
+    model = EvaluacionPsicosocial
+    form_class = EvaluacionPsicosocialForm
+    template_name = 'deportivo/evaluacion_psicosocial_form.html'
+
+    def get_success_url(self):
+        return reverse('atleta_detail', kwargs={'pk': self.object.atleta.pk})

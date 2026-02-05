@@ -1,6 +1,11 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Partido
+from .models import Partido, EvaluacionTecnica, EvaluacionPsicosocial
+
+
+TAILWIND_INPUT_CLASSES = 'form-input w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500'
+TAILWIND_SELECT_CLASSES = 'form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500'
+TAILWIND_TEXTAREA_CLASSES = 'form-textarea w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500'
 
 
 class PartidoProgramarForm(forms.ModelForm):
@@ -46,3 +51,47 @@ class PartidoResultadoForm(forms.ModelForm):
             'goles_contra_rival': 'Goles en Contra (Rival)',
         }
 
+
+class EvaluacionTecnicaForm(forms.ModelForm):
+    """Formulario para registrar evaluación técnica de un atleta."""
+    class Meta:
+        model = EvaluacionTecnica
+        fields = [
+            'atleta', 'entrenador', 'fecha_evaluacion',
+            'velocidad', 'resistencia', 'control_balon',
+            'pase_corto', 'tiro', 'inteligencia_tactica', 'observaciones'
+        ]
+        widgets = {
+            'atleta': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
+            'entrenador': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
+            'fecha_evaluacion': forms.DateInput(attrs={'type': 'date', 'class': TAILWIND_INPUT_CLASSES}),
+            'velocidad': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
+            'resistencia': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
+            'control_balon': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
+            'pase_corto': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
+            'tiro': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
+            'inteligencia_tactica': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
+            'observaciones': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA_CLASSES, 'rows': 3}),
+        }
+
+
+class EvaluacionPsicosocialForm(forms.ModelForm):
+    """Formulario para registrar evaluación psicosocial de un atleta."""
+    class Meta:
+        model = EvaluacionPsicosocial
+        fields = [
+            'atleta', 'coordinador_evaluador', 'fecha_evaluacion',
+            'compromiso', 'puntualidad', 'companerismo',
+            'respeto', 'manejo_frustracion', 'observaciones_conductuales'
+        ]
+        widgets = {
+            'atleta': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
+            'coordinador_evaluador': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
+            'fecha_evaluacion': forms.DateInput(attrs={'type': 'date', 'class': TAILWIND_INPUT_CLASSES}),
+            'compromiso': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
+            'puntualidad': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
+            'companerismo': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
+            'respeto': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
+            'manejo_frustracion': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
+            'observaciones_conductuales': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA_CLASSES, 'rows': 3}),
+        }

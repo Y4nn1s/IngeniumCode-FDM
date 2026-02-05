@@ -18,9 +18,13 @@ db.sqlite3
 
 # Media files
 /media/
+media/atletas/fotos/*
 
 # OS-specific
 .DS_Store
-
+ 
 # Project documents
 Contexto Documento PST.md
+
+# Agent config (local only)
+.agent/

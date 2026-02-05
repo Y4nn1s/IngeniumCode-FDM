@@ -1,14 +1,15 @@
 {% extends 'base.html' %}
 
-{% load static %} {# Need to load static here for image in full_width_content block #}
+{% load static %}
 
 {% block title %}Escuela de Fútbol FDM{% endblock %}
 
 {% block full_width_content %}
+<!-- Banner héroe con imagen de fondo -->
 <div class="relative mb-8 overflow-hidden shadow-lg h-80 md:h-96">
     <img src="{% static 'img/balon_cesped(azul-rojo).png' %}" alt="Balón en Césped" class="w-full h-full object-cover">
     
-    <div class="absolute inset-0 bg-black opacity-50"></div> {# Dark overlay #}
+    <div class="absolute inset-0 bg-black opacity-50"></div>
     
     <div class="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4">
         <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-3 drop-shadow-lg leading-tight">
@@ -27,45 +28,64 @@
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
     <!-- Card: Gestión Deportiva -->
-    <div class="bg-gradient-to-r from-navy to-red-950 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+    <div class="bg-gradient-to-r from-slate-800 to-red-950 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
         <h3 class="text-xl font-semibold text-slate-50 mb-3">⚽ Gestión Deportiva</h3>
         <p class="text-slate-200 mb-4">Administra partidos, estadísticas y resultados.</p>
-        <a href="{% url 'partido_list' %}" class="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-300">
+        <a href="{% url 'partido_list' %}" 
+           class="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-300">
             Ver Partidos
         </a>
     </div>
 
     <!-- Card: Gestión de Atletas -->
-    <div class="bg-gradient-to-r from-red-950 to-navy rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+    <div class="bg-gradient-to-r from-red-950 to-slate-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
         <h3 class="text-xl font-semibold text-slate-50 mb-3">🏃‍♂️ Gestión de Atletas</h3>
         <p class="text-slate-200 mb-4">Registra nuevos atletas, actualiza fichas y consulta perfiles.</p>
         <div class="flex flex-wrap gap-2">
-            <a href="{% url 'atleta_list' %}" class="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-300">
+            <a href="{% url 'atleta_list' %}" 
+               class="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-300">
                 Ver Atletas
             </a>
-            <a href="{% url 'atleta_create' %}" class="inline-block bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-colors duration-300">
+            <a href="{% url 'atleta_create' %}" 
+               class="inline-block bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-colors duration-300">
                 Nuevo Atleta
             </a>
         </div>
     </div>
 
     <!-- Card: Gestión de Representantes -->
-    <div class="bg-gradient-to-r from-navy to-red-950 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+    <div class="bg-gradient-to-r from-slate-800 to-red-950 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
         <h3 class="text-xl font-semibold text-slate-50 mb-3">👨‍👩‍👦 Gestión de Representantes</h3>
         <p class="text-slate-200 mb-4">Base de datos de padres y representantes.</p>
-        <a href="{% url 'representante_list' %}" class="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-300">
+        <a href="{% url 'representante_list' %}" 
+           class="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-300">
             Ver Representantes
         </a>
     </div>
 
-    <!-- Card: Administración -->
+    <!-- Card: Cuerpo Técnico (Solo staff/admin) -->
+    {% if user.is_staff or user.is_superuser %}
+    <div class="bg-gradient-to-r from-red-950 to-slate-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+        <h3 class="text-xl font-semibold text-slate-50 mb-3">🏅 Cuerpo Técnico</h3>
+        <p class="text-slate-200 mb-4">Gestión de entrenadores y personal técnico de la escuela.</p>
+        <a href="{% url 'entrenador_list' %}" 
+           class="inline-block bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-colors duration-300">
+            Ver Entrenadores
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Card: Administración (Solo staff/admin) -->
+    {% if user.is_staff or user.is_superuser %}
     <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
         <h3 class="text-xl font-semibold text-gray-800 mb-3">⚙️ Administración</h3>
         <p class="text-gray-600 mb-4">Panel avanzado para coordinadores y configuración.</p>
-        <a href="/admin/" class="inline-block bg-gray-600 text-white px-5 py-2 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-colors duration-300">
+        <a href="/admin/" 
+           class="inline-block bg-gray-600 text-white px-5 py-2 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition-colors duration-300">
             Ir al Admin
         </a>
     </div>
+    {% endif %}
 
 </div>
 {% endblock %}

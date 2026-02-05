@@ -3,7 +3,7 @@
 {% block title %}Partidos{% endblock %}
 
 {% block content %}
-<div class="flex justify-between items-center mb-8">
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
     <h2 class="text-3xl font-bold text-gray-800">Gestión de Partidos</h2>
     <a href="{% url 'partido_create' %}" class="inline-block bg-blue-600 text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-300">
         <span class="font-semibold">+ Programar Partido</span>
