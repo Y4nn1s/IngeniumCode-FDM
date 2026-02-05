@@ -11,49 +11,54 @@
 </head>
 <body class="bg-slate-200 text-gray-800 font-sans flex flex-col min-h-screen">
 
-<!-- Navbar con gradiente -->
-<header class="bg-gradient-to-r from-red-400 to-slate-900 shadow-md sticky top-0 z-10">
-    <div class="container mx-auto px-4 md:px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-        <h1 class="text-xl md:text-2xl font-bold text-white">
-            <a href="{% url 'dashboard' %}" class="hover:text-slate-200 transition duration-300">
-                Escuela FDM
-            </a>
-        </h1>
+<!-- Navbar con identidad FDM -->
+<header class="bg-gradient-to-r from-fdm-blue via-fdm-blue-dark to-fdm-red shadow-lg sticky top-0 z-10">
+    <div class="container mx-auto px-4 md:px-6 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+        <!-- Logo y nombre -->
+        <a href="{% url 'dashboard' %}" class="flex items-center gap-3 hover:opacity-90 transition duration-300">
+            <img src="{% static 'img/emblema_fdm.png' %}" alt="FDM" class="w-10 h-10 md:w-12 md:h-12 drop-shadow-lg">
+            <div class="text-white">
+                <h1 class="text-lg md:text-xl font-bold leading-tight">Francisco de Miranda FC</h1>
+                <p class="text-xs text-slate-200 italic hidden sm:block">¡Vamos que Vamos!</p>
+            </div>
+        </a>
+        
+        <!-- Navegación -->
         <nav>
-            <ul class="flex flex-wrap justify-center items-center gap-3 md:gap-6">
+            <ul class="flex flex-wrap justify-center items-center gap-2 md:gap-4">
                 <li>
                     <a href="{% url 'dashboard' %}" 
-                       class="text-slate-100 hover:text-blue-300 font-semibold transition duration-300">
+                       class="text-white hover:text-fdm-red font-semibold transition duration-300 px-2 py-1 rounded hover:bg-white/10">
                         Inicio
                     </a>
                 </li>
                 <li>
                     <a href="{% url 'atleta_list' %}" 
-                       class="text-slate-100 hover:text-blue-300 font-semibold transition duration-300">
+                       class="text-white hover:text-fdm-red font-semibold transition duration-300 px-2 py-1 rounded hover:bg-white/10">
                         Atletas
                     </a>
                 </li>
                 <li>
                     <a href="{% url 'representante_list' %}" 
-                       class="text-slate-100 hover:text-blue-300 font-semibold transition duration-300">
+                       class="text-white hover:text-fdm-red font-semibold transition duration-300 px-2 py-1 rounded hover:bg-white/10">
                         Representantes
                     </a>
                 </li>
                 <li>
                     <a href="{% url 'partido_list' %}" 
-                       class="text-slate-100 hover:text-blue-300 font-semibold transition duration-300">
+                       class="text-white hover:text-fdm-red font-semibold transition duration-300 px-2 py-1 rounded hover:bg-white/10">
                         Partidos
                     </a>
                 </li>
                 <li>
                     <a href="{% url 'entrenador_list' %}" 
-                       class="text-slate-100 hover:text-blue-300 font-semibold transition duration-300">
+                       class="text-white hover:text-fdm-red font-semibold transition duration-300 px-2 py-1 rounded hover:bg-white/10">
                         Cuerpo Técnico
                     </a>
                 </li>
                 <li>
                     <a href="/admin/" 
-                       class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 font-semibold">
+                       class="bg-fdm-red text-white px-4 py-2 rounded-md hover:bg-fdm-red-dark transition duration-300 font-semibold shadow-md">
                         Admin
                     </a>
                 </li>
@@ -98,10 +103,25 @@
     {% endblock %}
 </main>
 
-<!-- Footer con año dinámico -->
-<footer class="bg-slate-800 text-slate-300 mt-auto">
-    <div class="container mx-auto px-4 md:px-6 py-6 text-center">
-        <p>&copy; {% now "Y" %} Escuela de Fútbol Infantil Comunitaria Francisco de Miranda. Todos los derechos reservados.</p>
+<!-- Footer con identidad FDM -->
+<footer class="bg-gradient-to-r from-fdm-blue-dark to-fdm-blue text-white mt-auto">
+    <div class="container mx-auto px-4 md:px-6 py-6">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+            <!-- Logo y lema -->
+            <div class="flex items-center gap-3">
+                <img src="{% static 'img/emblema_fdm.png' %}" alt="FDM" class="w-12 h-12 drop-shadow-lg">
+                <div>
+                    <p class="font-bold">Francisco de Miranda FC</p>
+                    <p class="text-sm text-fdm-red font-semibold italic">¡Vamos que Vamos!</p>
+                </div>
+            </div>
+            
+            <!-- Copyright -->
+            <div class="text-center md:text-right text-sm text-slate-300">
+                <p>&copy; {% now "Y" %} Escuela de Fútbol Infantil Comunitaria</p>
+                <p>Francisco de Miranda. Todos los derechos reservados.</p>
+            </div>
+        </div>
     </div>
 </footer>
 

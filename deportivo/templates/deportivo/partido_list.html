@@ -4,37 +4,37 @@
 
 {% block content %}
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-    <h2 class="text-3xl font-bold text-gray-800">Gestión de Partidos</h2>
-    <a href="{% url 'partido_create' %}" class="inline-block bg-blue-600 text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-300">
+    <h2 class="text-3xl font-bold text-fdm-blue">Gestión de Partidos</h2>
+    <a href="{% url 'partido_create' %}" class="inline-block bg-fdm-red text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-fdm-red-dark focus:outline-none focus:ring-2 focus:ring-fdm-red focus:ring-opacity-50 transition-all duration-300">
         <span class="font-semibold">+ Programar Partido</span>
     </a>
 </div>
 
 <!-- Partidos Pendientes -->
-<div class="bg-white rounded-lg shadow-lg mb-10">
-    <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-xl font-semibold text-gray-800">📅 Partidos Programados (Pendientes)</h3>
+<div class="bg-white rounded-lg shadow-lg mb-10 border-t-4 border-fdm-blue">
+    <div class="px-6 py-4 border-b border-gray-200 bg-fdm-blue/5">
+        <h3 class="text-xl font-semibold text-fdm-blue">📅 Partidos Programados (Pendientes)</h3>
     </div>
     <div class="overflow-x-auto">
-        <table class="w-full min-w-full">
-            <thead class="bg-gray-50">
+        <table class="w-full min-w-[700px]">
+            <thead class="bg-fdm-blue text-white">
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha y Hora</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rival</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Condición</th>
-                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Fecha y Hora</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Rival</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Tipo</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Condición</th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">Acciones</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
                 {% for partido in partidos_pendientes %}
-                <tr class="hover:bg-gray-100 transition-colors duration-200">
+                <tr class="hover:bg-fdm-blue/5 transition-colors duration-200">
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ partido.fecha_hora|date:"d/m/Y H:i" }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ partido.equipo_rival }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ partido.get_tipo_display }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ partido.get_condicion_display }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="{% url 'partido_resultado' partido.pk %}" class="inline-block bg-yellow-500 text-white font-bold px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors duration-300 text-xs">
+                        <a href="{% url 'partido_resultado' partido.pk %}" class="inline-block bg-fdm-red text-white font-bold px-4 py-2 rounded-lg hover:bg-fdm-red-dark transition-colors duration-300 text-xs">
                             Registrar Resultado
                         </a>
                     </td>
@@ -47,27 +47,31 @@
             </tbody>
         </table>
     </div>
+    <!-- Indicador de scroll en móviles -->
+    <div class="sm:hidden px-4 py-2 bg-gray-50 text-xs text-gray-500 text-center border-t">
+        ← Desliza horizontalmente para ver más →
+    </div>
 </div>
 
 <!-- Partidos Jugados -->
-<div class="bg-white rounded-lg shadow-lg">
-    <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-xl font-semibold text-gray-800">✅ Partidos Jugados (Historial)</h3>
+<div class="bg-white rounded-lg shadow-lg border-t-4 border-fdm-red">
+    <div class="px-6 py-4 border-b border-gray-200 bg-fdm-red/5">
+        <h3 class="text-xl font-semibold text-fdm-red">✅ Partidos Jugados (Historial)</h3>
     </div>
     <div class="overflow-x-auto">
-        <table class="w-full min-w-full">
-            <thead class="bg-gray-50">
+        <table class="w-full min-w-[700px]">
+            <thead class="bg-fdm-red text-white">
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rival</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Resultado</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marcador</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Fecha</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Rival</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Tipo</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Resultado</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Marcador</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
                 {% for partido in partidos_jugados %}
-                <tr class="hover:bg-gray-100 transition-colors duration-200">
+                <tr class="hover:bg-fdm-red/5 transition-colors duration-200">
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ partido.fecha_hora|date:"d/m/Y" }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ partido.equipo_rival }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ partido.get_tipo_display }}</td>
@@ -89,6 +93,10 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+    <!-- Indicador de scroll en móviles -->
+    <div class="sm:hidden px-4 py-2 bg-gray-50 text-xs text-gray-500 text-center border-t">
+        ← Desliza horizontalmente para ver más →
     </div>
 </div>
 {% endblock %}
