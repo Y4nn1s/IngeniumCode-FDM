@@ -12,4 +12,6 @@ urlpatterns = [
     # Representantes
     path('representantes/', views.representante_list, name='representante_list'),
     path('representantes/crear/', views.representante_create, name='representante_create'),
+    path('representantes/<int:pk>/', views.representante_detail, name='representante_detail'),
+    path('representantes/<int:pk>/editar/', views.representante_update, name='representante_update'),
 ]

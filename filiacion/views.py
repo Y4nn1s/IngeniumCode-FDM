@@ -50,8 +50,23 @@ def representante_create(request):
     if request.method == 'POST':
         form = RepresentanteForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('representante_list')
+            representante = form.save()
+            return redirect('representante_detail', pk=representante.pk)
     else:
         form = RepresentanteForm()
     return render(request, 'filiacion/representante_form.html', {'form': form, 'titulo': 'Nuevo Representante'})
+
+def representante_detail(request, pk):
+    representante = get_object_or_404(Representante, pk=pk)
+    return render(request, 'filiacion/representante_detail.html', {'representante': representante})
+
+def representante_update(request, pk):
+    representante = get_object_or_404(Representante, pk=pk)
+    if request.method == 'POST':
+        form = RepresentanteForm(request.POST, instance=representante)
+        if form.is_valid():
+            form.save()
+            return redirect('representante_detail', pk=representante.pk)
+    else:
+        form = RepresentanteForm(instance=representante)
+    return render(request, 'filiacion/representante_form.html', {'form': form, 'titulo': f'Editar {representante.nombres}'})
