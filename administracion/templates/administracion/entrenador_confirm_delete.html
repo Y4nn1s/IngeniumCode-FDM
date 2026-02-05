@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmar Eliminación{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-3xl font-bold text-slate-800 mb-6">Confirmar Eliminación</h2>
+        
+        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+            <p class="text-slate-800">
+                ¿Estás seguro de que deseas eliminar al entrenador 
+                <strong>{{ object.nombres }} {{ object.apellidos }}</strong>?
+            </p>
+            <p class="text-slate-600 mt-2">Esta acción no se puede deshacer.</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="flex gap-3">
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded transition-colors duration-200">
+                    Sí, Eliminar
+                </button>
+                <a href="{% url 'entrenador_list' %}" class="bg-slate-600 hover:bg-slate-700 text-white font-semibold py-2 px-4 rounded transition-colors duration-200">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
