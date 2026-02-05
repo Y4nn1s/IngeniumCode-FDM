@@ -1,112 +1,49 @@
 {% extends 'base.html' %}
 
-{% block title %}{% if object %}Editar{% else %}Nuevo{% endif %} Entrenador{% endblock %}
+{% block title %}{{ titulo }}{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto">
-    <h2 class="text-3xl font-bold text-slate-800 mb-6">
-        {% if object %}Editar{% else %}Nuevo{% endif %} Entrenador
-    </h2>
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-4">{{ titulo }}</h2>
 
-    <form method="post" class="bg-white rounded-lg shadow-md p-6">
-        {% csrf_token %}
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-                <label for="{{ form.nombres.id_for_label }}" class="block mb-2 font-semibold text-slate-700">
-                    {{ form.nombres.label }}
-                </label>
-                {{ form.nombres }}
-                {% if form.nombres.errors %}
-                <div class="text-red-600 text-sm mt-1">
-                    {% for error in form.nombres.errors %}
-                    <p>{{ error }}</p>
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                {% for field in form %}
+                <div class="
+                    {% if field.name == 'coordinador' %}md:col-span-2{% endif %} {# Example for full width field #}
+                ">
+                    <label for="{{ field.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900">
+                        {{ field.label }}
+                        {% if field.field.required %}
+                            <span class="text-red-500 font-bold">*</span>
+                        {% endif %}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <p class="mt-1.5 text-xs text-gray-500">{{ field.help_text|safe }}</p>
+                    {% endif %}
+                    
+                    {% for error in field.errors %}
+                        <p class="mt-1.5 text-sm text-red-600 font-semibold">{{ error }}</p>
                     {% endfor %}
                 </div>
-                {% endif %}
-            </div>
-
-            <div>
-                <label for="{{ form.apellidos.id_for_label }}" class="block mb-2 font-semibold text-slate-700">
-                    {{ form.apellidos.label }}
-                </label>
-                {{ form.apellidos }}
-                {% if form.apellidos.errors %}
-                <div class="text-red-600 text-sm mt-1">
-                    {% for error in form.apellidos.errors %}
-                    <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-                <label for="{{ form.licencia.id_for_label }}" class="block mb-2 font-semibold text-slate-700">
-                    {{ form.licencia.label }}
-                </label>
-                {{ form.licencia }}
-                {% if form.licencia.errors %}
-                <div class="text-red-600 text-sm mt-1">
-                    {% for error in form.licencia.errors %}
-                    <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-                {% endif %}
-            </div>
-
-            <div>
-                <label for="{{ form.telefono.id_for_label }}" class="block mb-2 font-semibold text-slate-700">
-                    {{ form.telefono.label }}
-                </label>
-                {{ form.telefono }}
-                {% if form.telefono.errors %}
-                <div class="text-red-600 text-sm mt-1">
-                    {% for error in form.telefono.errors %}
-                    <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="mb-4">
-            <label for="{{ form.coordinador.id_for_label }}" class="block mb-2 font-semibold text-slate-700">
-                {{ form.coordinador.label }}
-            </label>
-            {{ form.coordinador }}
-            {% if form.coordinador.errors %}
-            <div class="text-red-600 text-sm mt-1">
-                {% for error in form.coordinador.errors %}
-                <p>{{ error }}</p>
                 {% endfor %}
             </div>
-            {% endif %}
-        </div>
 
-        <div class="mb-6">
-            <label class="flex items-center">
-                {{ form.activo }}
-                <span class="ml-2 text-slate-700 font-semibold">{{ form.activo.label }}</span>
-            </label>
-            {% if form.activo.errors %}
-            <div class="text-red-600 text-sm mt-1">
-                {% for error in form.activo.errors %}
-                <p>{{ error }}</p>
-                {% endfor %}
+            <div class="mt-8 pt-6 border-t flex justify-end space-x-4">
+                <a href="{% url 'entrenador_list' %}" class="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-800 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200">
+                    Cancelar
+                </a>
+                <button type="submit" class="px-8 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                    Guardar
+                </button>
             </div>
-            {% endif %}
-        </div>
-
-        <div class="flex gap-3">
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition-colors duration-200">
-                Guardar
-            </button>
-            <a href="{% url 'entrenador_list' %}" class="bg-slate-600 hover:bg-slate-700 text-white font-semibold py-2 px-4 rounded transition-colors duration-200">
-                Cancelar
-            </a>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 {% endblock %}
