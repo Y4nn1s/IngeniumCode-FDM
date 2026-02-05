@@ -5,6 +5,13 @@ from .models import Atleta, Representante
 
 
 class RepresentanteForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        input_classes = 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+        for field_name, field in self.fields.items():
+            if not isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs.update({'class': input_classes})
+
     class Meta:
         model = Representante
         fields = '__all__'
@@ -32,6 +39,17 @@ class RepresentanteForm(forms.ModelForm):
 
 
 class AtletaForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        input_classes = 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+        file_input_classes = 'block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none'
+
+        for field_name, field in self.fields.items():
+            if isinstance(field.widget, forms.ClearableFileInput):
+                field.widget.attrs.update({'class': file_input_classes})
+            elif not isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs.update({'class': input_classes})
+
     class Meta:
         model = Atleta
         fields = '__all__'
