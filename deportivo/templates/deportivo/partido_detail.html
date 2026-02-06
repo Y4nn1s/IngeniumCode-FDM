@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}Partido vs {{ partido.equipo_rival }}{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <!-- Encabezado -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div>
+            <h2 class="text-3xl font-bold text-fdm-blue">FDM vs {{ partido.equipo_rival }}</h2>
+            <p class="text-gray-600 mt-1">{{ partido.fecha_hora|date:"d/m/Y H:i" }} · {{ partido.categoria }}</p>
+        </div>
+        <a href="{% url 'partido_list' %}" 
+           class="inline-block text-fdm-blue hover:text-fdm-blue-dark font-semibold transition-colors duration-200">
+            ← Volver a Partidos
+        </a>
+    </div>
+
+    <!-- Marcador -->
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden border-t-4 border-fdm-blue mb-6">
+        <div class="p-6 text-center">
+            <div class="flex items-center justify-center gap-6 md:gap-12">
+                <!-- FDM -->
+                <div class="text-center">
+                    <p class="text-lg font-bold text-fdm-blue mb-2">FDM</p>
+                    <p class="text-5xl md:text-6xl font-bold text-fdm-blue">{{ partido.goles_favor_escuela }}</p>
+                </div>
+                
+                <div class="text-3xl font-bold text-gray-400">-</div>
+                
+                <!-- Rival -->
+                <div class="text-center">
+                    <p class="text-lg font-bold text-gray-700 mb-2">{{ partido.equipo_rival }}</p>
+                    <p class="text-5xl md:text-6xl font-bold text-gray-700">{{ partido.goles_contra_rival }}</p>
+                </div>
+            </div>
+            
+            <!-- Badge de resultado -->
+            <div class="mt-6">
+                <span class="px-6 py-2 inline-flex text-lg font-bold rounded-full
+                    {% if partido.resultado == 'VICTORIA' %} bg-green-100 text-green-800
+                    {% elif partido.resultado == 'DERROTA' %} bg-red-100 text-red-800
+                    {% else %} bg-yellow-100 text-yellow-800
+                    {% endif %}">
+                    {{ partido.get_resultado_display }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info del Partido -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-lg shadow p-4 text-center">
+            <p class="text-xs text-gray-500 uppercase tracking-wider">Tipo</p>
+            <p class="text-lg font-semibold text-gray-800">{{ partido.get_tipo_display }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 text-center">
+            <p class="text-xs text-gray-500 uppercase tracking-wider">Condición</p>
+            <p class="text-lg font-semibold text-gray-800">{{ partido.get_condicion_display }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 text-center">
+            <p class="text-xs text-gray-500 uppercase tracking-wider">Titulares</p>
+            <p class="text-lg font-semibold text-fdm-blue">{{ resumen.titulares }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 text-center">
+            <p class="text-xs text-gray-500 uppercase tracking-wider">Tarjetas</p>
+            <p class="text-lg font-semibold">
+                <span class="text-yellow-600">{{ resumen.total_amarillas }} 🟨</span>
+                <span class="text-red-600 ml-2">{{ resumen.total_rojas }} 🟥</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Estadísticas de Jugadores -->
+    {% if estadisticas %}
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden border-t-4 border-fdm-red">
+        <div class="px-6 py-4 border-b border-gray-200 bg-fdm-red/5">
+            <h3 class="text-xl font-semibold text-fdm-red">📊 Estadísticas Individuales</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full min-w-[700px]">
+                <thead class="bg-fdm-red text-white">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Atleta</th>
+                        <th class="px-3 py-3 text-center text-xs font-medium uppercase tracking-wider">Titular</th>
+                        <th class="px-3 py-3 text-center text-xs font-medium uppercase tracking-wider">Goles</th>
+                        <th class="px-3 py-3 text-center text-xs font-medium uppercase tracking-wider">Asist.</th>
+                        <th class="px-3 py-3 text-center text-xs font-medium uppercase tracking-wider">🟨</th>
+                        <th class="px-3 py-3 text-center text-xs font-medium uppercase tracking-wider">🟥</th>
+                        <th class="px-3 py-3 text-center text-xs font-medium uppercase tracking-wider">Nota DT</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for est in estadisticas %}
+                    <tr class="hover:bg-fdm-red/5 transition-colors duration-200">
+                        <td class="px-4 py-3 whitespace-nowrap">
+                            <div class="flex items-center gap-3">
+                                {% if est.atleta.foto_perfil %}
+                                    <img style="width: 40px; height: 40px; min-width: 40px;" 
+                                         class="rounded-full object-cover border-2 border-fdm-blue/30" 
+                                         src="{{ est.atleta.foto_perfil.url }}" alt="{{ est.atleta.nombres }}">
+                                {% else %}
+                                    <div style="width: 40px; height: 40px; min-width: 40px;" 
+                                         class="rounded-full bg-fdm-blue flex items-center justify-center text-white text-sm font-bold">
+                                        {{ est.atleta.nombres|slice:":1" }}{{ est.atleta.apellidos|slice:":1" }}
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <a href="{% url 'atleta_detail' est.atleta.pk %}" class="text-sm font-medium text-gray-900 hover:text-fdm-blue transition-colors">
+                                        {{ est.atleta.apellidos }}, {{ est.atleta.nombres }}
+                                    </a>
+                                    <span class="ml-2 px-2 py-0.5 text-xs font-semibold rounded-full bg-fdm-blue/10 text-fdm-blue">
+                                        {{ est.atleta.get_posicion_display }}
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-3 py-3 text-center">
+                            {% if est.es_titular %}
+                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 text-green-600">
+                                    ✓
+                                </span>
+                            {% else %}
+                                <span class="text-gray-400">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-3 py-3 text-center">
+                            {% if est.goles > 0 %}
+                                <span class="inline-flex items-center justify-center px-2 py-1 rounded-full bg-fdm-blue text-white text-sm font-bold">
+                                    {{ est.goles }}
+                                </span>
+                            {% else %}
+                                <span class="text-gray-400">0</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-3 py-3 text-center">
+                            {% if est.asistencias > 0 %}
+                                <span class="inline-flex items-center justify-center px-2 py-1 rounded-full bg-green-500 text-white text-sm font-bold">
+                                    {{ est.asistencias }}
+                                </span>
+                            {% else %}
+                                <span class="text-gray-400">0</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-3 py-3 text-center text-yellow-600 font-semibold">
+                            {{ est.tarjetas_amarillas|default:"0" }}
+                        </td>
+                        <td class="px-3 py-3 text-center text-red-600 font-semibold">
+                            {{ est.tarjetas_rojas|default:"0" }}
+                        </td>
+                        <td class="px-3 py-3 text-center">
+                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full 
+                                {% if est.calificacion_dt >= 8 %} bg-green-100 text-green-700
+                                {% elif est.calificacion_dt >= 5 %} bg-yellow-100 text-yellow-700
+                                {% else %} bg-red-100 text-red-700 {% endif %} font-bold text-sm">
+                                {{ est.calificacion_dt }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="bg-gray-50 font-semibold">
+                    <tr>
+                        <td class="px-4 py-3 text-right text-sm text-gray-600">TOTALES:</td>
+                        <td class="px-3 py-3 text-center text-fdm-blue">{{ resumen.titulares }}</td>
+                        <td class="px-3 py-3 text-center text-fdm-blue">{{ resumen.total_goles }}</td>
+                        <td class="px-3 py-3 text-center text-green-600">{{ resumen.total_asistencias }}</td>
+                        <td class="px-3 py-3 text-center text-yellow-600">{{ resumen.total_amarillas }}</td>
+                        <td class="px-3 py-3 text-center text-red-600">{{ resumen.total_rojas }}</td>
+                        <td class="px-3 py-3"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <!-- Indicador de scroll en móviles -->
+        <div class="sm:hidden px-4 py-2 bg-gray-50 text-xs text-gray-500 text-center border-t">
+            ← Desliza horizontalmente para ver más →
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">Sin estadísticas registradas</h3>
+        <p class="mt-1 text-sm text-gray-500">Este partido no tiene estadísticas individuales cargadas.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

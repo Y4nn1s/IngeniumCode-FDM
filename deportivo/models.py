@@ -21,6 +21,13 @@ RESULTADO_PARTIDO_CHOICES = [
 # --- Modelos ---
 
 class Partido(models.Model):
+    categoria = models.ForeignKey(
+        'administracion.Categoria',
+        on_delete=models.CASCADE,
+        related_name='partidos',
+        null=True,  # Temporal: remover después de asignar categorías a partidos existentes
+        blank=True
+    )
     fecha_hora = models.DateTimeField()
     equipo_rival = models.CharField(max_length=100)
     tipo = models.CharField(max_length=10, choices=TIPO_PARTIDO_CHOICES)
