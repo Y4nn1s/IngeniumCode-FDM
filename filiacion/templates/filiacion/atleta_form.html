@@ -4,10 +4,14 @@
 
 {% block content %}
 <div class="max-w-4xl mx-auto">
-    <div class="bg-white rounded-xl shadow-lg p-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-4">{{ titulo }}</h2>
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden border-t-4 border-fdm-blue">
+        <!-- Header -->
+        <div class="bg-fdm-blue/5 px-8 py-5 border-b">
+            <h2 class="text-3xl font-bold text-fdm-blue">{{ titulo }}</h2>
+            <p class="text-sm text-gray-600 mt-1">Complete los datos del atleta</p>
+        </div>
 
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" class="p-8">
             {% csrf_token %}
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
@@ -18,14 +22,14 @@
                     <label for="{{ field.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900">
                         {{ field.label }}
                         {% if field.field.required %}
-                            <span class="text-red-500 font-bold">*</span>
+                            <span class="text-fdm-red font-bold">*</span>
                         {% endif %}
                     </label>
 
                     {% if field.name == 'foto_perfil' and form.instance.foto_perfil %}
                     <div class="mb-2">
                         <p class="text-xs text-gray-600 mb-1">Foto Actual:</p>
-                        <img src="{{ form.instance.foto_perfil.url }}" alt="Foto actual" class="h-24 w-auto rounded-md border-2 border-gray-200">
+                        <img src="{{ form.instance.foto_perfil.url }}" alt="Foto actual" class="h-24 w-auto rounded-md border-2 border-fdm-blue/20">
                     </div>
                     {% endif %}
 
@@ -36,7 +40,7 @@
                     {% endif %}
                     
                     {% for error in field.errors %}
-                        <p class="mt-1.5 text-sm text-red-600 font-semibold">{{ error }}</p>
+                        <p class="mt-1.5 text-sm text-fdm-red font-semibold">{{ error }}</p>
                     {% endfor %}
                 </div>
                 {% endfor %}
@@ -46,7 +50,7 @@
                 <a href="{% url 'atleta_list' %}" class="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-800 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200">
                     Cancelar
                 </a>
-                <button type="submit" class="px-8 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                <button type="submit" class="px-8 py-2.5 bg-fdm-blue text-white rounded-lg text-sm font-medium hover:bg-fdm-blue-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fdm-blue transition-all duration-200">
                     Guardar
                 </button>
             </div>
