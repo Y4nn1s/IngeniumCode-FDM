@@ -36,10 +36,16 @@
             </div>
 
             <div class="mt-8 pt-6 border-t flex justify-end space-x-4">
-                <a href="{% url 'atleta_detail' form.instance.atleta.pk %}" class="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-800 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200">
-                    Cancelar
-                </a>
-                <button type="submit" class="px-8 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                {% if form.instance.pk and form.instance.atleta %}
+                    <a href="{% url 'atleta_detail' form.instance.atleta.pk %}" class="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-800 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200">
+                        Cancelar
+                    </a>
+                {% else %}
+                    <a href="{% url 'atleta_list' %}" class="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-800 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200">
+                        Cancelar
+                    </a>
+                {% endif %}
+                <button type="submit" class="px-8 py-2.5 bg-fdm-blue text-white rounded-lg text-sm font-medium hover:bg-fdm-blue-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
                     Guardar
                 </button>
             </div>

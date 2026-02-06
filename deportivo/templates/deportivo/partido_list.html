@@ -5,9 +5,14 @@
 {% block content %}
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
     <h2 class="text-3xl font-bold text-fdm-blue">Gestión de Partidos</h2>
-    <a href="{% url 'partido_create' %}" class="inline-block bg-fdm-red text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-fdm-red-dark focus:outline-none focus:ring-2 focus:ring-fdm-red focus:ring-opacity-50 transition-all duration-300">
-        <span class="font-semibold">+ Programar Partido</span>
-    </a>
+    <div class="flex flex-wrap gap-3">
+        <a href="{% url 'estadisticas_panel' %}" class="inline-block bg-fdm-blue text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-fdm-blue-dark focus:outline-none focus:ring-2 focus:ring-fdm-blue focus:ring-opacity-50 transition-all duration-300">
+            <span class="font-semibold">📊 Estadísticas</span>
+        </a>
+        <a href="{% url 'partido_create' %}" class="inline-block bg-fdm-red text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-fdm-red-dark focus:outline-none focus:ring-2 focus:ring-fdm-red focus:ring-opacity-50 transition-all duration-300">
+            <span class="font-semibold">+ Programar Partido</span>
+        </a>
+    </div>
 </div>
 
 <!-- Partidos Pendientes -->
