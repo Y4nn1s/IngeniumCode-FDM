@@ -16,6 +16,11 @@ urlpatterns = [
         views.partido_detail,
         name='partido_detail'
     ),
+    path(
+        'estadisticas/',
+        views.EstadisticasView.as_view(),
+        name='estadisticas_panel'
+    ),
     # Evaluación Técnica
     path(
         'evaluacion-tecnica/nueva/',
