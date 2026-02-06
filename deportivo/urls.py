@@ -11,6 +11,11 @@ urlpatterns = [
         views.partido_registrar_resultado,
         name='partido_resultado'
     ),
+    path(
+        'partidos/<int:pk>/',
+        views.partido_detail,
+        name='partido_detail'
+    ),
     # Evaluación Técnica
     path(
         'evaluacion-tecnica/nueva/',

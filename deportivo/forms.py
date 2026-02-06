@@ -1,6 +1,17 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Partido, EvaluacionTecnica, EvaluacionPsicosocial
+from .models import Estadistica, Partido, EvaluacionTecnica, EvaluacionPsicosocial
+
+
+# --- Clases de estilos Tailwind para inputs compactos (uso en tablas) ---
+TAILWIND_COMPACT_NUMBER = (
+    'w-16 text-center bg-gray-50 border border-gray-300 text-gray-900 '
+    'text-sm rounded focus:ring-blue-500 focus:border-blue-500 p-1.5'
+)
+TAILWIND_COMPACT_CHECKBOX = (
+    'w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded '
+    'focus:ring-blue-500 focus:ring-2'
+)
 
 
 TAILWIND_INPUT_CLASSES = 'form-input w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500'
@@ -18,7 +29,7 @@ class PartidoProgramarForm(forms.ModelForm):
 
     class Meta:
         model = Partido
-        fields = ['fecha_hora', 'equipo_rival', 'tipo', 'condicion']
+        fields = ['categoria', 'fecha_hora', 'equipo_rival', 'tipo', 'condicion']
         widgets = {
             'fecha_hora': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'equipo_rival': forms.TextInput(attrs={'placeholder': 'Nombre del equipo rival'}),
@@ -94,4 +105,47 @@ class EvaluacionPsicosocialForm(forms.ModelForm):
             'respeto': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
             'manejo_frustracion': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
             'observaciones_conductuales': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA_CLASSES, 'rows': 3}),
+        }
+
+
+class EstadisticaForm(forms.ModelForm):
+    """Formulario fila para estadísticas individuales de un atleta en un partido."""
+    class Meta:
+        model = Estadistica
+        fields = [
+            'es_titular', 'goles', 'asistencias',
+            'tarjetas_amarillas', 'tarjetas_rojas', 'calificacion_dt'
+        ]
+        widgets = {
+            'es_titular': forms.CheckboxInput(attrs={
+                'class': TAILWIND_COMPACT_CHECKBOX
+            }),
+            'goles': forms.NumberInput(attrs={
+                'class': TAILWIND_COMPACT_NUMBER,
+                'min': '0', 'max': '20'
+            }),
+            'asistencias': forms.NumberInput(attrs={
+                'class': TAILWIND_COMPACT_NUMBER,
+                'min': '0', 'max': '20'
+            }),
+            'tarjetas_amarillas': forms.NumberInput(attrs={
+                'class': TAILWIND_COMPACT_NUMBER,
+                'min': '0', 'max': '2'
+            }),
+            'tarjetas_rojas': forms.NumberInput(attrs={
+                'class': TAILWIND_COMPACT_NUMBER,
+                'min': '0', 'max': '1'
+            }),
+            'calificacion_dt': forms.NumberInput(attrs={
+                'class': TAILWIND_COMPACT_NUMBER,
+                'min': '1', 'max': '10'
+            }),
+        }
+        labels = {
+            'es_titular': 'Titular',
+            'goles': 'Goles',
+            'asistencias': 'Asist.',
+            'tarjetas_amarillas': '🟨',
+            'tarjetas_rojas': '🟥',
+            'calificacion_dt': 'Nota',
         }
