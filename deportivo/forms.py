@@ -3,9 +3,7 @@ from django.core.exceptions import ValidationError
 from .models import Partido, EvaluacionTecnica, EvaluacionPsicosocial
 
 
-TAILWIND_INPUT_CLASSES = 'form-input w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500'
-TAILWIND_SELECT_CLASSES = 'form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500'
-TAILWIND_TEXTAREA_CLASSES = 'form-textarea w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500'
+
 
 
 class PartidoProgramarForm(forms.ModelForm):
@@ -54,6 +52,17 @@ class PartidoResultadoForm(forms.ModelForm):
 
 class EvaluacionTecnicaForm(forms.ModelForm):
     """Formulario para registrar evaluación técnica de un atleta."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        input_classes = 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+        textarea_classes = input_classes + ' h-24' # Extend input for textarea
+        
+        for field_name, field in self.fields.items():
+            if isinstance(field.widget, forms.Textarea):
+                field.widget.attrs.update({'class': textarea_classes})
+            elif not isinstance(field.widget, forms.CheckboxInput): 
+                field.widget.attrs.update({'class': input_classes})
+
     class Meta:
         model = EvaluacionTecnica
         fields = [
@@ -62,21 +71,23 @@ class EvaluacionTecnicaForm(forms.ModelForm):
             'pase_corto', 'tiro', 'inteligencia_tactica', 'observaciones'
         ]
         widgets = {
-            'atleta': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
-            'entrenador': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
-            'fecha_evaluacion': forms.DateInput(attrs={'type': 'date', 'class': TAILWIND_INPUT_CLASSES}),
-            'velocidad': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
-            'resistencia': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
-            'control_balon': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
-            'pase_corto': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
-            'tiro': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
-            'inteligencia_tactica': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
-            'observaciones': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA_CLASSES, 'rows': 3}),
+            'fecha_evaluacion': forms.DateInput(attrs={'type': 'date'}), # Type date preserved
         }
 
 
 class EvaluacionPsicosocialForm(forms.ModelForm):
     """Formulario para registrar evaluación psicosocial de un atleta."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        input_classes = 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+        textarea_classes = input_classes + ' h-24' # Extend input for textarea
+
+        for field_name, field in self.fields.items():
+            if isinstance(field.widget, forms.Textarea):
+                field.widget.attrs.update({'class': textarea_classes})
+            elif not isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs.update({'class': input_classes})
+
     class Meta:
         model = EvaluacionPsicosocial
         fields = [
@@ -85,13 +96,5 @@ class EvaluacionPsicosocialForm(forms.ModelForm):
             'respeto', 'manejo_frustracion', 'observaciones_conductuales'
         ]
         widgets = {
-            'atleta': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
-            'coordinador_evaluador': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
-            'fecha_evaluacion': forms.DateInput(attrs={'type': 'date', 'class': TAILWIND_INPUT_CLASSES}),
-            'compromiso': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
-            'puntualidad': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
-            'companerismo': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
-            'respeto': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
-            'manejo_frustracion': forms.Select(attrs={'class': TAILWIND_SELECT_CLASSES}),
-            'observaciones_conductuales': forms.Textarea(attrs={'class': TAILWIND_TEXTAREA_CLASSES, 'rows': 3}),
+            'fecha_evaluacion': forms.DateInput(attrs={'type': 'date'}), # Type date preserved
         }

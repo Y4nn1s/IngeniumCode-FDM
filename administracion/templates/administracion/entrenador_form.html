@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{% if object %}Editar{% else %}Nuevo{% endif %} Entrenador{% endblock %}
+{% block title %}{{ titulo }}{% endblock %}
 
 {% block content %}
 <div class="max-w-2xl mx-auto">
@@ -85,8 +85,6 @@
                 <p>{{ error }}</p>
                 {% endfor %}
             </div>
-            {% endif %}
-        </div>
 
         <div class="mb-6">
             <label class="flex items-center">

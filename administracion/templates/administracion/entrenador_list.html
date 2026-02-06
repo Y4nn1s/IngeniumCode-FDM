@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Cuerpo Técnico - Entrenadores{% endblock %}
+{% block title %}Lista de Entrenadores{% endblock %}
 
 {% block content %}
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
@@ -9,7 +9,6 @@
     <a href="{% url 'entrenador_create' %}" class="bg-fdm-red hover:bg-fdm-red-dark text-white font-semibold py-2.5 px-5 rounded-lg shadow-md transition-colors duration-200">
         + Nuevo Entrenador
     </a>
-    {% endif %}
 </div>
 
 {% if entrenadores %}
