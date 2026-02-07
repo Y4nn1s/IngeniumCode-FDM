@@ -4,15 +4,15 @@
 
 {% block content %}
 <!-- Tarjeta Principal del Representante -->
-<div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border-t-4 border-fdm-red">
+<div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border-t-4 border-emerald-500">
     <!-- Header -->
-    <div class="px-8 py-5 border-b bg-fdm-red/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div class="px-8 py-5 border-b bg-fdm-blue-dark/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
             <h2 class="text-3xl font-bold text-fdm-blue">{{ representante.nombres }} {{ representante.apellidos }}</h2>
-            <p class="text-lg text-fdm-red font-semibold">C.I: {{ representante.cedula_identidad }}</p>
+            <p class="text-lg text-slate-800 font-semibold">C.I: {{ representante.cedula_identidad }}</p>
         </div>
         <div class="flex space-x-3">
-            <a href="{% url 'representante_update' representante.pk %}" class="inline-block bg-fdm-blue text-white px-5 py-2 rounded-lg hover:bg-fdm-blue-dark transition-colors duration-300 font-semibold text-sm">
+            <a href="{% url 'representante_update' representante.pk %}" class="inline-block bg-yellow-600 text-white px-5 py-2 rounded-lg hover:bg-yellow-700 transition-colors duration-300 font-semibold text-sm">
                 Editar
             </a>
             <a href="{% url 'representante_list' %}" class="inline-block bg-gray-200 text-gray-800 px-5 py-2 rounded-lg hover:bg-gray-300 transition-colors duration-300 font-semibold text-sm">
@@ -37,10 +37,10 @@
             <div>
                 <h4 class="text-sm font-medium text-gray-500">Correo Electrónico</h4>
                 <p class="mt-1 text-base font-semibold text-gray-800 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-fdm-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 mr-2 text-fdm-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
-                    <a href="mailto:{{ representante.correo_electronico }}" class="text-fdm-blue hover:underline">
+                    <a href="mailto:{{ representante.correo_electronico }}" class="text-gray-800 hover:underline">
                         {{ representante.correo_electronico }}
                     </a>
                 </p>
@@ -61,7 +61,7 @@
         <div class="border-t pt-6">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold text-fdm-blue">Atletas a su Cargo</h3>
-                <a href="{% url 'atleta_create' %}" class="inline-block bg-fdm-red text-white px-4 py-2 rounded-lg hover:bg-fdm-red-dark transition-colors duration-300 font-semibold text-sm">
+                <a href="{% url 'atleta_create' %}" class="inline-block bg-emerald-500 text-white px-4 py-2 rounded-lg hover:bg-emerald-600 transition-colors duration-300 font-semibold text-sm">
                     + Nuevo Atleta
                 </a>
             </div>
