@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha Técnica - {{ atleta.nombres }} {{ atleta.apellidos }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            color: #333;
+        }
+
+        /* Header con Branding FDM */
+        .header {
+            text-align: center;
+            border-bottom: 4px solid #1e40af;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #1e40af;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            font-size: 11pt;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .header .title {
+            font-size: 16pt;
+            font-weight: bold;
+            color: #dc2626;
+            margin-top: 10px;
+        }
+
+        /* Sección de Datos Personales */
+        .personal-info {
+            margin-bottom: 25px;
+        }
+
+        .personal-info table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .personal-info td {
+            padding: 8px;
+            vertical-align: top;
+        }
+
+        .photo-cell {
+            width: 150px;
+            text-align: center;
+        }
+
+        .photo {
+            width: 120px;
+            height: 160px;
+            border: 3px solid #1e40af;
+            object-fit: cover;
+        }
+
+        .no-photo {
+            width: 120px;
+            height: 160px;
+            border: 3px solid #d1d5db;
+            background-color: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-size: 10pt;
+        }
+
+        .data-grid {
+            display: table;
+            width: 100%;
+        }
+
+        .data-row {
+            display: table-row;
+        }
+
+        .data-label {
+            display: table-cell;
+            font-weight: bold;
+            color: #4b5563;
+            padding: 6px 10px 6px 0;
+            width: 40%;
+        }
+
+        .data-value {
+            display: table-cell;
+            color: #1f2937;
+            padding: 6px 0;
+        }
+
+        /* Secciones */
+        .section {
+            margin-bottom: 25px;
+            page-break-inside: avoid;
+        }
+
+        .section-title {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #fff;
+            background-color: #1e40af;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+        }
+
+        .section-title.technical {
+            background-color: #059669;
+        }
+
+        .section-title.psychosocial {
+            background-color: #7c3aed;
+        }
+
+        .section-title.stats {
+            background-color: #dc2626;
+        }
+
+        /* Tablas de Evaluación */
+        .eval-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .eval-table th {
+            background-color: #f3f4f6;
+            font-weight: bold;
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #d1d5db;
+            font-size: 10pt;
+        }
+
+        .eval-table td {
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 10pt;
+        }
+
+        .eval-date {
+            color: #6b7280;
+            font-size: 9pt;
+            margin-bottom: 10px;
+        }
+
+        .score-cell {
+            text-align: center;
+            font-weight: bold;
+            color: #1e40af;
+        }
+
+        .no-data {
+            color: #9ca3af;
+            font-style: italic;
+            padding: 15px;
+            text-align: center;
+            background-color: #f9fafb;
+            border: 1px dashed #d1d5db;
+        }
+
+        .observaciones {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            font-size: 10pt;
+        }
+
+        .observaciones-label {
+            font-weight: bold;
+            color: #92400e;
+            margin-bottom: 5px;
+        }
+
+        /* Estadísticas */
+        .stats-grid {
+            display: table;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .stat-item {
+            display: table-row;
+        }
+
+        .stat-label {
+            display: table-cell;
+            font-weight: bold;
+            padding: 10px 15px;
+            background-color: #fee2e2;
+            border: 1px solid #fecaca;
+            width: 60%;
+        }
+
+        .stat-value {
+            display: table-cell;
+            font-size: 16pt;
+            font-weight: bold;
+            color: #dc2626;
+            padding: 10px 15px;
+            text-align: center;
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 9pt;
+            font-weight: bold;
+        }
+
+        .badge-active {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-inactive {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .badge-becado {
+            background-color: #dbeafe;
+            color: #1e40af;
+            margin-left: 8px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 2px solid #e5e7eb;
+            font-size: 9pt;
+            color: #6b7280;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header con Branding -->
+    <div class="header">
+        <h1>ESCUELA DE FÚTBOL FRANCISCO DE MIRANDA</h1>
+        <div class="subtitle">¡Vamos que Vamos!</div>
+        <div class="title">FICHA TÉCNICA DEL ATLETA</div>
+    </div>
+
+    <!-- Sección de Datos Personales -->
+    <div class="section personal-info">
+        <div class="section-title">Datos Personales</div>
+        
+        <table>
+            <tr>
+                <td class="photo-cell">
+                    {% if atleta.foto_perfil %}
+                        <img src="file://{{ MEDIA_ROOT }}/{{ atleta.foto_perfil }}" alt="Foto" class="photo">
+                    {% else %}
+                        <div class="no-photo">Sin foto</div>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="data-grid">
+                        <div class="data-row">
+                            <div class="data-label">Nombre Completo:</div>
+                            <div class="data-value">{{ atleta.nombres }} {{ atleta.apellidos }}</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Cédula Escolar:</div>
+                            <div class="data-value">{{ atleta.cedula_escolar|default:"-" }}</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Fecha de Nacimiento:</div>
+                            <div class="data-value">{{ atleta.fecha_nacimiento|date:"d/m/Y" }}</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Categoría:</div>
+                            <div class="data-value">{{ atleta.categoria|default:"Sin Categoría" }}</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Posición:</div>
+                            <div class="data-value">{{ atleta.get_posicion_display }}</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Lateralidad:</div>
+                            <div class="data-value">{{ atleta.get_lateralidad_display }}</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Peso / Altura:</div>
+                            <div class="data-value">{{ atleta.peso_kg|default:"-" }} kg / {{ atleta.altura_mts|default:"-" }} mts</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Estado:</div>
+                            <div class="data-value">
+                                {% if atleta.activo %}
+                                    <span class="badge badge-active">ACTIVO</span>
+                                {% else %}
+                                    <span class="badge badge-inactive">INACTIVO</span>
+                                {% endif %}
+                                {% if atleta.becado %}
+                                    <span class="badge badge-becado">BECADO</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Representante:</div>
+                            <div class="data-value">{{ atleta.representante.nombres }} {{ atleta.representante.apellidos }}</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Teléfono de Contacto:</div>
+                            <div class="data-value">{{ atleta.representante.telefono_principal }}</div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Sección de Evaluaciones Técnicas -->
+    {% if evaluaciones_tecnicas %}
+        {% for eval in evaluaciones_tecnicas %}
+        <div class="section" {% if not forloop.first %}style="page-break-before: always;"{% endif %}>
+            <div class="section-title technical">Evaluación Técnica #{{ forloop.counter }}</div>
+            
+            <div class="eval-date">
+                Fecha de Evaluación: {{ eval.fecha_evaluacion|date:"d/m/Y" }} | 
+                Entrenador: {{ eval.entrenador|default:"-" }}
+            </div>
+            
+            <table class="eval-table">
+                <thead>
+                    <tr>
+                        <th>Velocidad</th>
+                        <th>Resistencia</th>
+                        <th>Control de Balón</th>
+                        <th>Pase Corto</th>
+                        <th>Tiro</th>
+                        <th>Inteligencia Táctica</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="score-cell">{{ eval.velocidad }}/10</td>
+                        <td class="score-cell">{{ eval.resistencia }}/10</td>
+                        <td class="score-cell">{{ eval.control_balon }}/10</td>
+                        <td class="score-cell">{{ eval.pase_corto }}/10</td>
+                        <td class="score-cell">{{ eval.tiro }}/10</td>
+                        <td class="score-cell">{{ eval.inteligencia_tactica }}/10</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            {% if eval.observaciones %}
+            <div class="observaciones">
+                <div class="observaciones-label">Observaciones:</div>
+                <div>{{ eval.observaciones }}</div>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="section">
+            <div class="section-title technical">Evaluación Técnica</div>
+            <div class="no-data">No hay evaluaciones técnicas registradas</div>
+        </div>
+    {% endif %}
+
+    <!-- Sección de Evaluaciones Psicosociales -->
+    {% if evaluaciones_psicosociales %}
+        {% for eval in evaluaciones_psicosociales %}
+        <div class="section" style="page-break-before: always;">
+            <div class="section-title psychosocial">Evaluación Psicosocial #{{ forloop.counter }}</div>
+            
+            <div class="eval-date">
+                Fecha de Evaluación: {{ eval.fecha_evaluacion|date:"d/m/Y" }} | 
+                Evaluador: {{ eval.coordinador_evaluador|default:"-" }}
+            </div>
+            
+            <table class="eval-table">
+                <thead>
+                    <tr>
+                        <th>Compromiso</th>
+                        <th>Puntualidad</th>
+                        <th>Compañerismo</th>
+                        <th>Respeto</th>
+                        <th>Manejo de Frustración</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="score-cell">{{ eval.compromiso }}/10</td>
+                        <td class="score-cell">{{ eval.puntualidad }}/10</td>
+                        <td class="score-cell">{{ eval.companerismo }}/10</td>
+                        <td class="score-cell">{{ eval.respeto }}/10</td>
+                        <td class="score-cell">{{ eval.manejo_frustracion }}/10</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            {% if eval.observaciones_conductuales %}
+            <div class="observaciones">
+                <div class="observaciones-label">Observaciones Conductuales:</div>
+                <div>{{ eval.observaciones_conductuales }}</div>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="section">
+            <div class="section-title psychosocial">Evaluación Psicosocial</div>
+            <div class="no-data">No hay evaluaciones psicosociales registradas</div>
+        </div>
+    {% endif %}
+
+    <!-- Sección de Estadísticas -->
+    <div class="section" style="page-break-before: always;">
+        <div class="section-title stats">Estadísticas de Temporada</div>
+        
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-label">Total de Partidos Jugados</div>
+                <div class="stat-value">{{ estadisticas.total_partidos|default:0 }}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Total de Goles Anotados</div>
+                <div class="stat-value">{{ estadisticas.total_goles|default:0 }}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Total de Asistencias</div>
+                <div class="stat-value">{{ estadisticas.total_asistencias|default:0 }}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Tarjetas Amarillas</div>
+                <div class="stat-value" style="color: #fbbf24;">{{ estadisticas.total_tarjetas_amarillas|default:0 }}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Tarjetas Rojas</div>
+                <div class="stat-value">{{ estadisticas.total_tarjetas_rojas|default:0 }}</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Calificación Promedio del DT</div>
+                <div class="stat-value" style="font-size: 14pt;">
+                    {% if estadisticas.calificacion_promedio %}
+                        {{ estadisticas.calificacion_promedio|floatformat:1 }}/10
+                    {% else %}
+                        -
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        Documento generado el {% now "d/m/Y H:i" %} | Escuela de Fútbol Francisco de Miranda
+    </div>
+</body>
+</html>

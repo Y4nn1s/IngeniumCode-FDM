@@ -12,6 +12,7 @@
             <p class="text-lg text-blue-600 font-semibold">{{ atleta.categoria|default:"Sin Categoría" }}</p>
         </div>
         <div class="flex space-x-3">
+            <a href="{% url 'atleta_ficha_pdf' atleta.pk %}" class="inline-block bg-red-600 text-white px-5 py-2 rounded-lg hover:bg-red-700 transition-colors duration-300 font-semibold text-sm">📄 Descargar Ficha</a>
             <a href="{% url 'atleta_update' atleta.pk %}" class="inline-block bg-gray-200 text-gray-800 px-5 py-2 rounded-lg hover:bg-gray-300 transition-colors duration-300 font-semibold text-sm">Editar</a>
             <a href="{% url 'atleta_delete' atleta.pk %}" class="inline-block bg-red-600 text-white px-5 py-2 rounded-lg hover:bg-red-700 transition-colors duration-300 font-semibold text-sm">Eliminar</a>
         </div>

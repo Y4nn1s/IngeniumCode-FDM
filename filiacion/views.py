@@ -1,6 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views import View
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from .models import Atleta, Representante
 from .forms import AtletaForm, RepresentanteForm
+from .utils import generar_ficha_tecnica_pdf
 
 # --- Atletas ---
 
@@ -70,3 +75,34 @@ def representante_update(request, pk):
     else:
         form = RepresentanteForm(instance=representante)
     return render(request, 'filiacion/representante_form.html', {'form': form, 'titulo': f'Editar {representante.nombres}'})
+
+# Vista para descargar ficha técnica en PDF
+@method_decorator(login_required, name='dispatch')
+class DescargarFichaPDF(View):
+    """
+    Vista para generar y descargar la ficha técnica de un atleta en PDF.
+    Permite especificar evaluaciones específicas mediante parámetros GET.
+    """
+    def get(self, request, pk):
+        # Obtener parámetros opcionales de evaluaciones
+        eval_tecnica_id = request.GET.get('eval_tecnica_id')
+        eval_psicosocial_id = request.GET.get('eval_psicosocial_id')
+        
+        # Convertir a int si existen
+        if eval_tecnica_id:
+            eval_tecnica_id = int(eval_tecnica_id)
+        if eval_psicosocial_id:
+            eval_psicosocial_id = int(eval_psicosocial_id)
+        
+        # Generar el PDF
+        pdf_bytes = generar_ficha_tecnica_pdf(pk, eval_tecnica_id, eval_psicosocial_id)
+        
+        # Obtener el nombre del atleta para el archivo
+        atleta = get_object_or_404(Atleta, pk=pk)
+        filename = f"ficha_tecnica_{atleta.nombres}_{atleta.apellidos}.pdf"
+        
+        # Crear respuesta HTTP con el PDF
+        response = HttpResponse(pdf_bytes, content_type='application/pdf')
+        response['Content-Disposition'] = f'inline; filename="{filename}"'
+        
+        return response
