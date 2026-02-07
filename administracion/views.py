@@ -38,6 +38,11 @@ class EntrenadorCreateView(LoginRequiredMixin, SuperusuarioRequiredMixin, Create
     template_name = 'administracion/entrenador_form.html'
     success_url = reverse_lazy('entrenador_list')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Nuevo Entrenador'
+        return context
+
     def form_valid(self, form):
         messages.success(self.request, 'Entrenador creado exitosamente.')
         return super().form_valid(form)
@@ -49,6 +54,11 @@ class EntrenadorUpdateView(LoginRequiredMixin, SuperusuarioRequiredMixin, Update
     form_class = EntrenadorForm
     template_name = 'administracion/entrenador_form.html'
     success_url = reverse_lazy('entrenador_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Editar Entrenador'
+        return context
 
     def form_valid(self, form):
         messages.success(self.request, 'Entrenador actualizado exitosamente.')

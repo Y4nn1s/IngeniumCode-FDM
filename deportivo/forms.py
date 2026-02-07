@@ -21,7 +21,7 @@ class PartidoProgramarForm(forms.ModelForm):
     """Formulario para programar un partido futuro (sin resultados)."""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        input_classes = 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+        input_classes = 'appearance-none block w-full bg-white text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500'
         for field_name, field in self.fields.items():
             field.widget.attrs.update({'class': input_classes})
 
@@ -44,7 +44,7 @@ class PartidoResultadoForm(forms.ModelForm):
     """Formulario para registrar el resultado de un partido ya jugado."""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        input_classes = 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+        input_classes = 'appearance-none block w-full bg-white text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500'
         for field_name, field in self.fields.items():
             field.widget.attrs.update({'class': input_classes})
 
@@ -65,7 +65,7 @@ class EvaluacionTecnicaForm(forms.ModelForm):
     """Formulario para registrar evaluación técnica de un atleta."""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        input_classes = 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+        input_classes = 'appearance-none block w-full bg-white text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500'
         textarea_classes = input_classes + ' h-24' # Extend input for textarea
         
         for field_name, field in self.fields.items():
@@ -90,7 +90,7 @@ class EvaluacionPsicosocialForm(forms.ModelForm):
     """Formulario para registrar evaluación psicosocial de un atleta."""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        input_classes = 'shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+        input_classes = 'appearance-none block w-full bg-white text-gray-700 border border-gray-200 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500'
         textarea_classes = input_classes + ' h-24' # Extend input for textarea
 
         for field_name, field in self.fields.items():
