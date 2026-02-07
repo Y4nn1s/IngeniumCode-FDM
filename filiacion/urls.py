@@ -8,6 +8,7 @@ urlpatterns = [
     path('atletas/<int:pk>/', views.atleta_detail, name='atleta_detail'),
     path('atletas/<int:pk>/editar/', views.atleta_update, name='atleta_update'),
     path('atletas/<int:pk>/eliminar/', views.atleta_delete, name='atleta_delete'),
+    path('atletas/<int:pk>/ficha-tecnica/', views.DescargarFichaPDF.as_view(), name='atleta_ficha_pdf'),
 
     # Representantes
     path('representantes/', views.representante_list, name='representante_list'),
