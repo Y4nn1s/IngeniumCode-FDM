@@ -47,6 +47,15 @@ def generar_ficha_tecnica_pdf(atleta_id, eval_tecnica_id=None, eval_psicosocial_
         'MEDIA_ROOT': settings.MEDIA_ROOT,
     }
     
+    # Agregar URL de foto compatible con Windows y Linux
+    if atleta.foto_perfil:
+        from pathlib import Path
+        from urllib.request import pathname2url
+        foto_path = Path(atleta.foto_perfil.path)
+        # Convertir ruta absoluta a URL file:// compatible con ambos OS
+        foto_url = 'file:' + pathname2url(str(foto_path))
+        contexto['foto_url'] = foto_url
+    
     # Renderizar el HTML
     html_string = render_to_string('filiacion/reports/ficha_tecnica_pdf.html', contexto)
     

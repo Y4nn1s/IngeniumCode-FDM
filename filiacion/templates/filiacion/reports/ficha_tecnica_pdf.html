@@ -280,8 +280,8 @@
         <table>
             <tr>
                 <td class="photo-cell">
-                    {% if atleta.foto_perfil %}
-                        <img src="file://{{ MEDIA_ROOT }}/{{ atleta.foto_perfil }}" alt="Foto" class="photo">
+                    {% if foto_url %}
+                        <img src="{{ foto_url }}" alt="Foto" class="photo">
                     {% else %}
                         <div class="no-photo">Sin foto</div>
                     {% endif %}
