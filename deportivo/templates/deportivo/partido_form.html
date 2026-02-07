@@ -8,7 +8,13 @@
         <!-- Header -->
         <div class="bg-fdm-blue/5 px-8 py-5 border-b">
             <h2 class="text-3xl font-bold text-fdm-blue">{{ titulo }}</h2>
-            <p class="text-sm text-gray-600 mt-1">Complete los datos del partido</p>
+            <p class="text-sm text-gray-600 mt-1">
+                {% if form.instance.pk %}
+                Actualice los datos del partido.
+                {% else %}
+                Complete los datos del partido.
+                {% endif %}
+            </p>
         </div>
 
         <form method="post" class="p-8">
@@ -41,7 +47,7 @@
                 <a href="{% url 'partido_list' %}" class="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-800 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200">
                     Cancelar
                 </a>
-                <button type="submit" class="px-8 py-2.5 bg-fdm-red text-white rounded-lg text-sm font-medium hover:bg-fdm-red-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fdm-red transition-all duration-200">
+                <button type="submit" class="px-8 py-2.5 bg-fdm-blue text-white rounded-lg text-sm font-medium hover:bg-fdm-blue-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fdm-blue transition-all duration-200">
                     Guardar
                 </button>
             </div>

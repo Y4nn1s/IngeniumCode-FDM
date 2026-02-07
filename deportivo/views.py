@@ -176,6 +176,11 @@ class EvaluacionTecnicaCreateView(LoginRequiredMixin, CreateView):
     form_class = EvaluacionTecnicaForm
     template_name = 'deportivo/evaluacion_tecnica_form.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Nueva Evaluación Técnica'
+        return context
+
     def get_success_url(self):
         return reverse('atleta_detail', kwargs={'pk': self.object.atleta.pk})
 
@@ -184,6 +189,11 @@ class EvaluacionTecnicaUpdateView(LoginRequiredMixin, UpdateView):
     model = EvaluacionTecnica
     form_class = EvaluacionTecnicaForm
     template_name = 'deportivo/evaluacion_tecnica_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Editar Evaluación Técnica'
+        return context
 
     def get_success_url(self):
         return reverse('atleta_detail', kwargs={'pk': self.object.atleta.pk})
@@ -194,6 +204,11 @@ class EvaluacionPsicosocialCreateView(LoginRequiredMixin, CreateView):
     form_class = EvaluacionPsicosocialForm
     template_name = 'deportivo/evaluacion_psicosocial_form.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Nueva Evaluación Psicosocial'
+        return context
+
     def get_success_url(self):
         return reverse('atleta_detail', kwargs={'pk': self.object.atleta.pk})
 
@@ -202,6 +217,11 @@ class EvaluacionPsicosocialUpdateView(LoginRequiredMixin, UpdateView):
     model = EvaluacionPsicosocial
     form_class = EvaluacionPsicosocialForm
     template_name = 'deportivo/evaluacion_psicosocial_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Editar Evaluación Psicosocial'
+        return context
 
     def get_success_url(self):
         return reverse('atleta_detail', kwargs={'pk': self.object.atleta.pk})
