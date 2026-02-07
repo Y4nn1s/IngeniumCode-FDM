@@ -8,7 +8,13 @@
         <!-- Header -->
         <div class="bg-fdm-blue/5 px-8 py-5 border-b">
             <h2 class="text-3xl font-bold text-fdm-blue">{{ titulo }}</h2>
-            <p class="text-sm text-gray-600 mt-1">Complete los datos del atleta</p>
+            <p class="text-sm text-gray-600 mt-1">
+                {% if form.instance.pk %}
+                Actualice los datos del atleta.
+                {% else %}
+                Complete los datos del atleta.
+                {% endif %}
+            </p>
         </div>
 
         <form method="post" enctype="multipart/form-data" class="p-8">
@@ -22,7 +28,7 @@
                     <label for="{{ field.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900">
                         {{ field.label }}
                         {% if field.field.required %}
-                            <span class="text-fdm-red font-bold">*</span>
+                            <span class="text-red-500 font-bold">*</span>
                         {% endif %}
                     </label>
 
@@ -32,8 +38,18 @@
                         <img src="{{ form.instance.foto_perfil.url }}" alt="Foto actual" class="h-24 w-auto rounded-md border-2 border-fdm-blue/20">
                     </div>
                     {% endif %}
-
-                    {{ field }}
+                    
+                    {# Special rendering for checkboxes #}
+                    {% if field.field.widget.input_type == 'checkbox' %}
+                        <div class="flex items-center mt-2">
+                            {{ field }}
+                            <label for="{{ field.id_for_label }}" class="ml-2 text-sm font-medium text-gray-900">
+                                {{ field.label }}
+                            </label>
+                        </div>
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
 
                     {% if field.help_text %}
                         <p class="mt-1.5 text-xs text-gray-500">{{ field.help_text|safe }}</p>
