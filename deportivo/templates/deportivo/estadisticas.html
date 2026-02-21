@@ -7,8 +7,8 @@
     <!-- Encabezado -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
-            <h2 class="text-3xl font-bold text-fdm-blue">📊 Panel de Estadísticas</h2>
-            <p class="text-gray-600 mt-1">Resumen de rendimiento de atletas en partidos</p>
+            <h2 class="text-3xl font-bold text-fdm-blue dark:text-blue-400">📊 Panel de Estadísticas</h2>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">Resumen de rendimiento de atletas en partidos</p>
         </div>
         <a href="{% url 'partido_list' %}" 
            class="inline-flex items-center gap-2 text-fdm-blue hover:text-fdm-blue-dark font-semibold transition-colors duration-200">
@@ -20,39 +20,39 @@
     <!-- Resumen de Temporada - Cards en fila -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         <!-- Partidos Jugados -->
-        <div class="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-b-4 border-fdm-blue">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-b-4 border-fdm-blue">
             <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-fdm-blue/10 flex items-center justify-center">
                 <span class="text-2xl">⚽</span>
             </div>
             <p class="text-5xl font-bold text-fdm-blue mb-1">{{ total_partidos }}</p>
-            <p class="text-sm text-gray-500 uppercase tracking-wide font-medium">Partidos</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 uppercase tracking-wide font-medium">Partidos</p>
         </div>
         
         <!-- Victorias -->
-        <div class="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-b-4" style="border-color: #16a34a;">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-b-4" style="border-color: #16a34a;">
             <div class="w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center" style="background-color: rgba(22, 163, 74, 0.1);">
                 <span class="text-2xl">🏆</span>
             </div>
             <p class="text-5xl font-bold mb-1" style="color: #16a34a;">{{ total_victorias }}</p>
-            <p class="text-sm text-gray-500 uppercase tracking-wide font-medium">Victorias</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 uppercase tracking-wide font-medium">Victorias</p>
         </div>
         
         <!-- Empates -->
-        <div class="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-b-4 border-gray-400">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-b-4 border-gray-400">
             <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-200 flex items-center justify-center">
                 <span class="text-2xl">⚖️</span>
             </div>
             <p class="text-5xl font-bold text-gray-500 mb-1">{{ total_empates }}</p>
-            <p class="text-sm text-gray-500 uppercase tracking-wide font-medium">Empates</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 uppercase tracking-wide font-medium">Empates</p>
         </div>
         
         <!-- Derrotas -->
-        <div class="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-b-4 border-fdm-red">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border-b-4 border-fdm-red">
             <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-fdm-red/10 flex items-center justify-center">
                 <span class="text-2xl">📉</span>
             </div>
             <p class="text-5xl font-bold text-fdm-red mb-1">{{ total_derrotas }}</p>
-            <p class="text-sm text-gray-500 uppercase tracking-wide font-medium">Derrotas</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 uppercase tracking-wide font-medium">Derrotas</p>
         </div>
     </div>
 
@@ -60,7 +60,7 @@
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
         
         <!-- Top Goleadores -->
-        <div class="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-md overflow-hidden flex flex-col">
             <div class="px-6 py-4 bg-fdm-blue flex items-center justify-between">
                 <h3 class="text-lg font-bold text-white flex items-center gap-2">
                     ⚽ Top Goleadores
@@ -70,16 +70,16 @@
             
             <div class="flex-1 overflow-y-auto max-h-96">
                 <table class="w-full">
-                    <thead class="bg-gray-50 sticky top-0">
+                    <thead class="bg-gray-50 dark:bg-slate-700 sticky top-0">
                         <tr>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-12">#</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Atleta</th>
-                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-20">Goles</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider w-12">#</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Atleta</th>
+                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider w-20">Goles</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-gray-100 dark:divide-slate-700">
                         {% for goleador in top_goleadores %}
-                        <tr class="hover:bg-fdm-blue/5 transition-colors">
+                        <tr class="hover:bg-fdm-blue/5 dark:hover:bg-slate-700/50 transition-colors">
                             <td class="px-4 py-3">
                                 {% if forloop.counter == 1 %}
                                 <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-white text-sm font-bold" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);">🥇</span>
@@ -101,10 +101,10 @@
                                     </div>
                                     {% endif %}
                                     <div>
-                                        <a href="{% url 'atleta_detail' goleador.atleta__pk %}" class="text-sm font-semibold text-gray-800 hover:text-fdm-blue transition-colors">
+                                        <a href="{% url 'atleta_detail' goleador.atleta__pk %}" class="text-sm font-semibold text-gray-800 dark:text-gray-100 hover:text-fdm-blue transition-colors">
                                             {{ goleador.atleta__apellidos }}, {{ goleador.atleta__nombres }}
                                         </a>
-                                        <p class="text-xs text-gray-400">{{ goleador.atleta__categoria__nombre }}</p>
+                                        <p class="text-xs text-gray-400 dark:text-gray-500">{{ goleador.atleta__categoria__nombre }}</p>
                                     </div>
                                 </div>
                             </td>
@@ -128,7 +128,7 @@
         </div>
 
         <!-- Top Asistentes -->
-        <div class="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-md overflow-hidden flex flex-col">
             <div class="px-6 py-4 flex items-center justify-between" style="background: linear-gradient(90deg, #16a34a 0%, #15803d 100%);">
                 <h3 class="text-lg font-bold text-white flex items-center gap-2">
                     🎯 Top Asistentes
@@ -138,16 +138,16 @@
             
             <div class="flex-1 overflow-y-auto max-h-96">
                 <table class="w-full">
-                    <thead class="bg-gray-50 sticky top-0">
+                    <thead class="bg-gray-50 dark:bg-slate-700 sticky top-0">
                         <tr>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-12">#</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Atleta</th>
-                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-20">Asist.</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider w-12">#</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Atleta</th>
+                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider w-20">Asist.</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-gray-100 dark:divide-slate-700">
                         {% for asistente in top_asistentes %}
-                        <tr class="hover:bg-green-50 transition-colors">
+                        <tr class="hover:bg-green-50 dark:hover:bg-slate-700/50 transition-colors">
                             <td class="px-4 py-3">
                                 {% if forloop.counter == 1 %}
                                 <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-white text-sm font-bold" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);">🥇</span>
@@ -169,10 +169,10 @@
                                     </div>
                                     {% endif %}
                                     <div>
-                                        <a href="{% url 'atleta_detail' asistente.atleta__pk %}" class="text-sm font-semibold text-gray-800 hover:text-green-600 transition-colors">
+                                        <a href="{% url 'atleta_detail' asistente.atleta__pk %}" class="text-sm font-semibold text-gray-800 dark:text-gray-100 hover:text-green-600 transition-colors">
                                             {{ asistente.atleta__apellidos }}, {{ asistente.atleta__nombres }}
                                         </a>
-                                        <p class="text-xs text-gray-400">{{ asistente.atleta__categoria__nombre }}</p>
+                                        <p class="text-xs text-gray-400 dark:text-gray-500">{{ asistente.atleta__categoria__nombre }}</p>
                                     </div>
                                 </div>
                             </td>
@@ -196,7 +196,7 @@
         </div>
 
         <!-- Disciplina -->
-        <div class="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-md overflow-hidden flex flex-col">
             <div class="px-6 py-4 bg-fdm-red flex items-center justify-between">
                 <h3 class="text-lg font-bold text-white flex items-center gap-2">
                     🟨 Disciplina
@@ -206,17 +206,17 @@
             
             <div class="flex-1 overflow-y-auto max-h-96">
                 <table class="w-full">
-                    <thead class="bg-gray-50 sticky top-0">
+                    <thead class="bg-gray-50 dark:bg-slate-700 sticky top-0">
                         <tr>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-12">#</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Atleta</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider w-12">#</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Atleta</th>
                             <th class="px-3 py-3 text-center text-xs font-semibold uppercase tracking-wider w-14" style="color: #ca8a04;">🟨</th>
                             <th class="px-3 py-3 text-center text-xs font-semibold text-fdm-red uppercase tracking-wider w-14">🟥</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-gray-100 dark:divide-slate-700">
                         {% for atleta in tarjetas_acumuladas %}
-                        <tr class="hover:bg-fdm-red/5 transition-colors">
+                        <tr class="hover:bg-fdm-red/5 dark:hover:bg-slate-700/50 transition-colors">
                             <td class="px-4 py-3">
                                 <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-200 text-gray-600 text-sm font-bold">{{ forloop.counter }}</span>
                             </td>
@@ -230,10 +230,10 @@
                                     </div>
                                     {% endif %}
                                     <div>
-                                        <a href="{% url 'atleta_detail' atleta.atleta__pk %}" class="text-sm font-semibold text-gray-800 hover:text-fdm-red transition-colors">
+                                        <a href="{% url 'atleta_detail' atleta.atleta__pk %}" class="text-sm font-semibold text-gray-800 dark:text-gray-100 hover:text-fdm-red transition-colors">
                                             {{ atleta.atleta__apellidos }}, {{ atleta.atleta__nombres }}
                                         </a>
-                                        <p class="text-xs text-gray-400">{{ atleta.atleta__categoria__nombre }}</p>
+                                        <p class="text-xs text-gray-400 dark:text-gray-500">{{ atleta.atleta__categoria__nombre }}</p>
                                     </div>
                                 </div>
                             </td>

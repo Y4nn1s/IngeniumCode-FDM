@@ -28,7 +28,7 @@
 {% endblock %}
 
 {% block content %}
-<h2 class="text-3xl font-bold text-fdm-blue mb-8">Panel Principal</h2>
+<h2 class="text-3xl font-bold text-fdm-blue dark:text-blue-400 mb-8">Panel Principal</h2>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
@@ -82,9 +82,9 @@
 
     <!-- Card: Administración (Solo staff/admin) -->
     {% if user.is_staff or user.is_superuser %}
-    <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border-l-4 border-fdm-blue">
-        <h3 class="text-xl font-semibold text-fdm-blue mb-3">⚙️ Administración</h3>
-        <p class="text-gray-600 mb-4">Panel avanzado para coordinadores y configuración.</p>
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border-l-4 border-fdm-blue">
+        <h3 class="text-xl font-semibold text-fdm-blue dark:text-blue-400 mb-3">⚙️ Administración</h3>
+        <p class="text-gray-600 dark:text-gray-300 mb-4">Panel avanzado para coordinadores y configuración.</p>
         <a href="/admin/" 
            class="inline-block bg-fdm-blue text-white px-5 py-2 rounded-lg hover:bg-fdm-blue-dark focus:outline-none focus:ring-2 focus:ring-fdm-blue focus:ring-opacity-50 transition-colors duration-300">
             Ir al Admin
