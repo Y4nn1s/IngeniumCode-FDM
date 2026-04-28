@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-    <h2 class="text-3xl font-bold text-slate-800">Cuerpo Técnico - Entrenadores</h2>
+    <h2 class="text-3xl font-bold text-slate-800 dark:text-slate-100">Cuerpo Técnico - Entrenadores</h2>
     {% if request.user.is_superuser %}
     <a href="{% url 'entrenador_create' %}" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2.5 px-5 rounded-lg shadow-md transition-colors duration-200">
         + Nuevo Entrenador
@@ -13,7 +13,7 @@
 </div>
 
 {% if entrenadores %}
-<div class="bg-white rounded-lg shadow-lg overflow-hidden border-t-4 border-fdm-blue">
+<div class="bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden border-t-4 border-fdm-blue">
     <div class="overflow-x-auto">
         <table class="w-full min-w-[800px] divide-y divide-gray-200">
             <thead class="bg-fdm-blue text-white">
@@ -28,19 +28,19 @@
                     {% endif %}
                 </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody class="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
                 {% for entrenador in entrenadores %}
-                <tr class="hover:bg-fdm-blue/5 transition-colors duration-200">
+                <tr class="hover:bg-fdm-blue/5 dark:hover:bg-slate-700/50 transition-colors duration-200">
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900">{{ entrenador.nombres }} {{ entrenador.apellidos }}</div>
+                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ entrenador.nombres }} {{ entrenador.apellidos }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-fdm-blue/10 text-fdm-blue">
                             {{ entrenador.get_licencia_display }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ entrenador.telefono }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ entrenador.coordinador|default:"-" }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ entrenador.telefono }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ entrenador.coordinador|default:"-" }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         {% if entrenador.activo %}
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Activo</span>
@@ -60,13 +60,13 @@
         </table>
     </div>
     <!-- Indicador de scroll en móviles -->
-    <div class="sm:hidden px-4 py-2 bg-gray-50 text-xs text-gray-500 text-center border-t">
+    <div class="sm:hidden px-4 py-2 bg-gray-50 dark:bg-slate-700 text-xs text-gray-500 dark:text-gray-400 text-center border-t dark:border-slate-600">
         ← Desliza horizontalmente para ver más →
     </div>
 </div>
 {% else %}
-<div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-fdm-blue">
-    <p class="text-gray-500 italic">No hay entrenadores registrados.</p>
+<div class="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 border-l-4 border-fdm-blue">
+    <p class="text-gray-500 dark:text-gray-400 italic">No hay entrenadores registrados.</p>
 </div>
 {% endif %}
 

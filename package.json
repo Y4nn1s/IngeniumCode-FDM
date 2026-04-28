@@ -4,7 +4,8 @@
   "description": "Plataforma Web Integral de Gestión para la Escuela de Fútbol Comunitaria Infantil \"Francisco de Miranda\".",
   "main": "index.js",
   "scripts": {
-    "build:css": "npx tailwindcss -i ./core/static/css/input.css -o ./core/static/css/output.css --watch"
+    "build:css": "npx tailwindcss -i ./core/static/css/input.css -o ./core/static/css/output.css --watch",
+    "build:js": "esbuild core/static/js/index.js --bundle --minify --outfile=core/static/js/bundle.js"
   },
   "repository": {
     "type": "git",
@@ -20,7 +21,11 @@
   "homepage": "https://github.com/Y4nn1s/IngeniumCode-FDM#readme",
   "devDependencies": {
     "autoprefixer": "^10.4.24",
+    "esbuild": "^0.27.3",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19"
+  },
+  "dependencies": {
+    "alpinejs": "^3.15.8"
   }
 }
