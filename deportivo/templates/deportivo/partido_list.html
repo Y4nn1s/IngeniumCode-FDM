@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-    <h2 class="text-3xl font-bold text-fdm-blue">Gestión de Partidos</h2>
+    <h2 class="text-3xl font-bold text-fdm-blue dark:text-blue-400">Gestión de Partidos</h2>
     <div class="flex flex-wrap gap-3">
         <a href="{% url 'estadisticas_panel' %}" class="inline-block bg-fdm-blue text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-fdm-blue-dark focus:outline-none focus:ring-2 focus:ring-fdm-blue focus:ring-opacity-50 transition-all duration-300">
             <span class="font-semibold">📊 Estadísticas</span>
@@ -16,8 +16,8 @@
 </div>
 
 <!-- Partidos Pendientes -->
-<div class="bg-white rounded-lg shadow-lg mb-10 border-t-4 border-fdm-blue">
-    <div class="px-6 py-4 border-b-2 border-fdm-blue bg-fdm-blue/5">
+<div class="bg-white dark:bg-slate-800 rounded-lg shadow-lg mb-10 border-t-4 border-fdm-blue">
+    <div class="px-6 py-4 border-b-2 border-fdm-blue bg-fdm-blue/5 dark:bg-fdm-blue/20">
         <h3 class="text-xl font-semibold text-fdm-blue">📅 Partidos Programados (Pendientes)</h3>
     </div>
     <div class="overflow-x-auto">
@@ -31,13 +31,13 @@
                     <th scope="col" class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">Acciones</th>
                 </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody class="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
                 {% for partido in partidos_pendientes %}
-                <tr class="hover:bg-fdm-blue/5 transition-colors duration-200">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ partido.fecha_hora|date:"d/m/Y H:i" }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ partido.equipo_rival }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ partido.get_tipo_display }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ partido.get_condicion_display }}</td>
+                <tr class="hover:bg-fdm-blue/5 dark:hover:bg-slate-700/50 transition-colors duration-200">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ partido.fecha_hora|date:"d/m/Y H:i" }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ partido.equipo_rival }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ partido.get_tipo_display }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ partido.get_condicion_display }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <a href="{% url 'partido_resultado' partido.pk %}" class="inline-block bg-orange-400 text-white font-bold px-4 py-2 rounded-lg hover:bg-orange-500 transition-colors duration-300 text-xs">
                             Registrar Resultado
@@ -46,20 +46,20 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">No hay partidos programados.</td>
+                    <td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No hay partidos programados.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
     <!-- Indicador de scroll en móviles -->
-    <div class="sm:hidden px-4 py-2 bg-gray-50 text-xs text-gray-500 text-center border-t">
+    <div class="sm:hidden px-4 py-2 bg-gray-50 dark:bg-slate-700 text-xs text-gray-500 dark:text-gray-400 text-center border-t dark:border-slate-600">
         ← Desliza horizontalmente para ver más →
     </div>
 </div>
 
 <!-- Partidos Jugados -->
-<div class="bg-white rounded-lg shadow-lg border-t-4 border-fdm-red">
+<div class="bg-white dark:bg-slate-800 rounded-lg shadow-lg border-t-4 border-fdm-red">
     <div class="px-6 py-4 border-b-2 border-fdm-red bg-fdm-red/5">
         <h3 class="text-xl font-semibold text-fdm-red">✅ Partidos Jugados (Historial)</h3>
     </div>
@@ -75,11 +75,11 @@
                     <th scope="col" class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">Acciones</th>
                 </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody class="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
                 {% for partido in partidos_jugados %}
-                <tr class="hover:bg-fdm-red/5 transition-colors duration-200">
+                <tr class="hover:bg-fdm-red/5 dark:hover:bg-slate-700/50 transition-colors duration-200">
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ partido.fecha_hora|date:"d/m/Y" }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ partido.equipo_rival }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ partido.equipo_rival }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ partido.get_tipo_display }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
@@ -90,7 +90,7 @@
                             {{ partido.get_resultado_display }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-800">{{ partido.goles_favor_escuela }} - {{ partido.goles_contra_rival }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-800 dark:text-gray-100">{{ partido.goles_favor_escuela }} - {{ partido.goles_contra_rival }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <a href="{% url 'partido_detail' partido.pk %}" class="text-fdm-blue hover:text-fdm-blue-dark font-semibold">
                             Ver Estadísticas
@@ -99,14 +99,14 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="px-6 py-8 text-center text-gray-500">No hay partidos en el historial.</td>
+                    <td colspan="6" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">No hay partidos en el historial.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
     <!-- Indicador de scroll en móviles -->
-    <div class="sm:hidden px-4 py-2 bg-gray-50 text-xs text-gray-500 text-center border-t">
+    <div class="sm:hidden px-4 py-2 bg-gray-50 dark:bg-slate-700 text-xs text-gray-500 dark:text-gray-400 text-center border-t dark:border-slate-600">
         ← Desliza horizontalmente para ver más →
     </div>
 </div>

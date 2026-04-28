@@ -4,16 +4,16 @@
 
 {% block content %}
 <!-- Tarjeta Principal del Atleta -->
-<div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+<div class="max-w-4xl mx-auto bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
     <!-- Header -->
-    <div class="px-8 py-5 border-b bg-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div class="px-8 py-5 border-b dark:border-slate-700 bg-gray-50 dark:bg-slate-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-            <h2 class="text-3xl font-bold text-gray-800">{{ atleta.nombres }} {{ atleta.apellidos }}</h2>
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-gray-100">{{ atleta.nombres }} {{ atleta.apellidos }}</h2>
             <p class="text-lg text-blue-600 font-semibold">{{ atleta.categoria|default:"Sin Categoría" }}</p>
         </div>
         <div class="flex space-x-3">
             <a href="{% url 'atleta_ficha_pdf' atleta.pk %}" class="inline-block bg-red-600 text-white px-5 py-2 rounded-lg hover:bg-red-700 transition-colors duration-300 font-semibold text-sm">📄 Descargar Ficha</a>
-            <a href="{% url 'atleta_update' atleta.pk %}" class="inline-block bg-gray-200 text-gray-800 px-5 py-2 rounded-lg hover:bg-gray-300 transition-colors duration-300 font-semibold text-sm">Editar</a>
+            <a href="{% url 'atleta_update' atleta.pk %}" class="inline-block bg-gray-200 dark:bg-slate-600 text-gray-800 dark:text-gray-100 px-5 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors duration-300 font-semibold text-sm">Editar</a>
             <a href="{% url 'atleta_delete' atleta.pk %}" class="inline-block bg-red-600 text-white px-5 py-2 rounded-lg hover:bg-red-700 transition-colors duration-300 font-semibold text-sm">Eliminar</a>
         </div>
     </div>
@@ -29,41 +29,41 @@
                     <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                 </div>
             {% endif %}
-            <p class="mt-2 text-sm text-gray-600">Foto Carnet</p>
+            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Foto Carnet</p>
         </div>
 
         <!-- Detalles -->
         <div class="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
             <div>
-                <h4 class="text-sm font-medium text-gray-500">Cédula Escolar</h4>
-                <p class="mt-1 text-base font-semibold text-gray-800">{{ atleta.cedula_escolar|default:"-" }}</p>
+                <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Cédula Escolar</h4>
+                <p class="mt-1 text-base font-semibold text-gray-800 dark:text-gray-100">{{ atleta.cedula_escolar|default:"-" }}</p>
             </div>
             <div>
-                <h4 class="text-sm font-medium text-gray-500">Fecha de Nacimiento</h4>
-                <p class="mt-1 text-base font-semibold text-gray-800">{{ atleta.fecha_nacimiento|date:"d/m/Y" }}</p>
+                <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Fecha de Nacimiento</h4>
+                <p class="mt-1 text-base font-semibold text-gray-800 dark:text-gray-100">{{ atleta.fecha_nacimiento|date:"d/m/Y" }}</p>
             </div>
             <div>
-                <h4 class="text-sm font-medium text-gray-500">Representante</h4>
-                <p class="mt-1 text-base font-semibold text-gray-800">{{ atleta.representante }}</p>
+                <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Representante</h4>
+                <p class="mt-1 text-base font-semibold text-gray-800 dark:text-gray-100">{{ atleta.representante }}</p>
             </div>
             <div>
-                <h4 class="text-sm font-medium text-gray-500">Posición</h4>
-                <p class="mt-1 text-base font-semibold text-gray-800">{{ atleta.get_posicion_display }}</p>
+                <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Posición</h4>
+                <p class="mt-1 text-base font-semibold text-gray-800 dark:text-gray-100">{{ atleta.get_posicion_display }}</p>
             </div>
             <div>
-                <h4 class="text-sm font-medium text-gray-500">Peso</h4>
-                <p class="mt-1 text-base font-semibold text-gray-800">{{ atleta.peso_kg|default:"-" }} kg</p>
+                <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Peso</h4>
+                <p class="mt-1 text-base font-semibold text-gray-800 dark:text-gray-100">{{ atleta.peso_kg|default:"-" }} kg</p>
             </div>
             <div>
-                <h4 class="text-sm font-medium text-gray-500">Altura</h4>
-                <p class="mt-1 text-base font-semibold text-gray-800">{{ atleta.altura_mts|default:"-" }} mts</p>
+                <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Altura</h4>
+                <p class="mt-1 text-base font-semibold text-gray-800 dark:text-gray-100">{{ atleta.altura_mts|default:"-" }} mts</p>
             </div>
             <div>
-                <h4 class="text-sm font-medium text-gray-500">Lateralidad</h4>
-                <p class="mt-1 text-base font-semibold text-gray-800">{{ atleta.get_lateralidad_display }}</p>
+                <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Lateralidad</h4>
+                <p class="mt-1 text-base font-semibold text-gray-800 dark:text-gray-100">{{ atleta.get_lateralidad_display }}</p>
             </div>
             <div class="sm:col-span-2">
-                <h4 class="text-sm font-medium text-gray-500">Estado</h4>
+                <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Estado</h4>
                 <p class="mt-1">
                     <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
                         {% if atleta.activo %} bg-green-100 text-green-800 {% else %} bg-gray-100 text-gray-800 {% endif %}">
@@ -81,9 +81,9 @@
 </div>
 
 <!-- Sección Evaluaciones (funcionalidad de Features-Backend) -->
-<div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8 mt-6">
+<div class="max-w-4xl mx-auto bg-white dark:bg-slate-800 rounded-xl shadow-lg p-8 mt-6">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <h3 class="text-2xl font-bold text-gray-800">Evaluaciones</h3>
+        <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Evaluaciones</h3>
         <div class="flex flex-wrap gap-2">
             <a href="{% url 'evaluacion_tecnica_create' %}?atleta={{ atleta.pk }}"
                 class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200">
@@ -98,34 +98,34 @@
 
     <!-- Tabla Evaluaciones Técnicas -->
     <div class="mb-6">
-        <h4 class="text-lg font-semibold text-gray-700 mb-3">Evaluaciones Técnicas</h4>
+        <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">Evaluaciones Técnicas</h4>
         {% if atleta.evaluaciones_tecnicas.exists %}
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+                <thead class="bg-gray-50 dark:bg-slate-700">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entrenador</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Velocidad</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Resistencia</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Control</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pase</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tiro</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Táctica</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fecha</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Entrenador</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Velocidad</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Resistencia</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Control</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Pase</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tiro</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Táctica</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Acciones</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
                     {% for eval in atleta.evaluaciones_tecnicas.all|slice:":5" %}
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ eval.fecha_evaluacion|date:"d/m/Y" }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ eval.entrenador|default:"-" }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ eval.velocidad }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ eval.resistencia }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ eval.control_balon }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ eval.pase_corto }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ eval.tiro }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ eval.inteligencia_tactica }}</td>
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/50">
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.fecha_evaluacion|date:"d/m/Y" }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.entrenador|default:"-" }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.velocidad }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.resistencia }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.control_balon }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.pase_corto }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.tiro }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.inteligencia_tactica }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm">
                             <a href="{% url 'evaluacion_tecnica_update' eval.pk %}" class="text-blue-600 hover:text-blue-800 font-medium">Editar</a>
                         </td>
@@ -135,38 +135,38 @@
             </table>
         </div>
         {% else %}
-        <p class="text-gray-500 italic">No hay evaluaciones técnicas registradas.</p>
+        <p class="text-gray-500 dark:text-gray-400 italic">No hay evaluaciones técnicas registradas.</p>
         {% endif %}
     </div>
 
     <!-- Tabla Evaluaciones Psicosociales -->
     <div>
-        <h4 class="text-lg font-semibold text-gray-700 mb-3">Evaluaciones Psicosociales</h4>
+        <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">Evaluaciones Psicosociales</h4>
         {% if atleta.evaluaciones_psicosociales.exists %}
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+                <thead class="bg-gray-50 dark:bg-slate-700">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Evaluador</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Compromiso</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Puntualidad</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Compañerismo</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Respeto</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">M. Frustración</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fecha</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Evaluador</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Compromiso</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Puntualidad</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Compañerismo</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Respeto</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">M. Frustración</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Acciones</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
                     {% for eval in atleta.evaluaciones_psicosociales.all|slice:":5" %}
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ eval.fecha_evaluacion|date:"d/m/Y" }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ eval.coordinador_evaluador|default:"-" }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ eval.compromiso }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ eval.puntualidad }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ eval.companerismo }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ eval.respeto }}</td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">{{ eval.manejo_frustracion }}</td>
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/50">
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.fecha_evaluacion|date:"d/m/Y" }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.coordinador_evaluador|default:"-" }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.compromiso }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.puntualidad }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.companerismo }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.respeto }}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.manejo_frustracion }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm">
                             <a href="{% url 'evaluacion_psicosocial_update' eval.pk %}" class="text-blue-600 hover:text-blue-800 font-medium">Editar</a>
                         </td>
@@ -176,7 +176,7 @@
             </table>
         </div>
         {% else %}
-        <p class="text-gray-500 italic">No hay evaluaciones psicosociales registradas.</p>
+        <p class="text-gray-500 dark:text-gray-400 italic">No hay evaluaciones psicosociales registradas.</p>
         {% endif %}
     </div>
 </div>

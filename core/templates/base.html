@@ -9,11 +9,13 @@
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
     <script src="{% static 'js/bundle.js' %}" defer></script>
     <link rel="icon" type="image/png" href="{% static 'img/logo_escuela.png' %}">
+    <style>[x-cloak] { display: none !important; }</style>
+    <script>if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) { document.documentElement.classList.add('dark') } else { document.documentElement.classList.remove('dark') }</script>
 </head>
-<body class="bg-slate-200 text-gray-800 font-sans flex flex-col min-h-screen">
+<body class="bg-slate-200 text-gray-800 dark:bg-slate-900 dark:text-gray-100 font-sans flex flex-col min-h-screen transition-colors duration-300" x-data="{ darkMode: document.documentElement.classList.contains('dark') }">
 
 <!-- Navbar con identidad FDM -->
-<header class="bg-gradient-to-r from-fdm-blue via-fdm-blue-dark to-fdm-red shadow-lg sticky top-0 z-10">
+<header class="bg-gradient-to-r from-fdm-blue via-fdm-blue-dark to-fdm-red dark:from-fdm-blue-dark dark:via-slate-900 dark:to-fdm-red-dark shadow-lg sticky top-0 z-10">
     <div class="container mx-auto px-4 md:px-6 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
         <!-- Logo y nombre -->
         <a href="{% url 'dashboard' %}" class="flex items-center gap-3 hover:opacity-90 transition duration-300">
@@ -63,6 +65,12 @@
                         Admin
                     </a>
                 </li>
+                <li>
+                    <button @click="darkMode = !darkMode; if(darkMode){ document.documentElement.classList.add('dark'); localStorage.theme = 'dark'; } else { document.documentElement.classList.remove('dark'); localStorage.theme = 'light'; }" class="p-2 rounded-lg hover:bg-white/10 dark:hover:bg-slate-800 transition-colors">
+                        <span x-show="!darkMode">🌙</span>
+                        <span x-show="darkMode" x-cloak>☀️</span>
+                    </button>
+                </li>
             </ul>
         </nav>
     </div>
@@ -79,13 +87,13 @@
         {% for message in messages %}
             <div class="mb-4 px-4 py-3 rounded-lg shadow-sm
                 {% if message.tags == 'success' %}
-                    bg-green-100 text-green-800 border border-green-300
+                    bg-green-100 text-green-800 border border-green-300 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700
                 {% elif message.tags == 'error' %}
-                    bg-red-100 text-red-800 border border-red-300
+                    bg-red-100 text-red-800 border border-red-300 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700
                 {% elif message.tags == 'warning' %}
-                    bg-yellow-100 text-yellow-800 border border-yellow-300
+                    bg-yellow-100 text-yellow-800 border border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-700
                 {% else %}
-                    bg-blue-100 text-blue-800 border border-blue-300
+                    bg-blue-100 text-blue-800 border border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700
                 {% endif %}
             " role="alert">
                 <span class="font-medium">
@@ -105,7 +113,7 @@
 </main>
 
 <!-- Footer con identidad FDM -->
-<footer class="bg-gradient-to-r from-fdm-blue-dark to-fdm-blue text-white mt-auto">
+<footer class="bg-gradient-to-r from-fdm-blue-dark to-fdm-blue dark:from-slate-950 dark:to-slate-900 text-white mt-auto border-t dark:border-slate-700">
     <div class="container mx-auto px-4 md:px-6 py-6">
         <div class="flex flex-col md:flex-row justify-between items-center gap-4">
             <!-- Logo y lema -->
