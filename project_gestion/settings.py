@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'filiacion.apps.FiliacionConfig',
     'deportivo.apps.DeportivoConfig',
     'finanzas.apps.FinanzasConfig',
-    'logistica.apps.LogisticaConfig',
 
     # Autenticación
     'accounts.apps.AccountsConfig',
