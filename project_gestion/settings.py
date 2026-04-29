@@ -199,7 +199,7 @@ LOGGING = {
     },
     'handlers': {
         'security_file': {
-            'level': 'WARNING',
+            'level': 'INFO',
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'logs' / 'security.log',
             'formatter': 'security',
@@ -208,7 +208,7 @@ LOGGING = {
     'loggers': {
         'security.ratelimit': {
             'handlers': ['security_file'],
-            'level': 'WARNING',
+            'level': 'INFO',
             'propagate': False,
         },
     },

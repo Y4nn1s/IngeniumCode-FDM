@@ -1,5 +1,6 @@
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 
@@ -25,3 +26,44 @@ class StaffOnlyAuthenticationForm(AuthenticationForm):
                 self.error_messages['no_staff'],
                 code='no_staff',
             )
+
+
+class RepresentanteSignUpForm(UserCreationForm):
+    """
+    Formulario de registro público exclusivo para representantes.
+    Fuerza is_staff=False e is_superuser=False por seguridad.
+    """
+
+    first_name = forms.CharField(
+        max_length=150,
+        required=True,
+        label='Nombres',
+        widget=forms.TextInput(attrs={'autocomplete': 'given-name'}),
+    )
+    last_name = forms.CharField(
+        max_length=150,
+        required=True,
+        label='Apellidos',
+        widget=forms.TextInput(attrs={'autocomplete': 'family-name'}),
+    )
+    email = forms.EmailField(
+        required=True,
+        label='Correo Electrónico',
+        widget=forms.EmailInput(attrs={'autocomplete': 'email'}),
+    )
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email',
+                  'password1', 'password2')
+        labels = {
+            'username': 'Cédula de Identidad (Ej. V12345678)',
+        }
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.is_staff = False
+        user.is_superuser = False
+        if commit:
+            user.save()
+        return user

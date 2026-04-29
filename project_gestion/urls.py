@@ -10,6 +10,7 @@ from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
 
 from accounts.forms import StaffOnlyAuthenticationForm
+from accounts import views as accounts_views
 
 
 # ──────────────────────────────────────────────────────────────
@@ -40,6 +41,9 @@ urlpatterns = [
         auth_views.LogoutView.as_view(),
         name='logout',
     ),
+
+    # Registro de representantes
+    path('registro/', accounts_views.RepresentanteSignUpView.as_view(), name='registro'),
 
     # Apps de negocio
     path('', include('core.urls')),
