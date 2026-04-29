@@ -172,3 +172,20 @@ python manage.py runserver
 ```
 
 Abre tu navegador en `http://127.0.0.1:8000/` — serás redirigido a `/login/` si no tienes sesión activa.
+
+---
+
+## 📋 Generar Mensualidades
+
+**Generar mensualidades cada mes:** ejecutar `python manage.py generar_mensualidades` el primer día de cada mes. Idempotente — si ya existen, no las duplica. En producción puede automatizarse con cron o systemd timer.
+
+```bash
+# Mes actual
+python manage.py generar_mensualidades
+
+# Mes específico
+python manage.py generar_mensualidades --mes 4 --anio 2026
+
+# Con monto personalizado
+python manage.py generar_mensualidades --monto 20.00
+```
