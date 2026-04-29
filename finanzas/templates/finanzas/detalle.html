@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}Pago #{{ pago.id }} — FDM{% endblock %}
+{% block content %}
+<div class="max-w-6xl mx-auto p-6">
+  <a href="{% url 'finanzas:bandeja' %}" class="text-fdm-blue hover:underline mb-4 inline-block font-semibold">← Volver a bandeja</a>
+  <h1 class="text-2xl font-bold mb-6 dark:text-white">Pago #{{ pago.id }}</h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Comprobante -->
+    <div class="border rounded-lg p-4 dark:border-slate-700 dark:bg-slate-800/50">
+      <h2 class="font-bold mb-3 dark:text-white">Comprobante</h2>
+      {% with ext=pago.comprobante.url|lower %}
+        {% if '.pdf' in ext %}
+          <embed src="{{ pago.comprobante.url }}" type="application/pdf" class="w-full h-96 rounded" />
+          <a href="{{ pago.comprobante.url }}" target="_blank" class="text-fdm-blue hover:underline mt-2 inline-block font-semibold">Abrir PDF</a>
+        {% else %}
+          <img src="{{ pago.comprobante.url }}" class="w-full border rounded dark:border-slate-600" alt="Comprobante" />
+        {% endif %}
+      {% endwith %}
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Hash: {{ pago.comprobante_hash|slice:":16" }}…</p>
+    </div>
+
+    <!-- Datos -->
+    <div class="space-y-4">
+      <div class="border rounded-lg p-4 dark:border-slate-700 dark:bg-slate-800/50">
+        <h2 class="font-bold mb-3 dark:text-white">Datos del pago</h2>
+        <dl class="text-sm space-y-1">
+          <div class="flex justify-between"><dt class="text-gray-600 dark:text-gray-400">Representante:</dt><dd class="dark:text-gray-200">{{ pago.representante.nombres }} {{ pago.representante.apellidos }}</dd></div>
+          <div class="flex justify-between"><dt class="text-gray-600 dark:text-gray-400">Cédula:</dt><dd class="dark:text-gray-200">{{ pago.representante.cedula_identidad }}</dd></div>
+          <div class="flex justify-between"><dt class="text-gray-600 dark:text-gray-400">Concepto:</dt><dd class="dark:text-gray-200">{{ pago.concepto }}</dd></div>
+          <div class="flex justify-between"><dt class="text-gray-600 dark:text-gray-400">Método:</dt><dd class="dark:text-gray-200">{{ pago.get_metodo_display }}</dd></div>
+          <div class="flex justify-between"><dt class="text-gray-600 dark:text-gray-400">Banco:</dt><dd class="dark:text-gray-200">{{ pago.get_banco_emisor_display|default:"—" }}</dd></div>
+          <div class="flex justify-between"><dt class="text-gray-600 dark:text-gray-400">Referencia:</dt><dd class="font-mono dark:text-gray-200">{{ pago.referencia|default:"—" }}</dd></div>
+          <div class="flex justify-between"><dt class="text-gray-600 dark:text-gray-400">Monto Bs:</dt><dd class="font-bold dark:text-gray-200">{{ pago.monto_bs }}</dd></div>
+          <div class="flex justify-between"><dt class="text-gray-600 dark:text-gray-400">Tasa BCV:</dt><dd class="dark:text-gray-200">{{ pago.tasa_bcv|default:"Pendiente" }}</dd></div>
+          <div class="flex justify-between"><dt class="text-gray-600 dark:text-gray-400">Monto USD:</dt><dd class="font-bold dark:text-gray-200">{{ pago.monto_usd|default:"—" }}</dd></div>
+          <div class="flex justify-between"><dt class="text-gray-600 dark:text-gray-400">Fecha pago:</dt><dd class="dark:text-gray-200">{{ pago.fecha_pago }}</dd></div>
+          <div class="flex justify-between"><dt class="text-gray-600 dark:text-gray-400">Estado:</dt><dd class="font-bold dark:text-gray-200">{{ pago.get_estado_display }}</dd></div>
+          {% if pago.revisado_por %}
+            <div class="flex justify-between"><dt class="text-gray-600 dark:text-gray-400">Revisado por:</dt><dd class="dark:text-gray-200">{{ pago.revisado_por }}</dd></div>
+            <div class="flex justify-between"><dt class="text-gray-600 dark:text-gray-400">Revisado el:</dt><dd class="dark:text-gray-200">{{ pago.revisado_en }}</dd></div>
+          {% endif %}
+          {% if pago.motivo_rechazo %}
+            <div class="mt-2 p-2 bg-red-50 text-red-800 dark:bg-red-900/30 dark:text-red-300 rounded"><strong>Motivo:</strong> {{ pago.motivo_rechazo }}</div>
+          {% endif %}
+        </dl>
+      </div>
+
+      {% if pago.mensualidades_cubiertas.all %}
+        <div class="border rounded-lg p-4 dark:border-slate-700 dark:bg-slate-800/50">
+          <h3 class="font-bold mb-2 dark:text-white">Mensualidades cubiertas</h3>
+          <ul class="text-sm space-y-1">
+            {% for m in pago.mensualidades_cubiertas.all %}
+              <li class="dark:text-gray-300">{{ m.atleta }} — {{ m.etiqueta_periodo }} ({{ m.monto_usd }} USD) {% if m.pagada %}<span class="text-green-700 dark:text-green-400">✓</span>{% endif %}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <div class="border rounded-lg p-4 bg-gray-50 dark:bg-slate-800/50 dark:border-slate-700">
+        <h3 class="font-bold mb-2 dark:text-white">Historial</h3>
+        <ul class="text-xs space-y-1 max-h-48 overflow-y-auto">
+          {% for log in audit_log %}
+            <li class="dark:text-gray-300">
+              <span class="text-gray-500 dark:text-gray-400">{{ log.timestamp|date:"d/m/Y H:i" }}</span>
+              <strong>{{ log.get_accion_display }}</strong>
+              {% if log.actor %}por {{ log.actor }}{% endif %}
+              {% if log.estado_anterior %}({{ log.estado_anterior }} → {{ log.estado_nuevo }}){% endif %}
+            </li>
+          {% empty %}
+            <li class="text-gray-500 dark:text-gray-400">Sin historial.</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      {% if pago.estado == 'PENDIENTE' %}
+        <div class="border rounded-lg p-4 bg-green-50 dark:bg-green-900/20 dark:border-green-800">
+          <h3 class="font-bold mb-2 dark:text-green-200">Aprobar</h3>
+          <form method="post" action="{% url 'finanzas:aprobar' pago.id %}" class="space-y-2">
+            {% csrf_token %}
+            <label class="block text-sm dark:text-green-200">Tasa BCV (Bs por USD)</label>
+            {{ aprobar_form.tasa_bcv }}
+            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-300 font-semibold shadow-md">Aprobar pago</button>
+          </form>
+        </div>
+
+        <div class="border rounded-lg p-4 bg-red-50 dark:bg-red-900/20 dark:border-red-800">
+          <h3 class="font-bold mb-2 dark:text-red-200">Rechazar</h3>
+          <form method="post" action="{% url 'finanzas:rechazar' pago.id %}" class="space-y-2">
+            {% csrf_token %}
+            <label class="block text-sm dark:text-red-200">Motivo</label>
+            {{ rechazar_form.motivo }}
+            <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300 font-semibold shadow-md">Rechazar pago</button>
+          </form>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
