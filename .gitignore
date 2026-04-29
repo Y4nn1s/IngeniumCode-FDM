@@ -30,7 +30,8 @@ Contexto Documento PST.md
 .agent/
 
 # Logs
-logs/
+logs/*
+!logs/.gitkeep
 
 # Others
 PRD v2.1.md
