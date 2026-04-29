@@ -23,6 +23,13 @@ class Representante(models.Model):
     telefono_principal = models.CharField(max_length=20)
     direccion_habitacion = models.TextField()
     correo_electronico = models.EmailField(unique=True)
+    telegram_chat_id = models.CharField(max_length=20, blank=True,
+        help_text="ID de chat de Telegram para notificaciones")
+    usuario = models.OneToOneField(
+        'auth.User', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='representante',
+        help_text="Cuenta de usuario asociada al representante"
+    )
 
     def __str__(self):
         return f"{self.nombres} {self.apellidos} (C.I: {self.cedula_identidad})"
