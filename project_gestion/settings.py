@@ -185,7 +185,7 @@ STATICFILES_DIRS = [
 ]
 
 # ──────────────────────────────────────────────────────────────
-# LOGGING (security events)
+# LOGGING (Security & Finanzas Bot Integrados)
 # ──────────────────────────────────────────────────────────────
 LOGGING = {
     'version': 1,
@@ -197,17 +197,29 @@ LOGGING = {
         },
     },
     'handlers': {
+
         'security_file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'logs' / 'security.log',
             'formatter': 'security',
         },
+
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
     },
     'loggers': {
+
         'security.ratelimit': {
             'handlers': ['security_file'],
             'level': 'INFO',
+            'propagate': False,
+        },
+
+        'finanzas.telegram_bot': {
+            'handlers': ['console'],
+            'level': 'WARNING',
             'propagate': False,
         },
     },
