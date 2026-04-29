@@ -1,0 +1,78 @@
+# finanzas/forms.py
+from django import forms
+from django.utils import timezone
+from .models import Pago, Mensualidad
+
+
+class ReportarPagoForm(forms.ModelForm):
+    mensualidades = forms.ModelMultipleChoiceField(
+        queryset=Mensualidad.objects.none(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        help_text="Selecciona qué mensualidades cubre este pago"
+    )
+
+    class Meta:
+        model = Pago
+        fields = [
+            'metodo', 'banco_emisor', 'referencia',
+            'monto_bs', 'fecha_pago', 'comprobante'
+        ]
+        widgets = {
+            'fecha_pago': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        representante = kwargs.pop('representante', None)
+        super().__init__(*args, **kwargs)
+        if representante:
+            atletas = representante.atletas.filter(activo=True)
+            self.fields['mensualidades'].queryset = Mensualidad.objects.filter(
+                atleta__in=atletas, pagada=False
+            ).select_related('atleta').order_by('fecha_vencimiento')
+
+    def clean_comprobante(self):
+        f = self.cleaned_data['comprobante']
+        if f.size > 5 * 1024 * 1024:
+            raise forms.ValidationError('El comprobante no puede superar 5MB.')
+        ext = f.name.lower().rsplit('.', 1)[-1]
+        if ext not in ('jpg', 'jpeg', 'png', 'pdf'):
+            raise forms.ValidationError('Solo se aceptan archivos JPG, PNG o PDF.')
+        return f
+
+    def clean_fecha_pago(self):
+        fecha = self.cleaned_data['fecha_pago']
+        if fecha > timezone.now().date():
+            raise forms.ValidationError('La fecha de pago no puede ser futura.')
+        return fecha
+
+    def clean(self):
+        cleaned = super().clean()
+        ref = cleaned.get('referencia')
+        banco = cleaned.get('banco_emisor')
+        if ref and banco:
+            existe = Pago.objects.filter(
+                banco_emisor=banco,
+                referencia=ref,
+                estado__in=['PENDIENTE', 'APROBADO']
+            ).exists()
+            if existe:
+                raise forms.ValidationError(
+                    f'Ya existe un pago activo con referencia {ref} de ese banco.'
+                )
+        return cleaned
+
+
+class AprobarPagoForm(forms.Form):
+    tasa_bcv = forms.DecimalField(
+        max_digits=12, decimal_places=4, min_value=0,
+        help_text='Tasa BCV del día del pago (Bs por USD)'
+    )
+
+
+class RechazarPagoForm(forms.Form):
+    motivo = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 3}),
+        max_length=500,
+        help_text='Explica al representante por qué se rechaza.'
+    )
