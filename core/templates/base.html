@@ -59,6 +59,22 @@
                         Cuerpo Técnico
                     </a>
                 </li>
+                {% if user.is_authenticated %}
+                <li>
+                    <a href="{% url 'finanzas:mis_pagos' %}" 
+                       class="text-white hover:text-fdm-red font-semibold transition duration-300 px-2 py-1 rounded hover:bg-white/10">
+                        Mis Pagos
+                    </a>
+                </li>
+                {% endif %}
+                {% if user.is_staff %}
+                <li>
+                    <a href="{% url 'finanzas:bandeja' %}" 
+                       class="text-white hover:text-fdm-red font-semibold transition duration-300 px-2 py-1 rounded hover:bg-white/10">
+                        Bandeja Pagos
+                    </a>
+                </li>
+                {% endif %}
                 <li>
                     <a href="/admin/" 
                        class="bg-fdm-red text-white px-4 py-2 rounded-md hover:bg-fdm-red-dark transition duration-300 font-semibold shadow-md">

@@ -9,5 +9,7 @@ class AtletaAdmin(admin.ModelAdmin):
 
 @admin.register(Representante)
 class RepresentanteAdmin(admin.ModelAdmin):
-    list_display = ('nombres', 'apellidos', 'cedula_identidad', 'telefono_principal')
+    list_display = ('nombres', 'apellidos', 'cedula_identidad', 'telefono_principal', 'usuario', 'telegram_chat_id')
     search_fields = ('nombres', 'apellidos', 'cedula_identidad')
+    list_filter = ('usuario',)
+    raw_id_fields = ('usuario',)

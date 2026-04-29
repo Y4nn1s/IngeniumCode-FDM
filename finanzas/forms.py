@@ -3,6 +3,11 @@ from django import forms
 from django.utils import timezone
 from .models import Pago, Mensualidad
 
+# Clases Tailwind reutilizables para inputs del formulario
+INPUT_CSS = 'w-full px-3 py-2 border rounded-lg text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200 focus:ring-2 focus:ring-fdm-blue focus:border-fdm-blue'
+SELECT_CSS = INPUT_CSS
+TEXTAREA_CSS = INPUT_CSS
+
 
 class ReportarPagoForm(forms.ModelForm):
     mensualidades = forms.ModelMultipleChoiceField(
@@ -19,7 +24,12 @@ class ReportarPagoForm(forms.ModelForm):
             'monto_bs', 'fecha_pago', 'comprobante'
         ]
         widgets = {
-            'fecha_pago': forms.DateInput(attrs={'type': 'date'}),
+            'metodo': forms.Select(attrs={'class': SELECT_CSS}),
+            'banco_emisor': forms.Select(attrs={'class': SELECT_CSS}),
+            'referencia': forms.TextInput(attrs={'class': INPUT_CSS, 'placeholder': 'Nro. de referencia'}),
+            'monto_bs': forms.NumberInput(attrs={'class': INPUT_CSS, 'placeholder': '0.00', 'step': '0.01'}),
+            'fecha_pago': forms.DateInput(attrs={'type': 'date', 'class': INPUT_CSS}),
+            'comprobante': forms.ClearableFileInput(attrs={'class': INPUT_CSS}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -66,13 +76,18 @@ class ReportarPagoForm(forms.ModelForm):
 class AprobarPagoForm(forms.Form):
     tasa_bcv = forms.DecimalField(
         max_digits=12, decimal_places=4, min_value=0,
-        help_text='Tasa BCV del día del pago (Bs por USD)'
+        help_text='Tasa BCV del día del pago (Bs por USD)',
+        widget=forms.NumberInput(attrs={
+            'class': INPUT_CSS,
+            'placeholder': 'Ej: 36.5000',
+            'step': '0.0001',
+        })
     )
 
 
 class RechazarPagoForm(forms.Form):
     motivo = forms.CharField(
-        widget=forms.Textarea(attrs={'rows': 3}),
+        widget=forms.Textarea(attrs={'rows': 3, 'class': TEXTAREA_CSS, 'placeholder': 'Motivo del rechazo...'}),
         max_length=500,
         help_text='Explica al representante por qué se rechaza.'
     )
