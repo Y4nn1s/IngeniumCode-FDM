@@ -50,6 +50,7 @@ urlpatterns = [
     path('', include('filiacion.urls')),
     path('', include('deportivo.urls')),
     path('', include('administracion.urls')),
+    path('finanzas/', include('finanzas.urls', namespace='finanzas')),
 ]
 
 if settings.DEBUG:
