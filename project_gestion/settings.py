@@ -140,3 +140,18 @@ CACHES = {
 
 # Rate limiting
 RATELIMIT_ENABLE = True
+
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler'},
+    },
+    'loggers': {
+        'finanzas.telegram_bot': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+        },
+    },
+}
