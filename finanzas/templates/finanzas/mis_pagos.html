@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load finanzas_filters %}
+{% block title %}Mis pagos — FDM{% endblock %}
+{% block content %}
+<div class="max-w-5xl mx-auto p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold dark:text-white">Mis pagos</h1>
+    <a href="{% url 'finanzas:reportar' %}" class="bg-fdm-blue text-white px-4 py-2 rounded-lg hover:bg-fdm-blue-dark transition duration-300 font-semibold shadow-md">+ Reportar pago</a>
+  </div>
+
+  {% if mensualidades_pendientes %}
+    <div class="border rounded-lg p-4 mb-6 bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-800">
+      <h2 class="font-bold mb-2 dark:text-yellow-200">Mensualidades pendientes</h2>
+      <ul class="text-sm space-y-1">
+        {% for m in mensualidades_pendientes %}
+          <li class="flex justify-between {% if m.vencida %}text-red-700 dark:text-red-400 font-semibold{% else %}dark:text-gray-300{% endif %}">
+            <span>{{ m.atleta.nombres }} {{ m.atleta.apellidos }} — {{ m.etiqueta_periodo }}</span>
+            <span>{{ m.monto_usd|usd }} {% if m.vencida %}(VENCIDA){% endif %}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <div class="overflow-x-auto rounded-lg border dark:border-slate-700">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-100 dark:bg-slate-800">
+        <tr>
+          <th class="p-3 text-left dark:text-gray-200">#</th>
+          <th class="p-3 text-left dark:text-gray-200">Concepto</th>
+          <th class="p-3 text-left dark:text-gray-200">Método</th>
+          <th class="p-3 text-right dark:text-gray-200">Monto Bs</th>
+          <th class="p-3 text-right dark:text-gray-200">USD</th>
+          <th class="p-3 text-left dark:text-gray-200">Fecha</th>
+          <th class="p-3 text-left dark:text-gray-200">Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in pagos %}
+          <tr class="border-t dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800/50">
+            <td class="p-3 dark:text-gray-300">{{ p.id }}</td>
+            <td class="p-3 dark:text-gray-300">{{ p.concepto|truncatechars:50 }}</td>
+            <td class="p-3 dark:text-gray-300">{{ p.get_metodo_display }}</td>
+            <td class="p-3 text-right dark:text-gray-300">{{ p.monto_bs|bs }}</td>
+            <td class="p-3 text-right dark:text-gray-300">{{ p.monto_usd|usd }}</td>
+            <td class="p-3 dark:text-gray-300">{{ p.fecha_pago }}</td>
+            <td class="p-3">
+              {% if p.estado == 'APROBADO' %}<span class="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 rounded text-xs font-semibold">Aprobado</span>
+              {% elif p.estado == 'RECHAZADO' %}<span class="px-2 py-1 bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300 rounded text-xs font-semibold">Rechazado</span>
+              {% else %}<span class="px-2 py-1 bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300 rounded text-xs font-semibold">Pendiente</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="7" class="p-4 text-center text-gray-500 dark:text-gray-400">No hay pagos reportados.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

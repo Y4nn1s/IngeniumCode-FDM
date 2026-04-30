@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load finanzas_filters %}
+{% block title %}Bandeja de pagos — FDM{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto p-6">
+  <h1 class="text-2xl font-bold mb-6 dark:text-white">Bandeja de pagos</h1>
+
+  <div class="flex gap-2 mb-4">
+    <a href="?estado=PENDIENTE" class="px-3 py-1 rounded-lg transition duration-300 font-semibold text-sm {% if estado_actual == 'PENDIENTE' %}bg-fdm-blue text-white shadow-md{% else %}bg-gray-200 dark:bg-slate-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-600{% endif %}">Pendientes</a>
+    <a href="?estado=APROBADO" class="px-3 py-1 rounded-lg transition duration-300 font-semibold text-sm {% if estado_actual == 'APROBADO' %}bg-fdm-blue text-white shadow-md{% else %}bg-gray-200 dark:bg-slate-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-600{% endif %}">Aprobados</a>
+    <a href="?estado=RECHAZADO" class="px-3 py-1 rounded-lg transition duration-300 font-semibold text-sm {% if estado_actual == 'RECHAZADO' %}bg-fdm-blue text-white shadow-md{% else %}bg-gray-200 dark:bg-slate-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-600{% endif %}">Rechazados</a>
+    <a href="?estado=TODOS" class="px-3 py-1 rounded-lg transition duration-300 font-semibold text-sm {% if estado_actual == 'TODOS' %}bg-fdm-blue text-white shadow-md{% else %}bg-gray-200 dark:bg-slate-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-600{% endif %}">Todos</a>
+  </div>
+
+  <div class="overflow-x-auto rounded-lg border dark:border-slate-700">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-100 dark:bg-slate-800">
+        <tr>
+          <th class="p-3 text-left dark:text-gray-200">#</th>
+          <th class="p-3 text-left dark:text-gray-200">Representante</th>
+          <th class="p-3 text-left dark:text-gray-200">Concepto</th>
+          <th class="p-3 text-left dark:text-gray-200">Método</th>
+          <th class="p-3 text-left dark:text-gray-200">Banco</th>
+          <th class="p-3 text-left dark:text-gray-200">Ref.</th>
+          <th class="p-3 text-right dark:text-gray-200">Monto Bs</th>
+          <th class="p-3 text-left dark:text-gray-200">Fecha</th>
+          <th class="p-3 text-left dark:text-gray-200">Estado</th>
+          <th class="p-3 dark:text-gray-200"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in pagos %}
+          <tr class="border-t dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800/50">
+            <td class="p-3 dark:text-gray-300">{{ p.id }}</td>
+            <td class="p-3 dark:text-gray-300">{{ p.representante.nombres }} {{ p.representante.apellidos }}</td>
+            <td class="p-3 dark:text-gray-300">{{ p.concepto|truncatechars:40 }}</td>
+            <td class="p-3 dark:text-gray-300">{{ p.get_metodo_display }}</td>
+            <td class="p-3 dark:text-gray-300">{{ p.get_banco_emisor_display }}</td>
+            <td class="p-3 font-mono text-xs dark:text-gray-300">{{ p.referencia }}</td>
+            <td class="p-3 text-right dark:text-gray-300">{{ p.monto_bs|bs }}</td>
+            <td class="p-3 dark:text-gray-300">{{ p.fecha_pago }}</td>
+            <td class="p-3">
+              {% if p.estado == 'APROBADO' %}<span class="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 rounded text-xs font-semibold">✓</span>
+              {% elif p.estado == 'RECHAZADO' %}<span class="px-2 py-1 bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300 rounded text-xs font-semibold">✗</span>
+              {% else %}<span class="px-2 py-1 bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300 rounded text-xs font-semibold">⏳</span>
+              {% endif %}
+            </td>
+            <td class="p-3">
+              <a href="{% url 'finanzas:detalle' p.id %}" class="text-fdm-blue hover:underline font-semibold">Ver</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="10" class="p-4 text-center text-gray-500 dark:text-gray-400">Sin pagos.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
