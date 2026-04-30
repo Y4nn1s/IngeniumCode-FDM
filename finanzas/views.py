@@ -147,6 +147,11 @@ def bandeja_admin(request):
 def detalle_admin(request, pk):
     pago = get_object_or_404(Pago, pk=pk)
     audit = pago.audit_log.all()[:20]
+    mensualidades = pago.mensualidades_cubiertas.all()
+    total_esperado_usd = sum(
+        (m.monto_usd for m in mensualidades),
+        Decimal('0.00')
+    )
 
     # Pre-cargar tasa BCV de la fecha del pago (no rompe si falla)
     tasa_sugerida = None
@@ -168,6 +173,7 @@ def detalle_admin(request, pk):
         'audit_log': audit,
         'aprobar_form': aprobar_form,
         'rechazar_form': RechazarPagoForm(),
+        'total_esperado_usd': total_esperado_usd,
         'tasa_sugerida': tasa_sugerida,
         'fuente_tasa': fuente_tasa,
     })
