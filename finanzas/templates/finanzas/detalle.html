@@ -80,6 +80,21 @@
             {% csrf_token %}
             <label class="block text-sm dark:text-green-200">Tasa BCV (Bs por USD)</label>
             {{ aprobar_form.tasa_bcv }}
+
+            {% if tasa_sugerida %}
+              <p class="text-xs text-gray-600 dark:text-gray-400">
+                ✓ Tasa pre-cargada desde
+                <strong>{{ fuente_tasa|default:"DolarAPI" }}</strong>
+                para la fecha {{ pago.fecha_pago }}.
+                Puedes editarla si es necesario.
+              </p>
+            {% else %}
+              <p class="text-xs text-amber-700 dark:text-amber-400">
+                ⚠️ No se pudo obtener la tasa automáticamente. Cópiala desde
+                <a href="https://www.bcv.org.ve" target="_blank" class="underline">bcv.org.ve</a>.
+              </p>
+            {% endif %}
+
             <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-300 font-semibold shadow-md">Aprobar pago</button>
           </form>
         </div>

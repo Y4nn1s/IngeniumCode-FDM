@@ -139,11 +139,29 @@ def bandeja_admin(request):
 def detalle_admin(request, pk):
     pago = get_object_or_404(Pago, pk=pk)
     audit = pago.audit_log.all()[:20]
+
+    # Pre-cargar tasa BCV de la fecha del pago (no rompe si falla)
+    tasa_sugerida = None
+    fuente_tasa = None
+    if pago.estado == 'PENDIENTE':
+        from finanzas.services.tasa_bcv import obtener_tasa
+        tasa_sugerida = obtener_tasa(pago.fecha_pago)
+        if tasa_sugerida is not None:
+            from .models import TasaBCV
+            cache_obj = TasaBCV.objects.filter(fecha=pago.fecha_pago).first()
+            fuente_tasa = cache_obj.fuente if cache_obj else 'dolarapi'
+
+    aprobar_form = AprobarPagoForm(
+        initial={'tasa_bcv': tasa_sugerida} if tasa_sugerida else None
+    )
+
     return render(request, 'finanzas/detalle.html', {
         'pago': pago,
         'audit_log': audit,
-        'aprobar_form': AprobarPagoForm(),
+        'aprobar_form': aprobar_form,
         'rechazar_form': RechazarPagoForm(),
+        'tasa_sugerida': tasa_sugerida,
+        'fuente_tasa': fuente_tasa,
     })
 
 
