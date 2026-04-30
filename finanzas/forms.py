@@ -37,9 +37,14 @@ class ReportarPagoForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if representante:
             atletas = representante.atletas.filter(activo=True)
-            self.fields['mensualidades'].queryset = Mensualidad.objects.filter(
+            qs = Mensualidad.objects.filter(
                 atleta__in=atletas, pagada=False
             ).select_related('atleta').order_by('fecha_vencimiento')
+            self.fields['mensualidades'].queryset = qs
+            # Etiqueta enriquecida con monto USD
+            self.fields['mensualidades'].label_from_instance = (
+                lambda m: f"{m.atleta.nombres} {m.atleta.apellidos} — {m.etiqueta_periodo} (${m.monto_usd})"
+            )
 
     def clean_comprobante(self):
         f = self.cleaned_data['comprobante']
