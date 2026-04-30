@@ -48,12 +48,24 @@
 
       {% if pago.mensualidades_cubiertas.all %}
         <div class="border rounded-lg p-4 dark:border-slate-700 dark:bg-slate-800/50">
-          <h3 class="font-bold mb-2 dark:text-white">Mensualidades cubiertas</h3>
+          <h3 class="font-bold mb-2 dark:text-white">Mensualidades vinculadas</h3>
           <ul class="text-sm space-y-1">
             {% for m in pago.mensualidades_cubiertas.all %}
-              <li class="dark:text-gray-300">{{ m.atleta }} — {{ m.etiqueta_periodo }} ({{ m.monto_usd }} USD) {% if m.pagada %}<span class="text-green-700 dark:text-green-400">✓</span>{% endif %}</li>
+              <li class="dark:text-gray-300">{{ m.atleta }} — {{ m.etiqueta_periodo }} (${{ m.monto_usd }}) {% if m.pagada %}<span class="text-green-700 dark:text-green-400">✓ pagada</span>{% endif %}</li>
             {% endfor %}
           </ul>
+
+          {% if pago.estado == 'PENDIENTE' %}
+            <div class="mt-3 p-3 rounded text-sm
+              {% if pago.monto_usd and pago.monto_usd < total_esperado_usd %}bg-red-50 text-red-800 dark:bg-red-900/30 dark:text-red-300
+              {% else %}bg-blue-50 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200{% endif %}">
+              <div>Total esperado: <strong>${{ total_esperado_usd }}</strong></div>
+              <div>Monto reportado: <strong>${{ pago.monto_usd|default:"— (falta tasa BCV)" }}</strong></div>
+              {% if pago.monto_usd and pago.monto_usd < total_esperado_usd %}
+                <div class="mt-1">⚠️ El pago no cubre el total. Bloqueado para aprobación.</div>
+              {% endif %}
+            </div>
+          {% endif %}
         </div>
       {% endif %}
 
