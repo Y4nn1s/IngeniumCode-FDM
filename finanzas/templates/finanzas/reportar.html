@@ -4,6 +4,13 @@
 <div class="max-w-2xl mx-auto p-6">
   <h1 class="text-2xl font-bold mb-6 dark:text-white">Reportar pago</h1>
 
+  {% if tasa_hoy %}
+    <div class="p-3 mb-4 bg-blue-50 text-blue-900 dark:bg-blue-900/30 dark:text-blue-200 rounded-lg text-sm border border-blue-200 dark:border-blue-800">
+      📊 Tasa BCV de hoy: <strong>{{ tasa_hoy }} Bs/USD</strong>
+      <span class="text-xs text-blue-700 dark:text-blue-400">(referencia automática desde DolarAPI)</span>
+    </div>
+  {% endif %}
+
   <form method="post" enctype="multipart/form-data" class="space-y-4">
     {% csrf_token %}
 

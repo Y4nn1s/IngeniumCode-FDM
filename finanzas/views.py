@@ -95,7 +95,14 @@ def reportar_pago(request):
     else:
         form = ReportarPagoForm(representante=rep)
 
-    return render(request, 'finanzas/reportar.html', {'form': form})
+    # Tasa de hoy para mostrar referencia (no rompe si falla)
+    from finanzas.services.tasa_bcv import obtener_tasa
+    tasa_hoy = obtener_tasa()
+
+    return render(request, 'finanzas/reportar.html', {
+        'form': form,
+        'tasa_hoy': tasa_hoy,
+    })
 
 
 @login_required
