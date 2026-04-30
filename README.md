@@ -137,6 +137,11 @@ python manage.py generar_mensualidades --monto 20.00
 
 # Crear tabla de cache para rate limiting (solo la primera vez)
 python manage.py createcachetable
+
+# Actualizar tasa BCV del día desde DolarAPI
+python manage.py refrescar_tasa_bcv
+# Recomendado correrlo a primera hora del día vía cron/scheduled task.
+# En producción ejemplo cron: 0 9 * * * python manage.py refrescar_tasa_bcv
 ```
 
 ### Asociación de representante a Telegram
