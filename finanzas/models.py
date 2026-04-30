@@ -1,6 +1,6 @@
 # finanzas/models.py
 import hashlib
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -57,6 +57,10 @@ TIPO_APORTE_CHOICES = [
     ('MONETARIO', 'Monetario'),
     ('INSUMOS', 'Insumos'),
 ]
+
+
+# === Constantes de negocio ===
+TOLERANCIA_COBERTURA_USD = Decimal('0.50')
 
 
 # === Modelo TasaBCV (cache local) ===
@@ -178,7 +182,10 @@ class Pago(models.Model):
         if self.comprobante and not self.comprobante_hash:
             self.comprobante_hash = self._calcular_hash()
         if self.monto_bs and self.tasa_bcv:
-            self.monto_usd = self.monto_bs / self.tasa_bcv
+            # Redondeo a 2 decimales con HALF_UP (estándar contable)
+            self.monto_usd = (self.monto_bs / self.tasa_bcv).quantize(
+                Decimal('0.01'), rounding=ROUND_HALF_UP
+            )
         super().save(*args, **kwargs)
 
     def _calcular_hash(self):
