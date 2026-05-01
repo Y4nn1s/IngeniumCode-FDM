@@ -30,11 +30,7 @@ class PartidoProgramarForm(forms.ModelForm):
         fields = ['categoria', 'fecha_hora', 'equipo_rival', 'tipo', 'condicion']
         widgets = {
             'fecha_hora': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-            'equipo_rival': forms.TextInput(attrs={
-                'placeholder': 'Nombre del equipo rival',
-                'maxlength': '100',
-                'oninput': "this.value = this.value.slice(0, 100)",
-            }),
+            'equipo_rival': forms.TextInput(attrs={'placeholder': 'Nombre del equipo rival'}),
         }
 
     def clean_equipo_rival(self):
@@ -56,16 +52,8 @@ class PartidoResultadoForm(forms.ModelForm):
         model = Partido
         fields = ['goles_favor_escuela', 'goles_contra_rival']
         widgets = {
-            'goles_favor_escuela': forms.NumberInput(attrs={
-                'min': '0', 'max': '50',
-                'inputmode': 'numeric',
-                'oninput': "if (this.value.length > 2) this.value = this.value.slice(0, 2)",
-            }),
-            'goles_contra_rival': forms.NumberInput(attrs={
-                'min': '0', 'max': '50',
-                'inputmode': 'numeric',
-                'oninput': "if (this.value.length > 2) this.value = this.value.slice(0, 2)",
-            }),
+            'goles_favor_escuela': forms.NumberInput(attrs={'min': '0', 'max': '50'}),
+            'goles_contra_rival': forms.NumberInput(attrs={'min': '0', 'max': '50'}),
         }
         labels = {
             'goles_favor_escuela': 'Goles a Favor (FDM)',
@@ -137,28 +125,23 @@ class EstadisticaForm(forms.ModelForm):
             }),
             'goles': forms.NumberInput(attrs={
                 'class': TAILWIND_COMPACT_NUMBER,
-                'min': '0', 'max': '20',
-                'oninput': "if (this.value.length > 2) this.value = this.value.slice(0, 2)",
+                'min': '0', 'max': '20'
             }),
             'asistencias': forms.NumberInput(attrs={
                 'class': TAILWIND_COMPACT_NUMBER,
-                'min': '0', 'max': '20',
-                'oninput': "if (this.value.length > 2) this.value = this.value.slice(0, 2)",
+                'min': '0', 'max': '20'
             }),
             'tarjetas_amarillas': forms.NumberInput(attrs={
                 'class': TAILWIND_COMPACT_NUMBER,
-                'min': '0', 'max': '2',
-                'oninput': "if (this.value.length > 1) this.value = this.value.slice(0, 1)",
+                'min': '0', 'max': '2'
             }),
             'tarjetas_rojas': forms.NumberInput(attrs={
                 'class': TAILWIND_COMPACT_NUMBER,
-                'min': '0', 'max': '1',
-                'oninput': "if (this.value.length > 1) this.value = this.value.slice(0, 1)",
+                'min': '0', 'max': '1'
             }),
             'calificacion_dt': forms.NumberInput(attrs={
                 'class': TAILWIND_COMPACT_NUMBER,
-                'min': '1', 'max': '10',
-                'oninput': "if (this.value.length > 2) this.value = this.value.slice(0, 2)",
+                'min': '1', 'max': '10'
             }),
         }
         labels = {

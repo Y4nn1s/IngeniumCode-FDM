@@ -14,5 +14,4 @@ urlpatterns = [
     path('admin/<int:pk>/rechazar/', views.rechazar, name='rechazar'),
 
     path('telegram/webhook/', views.telegram_webhook, name='telegram_webhook'),
-    path('comprobante/<int:pago_id>/', views.descargar_comprobante, name='comprobante'),
 ]

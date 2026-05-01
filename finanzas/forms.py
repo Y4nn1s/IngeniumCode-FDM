@@ -26,24 +26,8 @@ class ReportarPagoForm(forms.ModelForm):
         widgets = {
             'metodo': forms.Select(attrs={'class': SELECT_CSS}),
             'banco_emisor': forms.Select(attrs={'class': SELECT_CSS}),
-            'referencia': forms.TextInput(attrs={
-                'class': INPUT_CSS,
-                'placeholder': 'Nro. de referencia',
-                'maxlength': '12',
-                'pattern': '\\d{1,12}',
-                'inputmode': 'numeric',
-                'title': 'Hasta 12 dígitos numéricos',
-                'oninput': "this.value = this.value.replace(/[^0-9]/g, '').slice(0, 12)",
-            }),
-            'monto_bs': forms.NumberInput(attrs={
-                'class': INPUT_CSS,
-                'placeholder': '0.00',
-                'step': '0.01',
-                'min': '0',
-                'max': '99999999999.99',
-                'inputmode': 'decimal',
-                'oninput': "if (this.value.length > 14) this.value = this.value.slice(0, 14)",
-            }),
+            'referencia': forms.TextInput(attrs={'class': INPUT_CSS, 'placeholder': 'Nro. de referencia'}),
+            'monto_bs': forms.NumberInput(attrs={'class': INPUT_CSS, 'placeholder': '0.00', 'step': '0.01'}),
             'fecha_pago': forms.DateInput(attrs={'type': 'date', 'class': INPUT_CSS}),
             'comprobante': forms.ClearableFileInput(attrs={'class': INPUT_CSS}),
         }
@@ -100,25 +84,15 @@ class AprobarPagoForm(forms.Form):
         help_text='Tasa BCV del día del pago (Bs por USD)',
         widget=forms.NumberInput(attrs={
             'class': INPUT_CSS,
-            'placeholder': 'Ej: 486.0000',
+            'placeholder': 'Ej: 36.5000',
             'step': '0.0001',
-            'min': '0',
-            'max': '999999.9999',
-            'inputmode': 'decimal',
-            'oninput': "if (this.value.length > 12) this.value = this.value.slice(0, 12)",
         })
     )
 
 
 class RechazarPagoForm(forms.Form):
     motivo = forms.CharField(
-        widget=forms.Textarea(attrs={
-            'rows': 3,
-            'class': TEXTAREA_CSS,
-            'placeholder': 'Motivo del rechazo...',
-            'maxlength': '500',
-            'oninput': "this.value = this.value.slice(0, 500)",
-        }),
+        widget=forms.Textarea(attrs={'rows': 3, 'class': TEXTAREA_CSS, 'placeholder': 'Motivo del rechazo...'}),
         max_length=500,
         help_text='Explica al representante por qué se rechaza.'
     )
