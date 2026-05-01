@@ -1,5 +1,9 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from accounts.decorators import (
+    gestion_deportiva_required,
+    lectura_atletas_required,
+)
 from django.db.models import Sum
 from django.forms import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
@@ -18,7 +22,7 @@ from .forms import (
 from .models import Estadistica, EvaluacionPsicosocial, EvaluacionTecnica, Partido
 
 
-@login_required
+@login_required  # Permite a representantes ver el calendario
 def partido_list(request):
     partidos_pendientes = Partido.objects.filter(procesado=False).order_by('fecha_hora')
     partidos_jugados = Partido.objects.filter(procesado=True).order_by('-fecha_hora')
@@ -52,7 +56,7 @@ def partido_detail(request, pk):
     })
 
 
-@login_required
+@gestion_deportiva_required
 def partido_create(request):
     """Programar un nuevo partido (futuro)."""
     if request.method == 'POST':
@@ -68,7 +72,7 @@ def partido_create(request):
     })
 
 
-@login_required
+@gestion_deportiva_required
 def partido_registrar_resultado(request, pk):
     """Registrar el resultado de un partido con estadísticas individuales por atleta."""
     partido = get_object_or_404(Partido, pk=pk)
@@ -171,7 +175,23 @@ def partido_registrar_resultado(request, pk):
 # --- Vistas para Evaluaciones ---
 
 
-class EvaluacionTecnicaCreateView(LoginRequiredMixin, CreateView):
+class GestionDeportivaRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """Mixin para CBVs que requieren rol de gestión deportiva."""
+
+    def test_func(self):
+        user = self.request.user
+        if user.is_superuser:
+            return True
+        return user.groups.filter(
+            name__in=['CoordinadorGeneral', 'CoordinadorDeportivo', 'Entrenador']
+        ).exists()
+
+    def handle_no_permission(self):
+        from django.shortcuts import render
+        return render(self.request, '403.html', status=403)
+
+
+class EvaluacionTecnicaCreateView(GestionDeportivaRequiredMixin, CreateView):
     model = EvaluacionTecnica
     form_class = EvaluacionTecnicaForm
     template_name = 'deportivo/evaluacion_tecnica_form.html'
@@ -185,7 +205,7 @@ class EvaluacionTecnicaCreateView(LoginRequiredMixin, CreateView):
         return reverse('atleta_detail', kwargs={'pk': self.object.atleta.pk})
 
 
-class EvaluacionTecnicaUpdateView(LoginRequiredMixin, UpdateView):
+class EvaluacionTecnicaUpdateView(GestionDeportivaRequiredMixin, UpdateView):
     model = EvaluacionTecnica
     form_class = EvaluacionTecnicaForm
     template_name = 'deportivo/evaluacion_tecnica_form.html'
@@ -199,7 +219,7 @@ class EvaluacionTecnicaUpdateView(LoginRequiredMixin, UpdateView):
         return reverse('atleta_detail', kwargs={'pk': self.object.atleta.pk})
 
 
-class EvaluacionPsicosocialCreateView(LoginRequiredMixin, CreateView):
+class EvaluacionPsicosocialCreateView(GestionDeportivaRequiredMixin, CreateView):
     model = EvaluacionPsicosocial
     form_class = EvaluacionPsicosocialForm
     template_name = 'deportivo/evaluacion_psicosocial_form.html'
@@ -213,7 +233,7 @@ class EvaluacionPsicosocialCreateView(LoginRequiredMixin, CreateView):
         return reverse('atleta_detail', kwargs={'pk': self.object.atleta.pk})
 
 
-class EvaluacionPsicosocialUpdateView(LoginRequiredMixin, UpdateView):
+class EvaluacionPsicosocialUpdateView(GestionDeportivaRequiredMixin, UpdateView):
     model = EvaluacionPsicosocial
     form_class = EvaluacionPsicosocialForm
     template_name = 'deportivo/evaluacion_psicosocial_form.html'
@@ -230,7 +250,7 @@ class EvaluacionPsicosocialUpdateView(LoginRequiredMixin, UpdateView):
 # --- Vista de Panel de Estadísticas ---
 
 
-class EstadisticasView(LoginRequiredMixin, TemplateView):
+class EstadisticasView(GestionDeportivaRequiredMixin, TemplateView):
     """Panel de estadísticas acumuladas de atletas."""
     template_name = 'deportivo/estadisticas.html'
 

@@ -12,12 +12,16 @@
             <p class="text-lg text-slate-800 dark:text-slate-200 font-semibold">C.I: {{ representante.cedula_identidad }}</p>
         </div>
         <div class="flex space-x-3">
+            {% if is_admin_total or is_coord_general %}
             <a href="{% url 'representante_update' representante.pk %}" class="inline-block bg-yellow-600 text-white px-5 py-2 rounded-lg hover:bg-yellow-700 transition-colors duration-300 font-semibold text-sm">
                 Editar
             </a>
+            {% endif %}
+            {% if is_admin_total or is_coord_general or is_coord_deportivo or is_tesoreria or is_entrenador %}
             <a href="{% url 'representante_list' %}" class="inline-block bg-gray-200 dark:bg-slate-600 text-gray-800 dark:text-gray-100 px-5 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors duration-300 font-semibold text-sm">
                 Volver
             </a>
+            {% endif %}
         </div>
     </div>
 
@@ -61,9 +65,11 @@
         <div class="border-t dark:border-slate-700 pt-6">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold text-fdm-blue">Atletas a su Cargo</h3>
+                {% if is_admin_total or is_coord_general or is_coord_deportivo %}
                 <a href="{% url 'atleta_create' %}" class="inline-block bg-emerald-500 text-white px-4 py-2 rounded-lg hover:bg-emerald-600 transition-colors duration-300 font-semibold text-sm">
                     + Nuevo Atleta
                 </a>
+                {% endif %}
             </div>
             
             {% if representante.atletas.exists %}
@@ -120,9 +126,11 @@
     </div>
 </div>
 
+{% if is_admin_total or is_coord_general or is_coord_deportivo or is_tesoreria or is_entrenador %}
 <div class="mt-8 text-center">
     <a href="{% url 'representante_list' %}" class="text-fdm-blue hover:underline font-medium">
         &larr; Volver al listado de representantes
     </a>
 </div>
+{% endif %}
 {% endblock %}

@@ -1,5 +1,26 @@
 from django.contrib.auth.decorators import login_required
+from accounts.decorators import (
+    lectura_atletas_required,
+    edicion_atletas_required,
+    edicion_representantes_required,
+    staff_required,
+)
 from django.shortcuts import render, get_object_or_404, redirect
+
+def _es_solo_representante(user):
+    """True si el usuario es representante puro (no staff, no superuser)."""
+    if user.is_superuser:
+        return False
+    es_staff_interno = user.groups.filter(
+        name__in=['Tesoreria', 'CoordinadorGeneral',
+                  'CoordinadorDeportivo', 'Entrenador']
+    ).exists()
+    if es_staff_interno:
+        return False
+    return hasattr(user, 'representante') and user.representante is not None
+
+def _forbidden(request):
+    return render(request, '403.html', status=403)
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse
@@ -10,19 +31,32 @@ from .utils import generar_ficha_tecnica_pdf
 # --- Atletas ---
 
 
-@login_required
+@lectura_atletas_required
 def atleta_list(request):
-    atletas = Atleta.objects.all().order_by('apellidos')
+    """
+    Staff interno ve TODOS los atletas.
+    Representantes ven SOLO sus atletas.
+    """
+    if _es_solo_representante(request.user):
+        atletas = Atleta.objects.filter(
+            representante=request.user.representante
+        ).order_by('apellidos')
+    else:
+        atletas = Atleta.objects.all().order_by('apellidos')
     return render(request, 'filiacion/atleta_list.html', {'atletas': atletas})
 
 
-@login_required
+@lectura_atletas_required
 def atleta_detail(request, pk):
+    """Representantes solo pueden ver sus propios atletas."""
     atleta = get_object_or_404(Atleta, pk=pk)
+    if _es_solo_representante(request.user):
+        if atleta.representante_id != request.user.representante.id:
+            return _forbidden(request)
     return render(request, 'filiacion/atleta_detail.html', {'atleta': atleta})
 
 
-@login_required
+@edicion_atletas_required
 def atleta_create(request):
     if request.method == 'POST':
         form = AtletaForm(request.POST, request.FILES)
@@ -34,7 +68,7 @@ def atleta_create(request):
     return render(request, 'filiacion/atleta_form.html', {'form': form, 'titulo': 'Nuevo Atleta'})
 
 
-@login_required
+@edicion_atletas_required
 def atleta_update(request, pk):
     atleta = get_object_or_404(Atleta, pk=pk)
     if request.method == 'POST':
@@ -47,7 +81,7 @@ def atleta_update(request, pk):
     return render(request, 'filiacion/atleta_form.html', {'form': form, 'titulo': f'Editar {atleta.nombres}'})
 
 
-@login_required
+@edicion_atletas_required
 def atleta_delete(request, pk):
     atleta = get_object_or_404(Atleta, pk=pk)
     if request.method == 'POST':
@@ -58,13 +92,14 @@ def atleta_delete(request, pk):
 # --- Representantes ---
 
 
-@login_required
+@staff_required
 def representante_list(request):
+    """Solo staff interno ve la lista de representantes."""
     representantes = Representante.objects.all().order_by('apellidos')
     return render(request, 'filiacion/representante_list.html', {'representantes': representantes})
 
 
-@login_required
+@edicion_representantes_required
 def representante_create(request):
     if request.method == 'POST':
         form = RepresentanteForm(request.POST)
@@ -78,11 +113,18 @@ def representante_create(request):
 
 @login_required
 def representante_detail(request, pk):
+    """
+    Staff ve cualquier representante.
+    Representantes solo ven su propio perfil.
+    """
     representante = get_object_or_404(Representante, pk=pk)
+    if _es_solo_representante(request.user):
+        if representante.id != request.user.representante.id:
+            return _forbidden(request)
     return render(request, 'filiacion/representante_detail.html', {'representante': representante})
 
 
-@login_required
+@edicion_representantes_required
 def representante_update(request, pk):
     representante = get_object_or_404(Representante, pk=pk)
     if request.method == 'POST':
@@ -95,7 +137,7 @@ def representante_update(request, pk):
     return render(request, 'filiacion/representante_form.html', {'form': form, 'titulo': f'Editar {representante.nombres}'})
 
 # Vista para descargar ficha técnica en PDF
-@method_decorator(login_required, name='dispatch')
+@method_decorator(lectura_atletas_required, name='dispatch')
 class DescargarFichaPDF(View):
     """
     Vista para generar y descargar la ficha técnica de un atleta en PDF.
@@ -117,6 +159,12 @@ class DescargarFichaPDF(View):
         
         # Obtener el nombre del atleta para el archivo
         atleta = get_object_or_404(Atleta, pk=pk)
+
+        # Verificación de permiso para representantes
+        if _es_solo_representante(request.user):
+            if atleta.representante_id != request.user.representante.id:
+                return _forbidden(request)
+
         filename = f"ficha_tecnica_{atleta.nombres}_{atleta.apellidos}.pdf"
         
         # Crear respuesta HTTP con el PDF

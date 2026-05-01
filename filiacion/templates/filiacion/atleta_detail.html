@@ -13,8 +13,10 @@
         </div>
         <div class="flex space-x-3">
             <a href="{% url 'atleta_ficha_pdf' atleta.pk %}" class="inline-block bg-red-600 text-white px-5 py-2 rounded-lg hover:bg-red-700 transition-colors duration-300 font-semibold text-sm">📄 Descargar Ficha</a>
+            {% if is_admin_total or is_coord_general or is_coord_deportivo %}
             <a href="{% url 'atleta_update' atleta.pk %}" class="inline-block bg-gray-200 dark:bg-slate-600 text-gray-800 dark:text-gray-100 px-5 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors duration-300 font-semibold text-sm">Editar</a>
             <a href="{% url 'atleta_delete' atleta.pk %}" class="inline-block bg-red-600 text-white px-5 py-2 rounded-lg hover:bg-red-700 transition-colors duration-300 font-semibold text-sm">Eliminar</a>
+            {% endif %}
         </div>
     </div>
 
@@ -85,6 +87,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Evaluaciones</h3>
         <div class="flex flex-wrap gap-2">
+            {% if is_admin_total or is_coord_general or is_coord_deportivo or is_entrenador %}
             <a href="{% url 'evaluacion_tecnica_create' %}?atleta={{ atleta.pk }}"
                 class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200">
                 Nueva Ev. Técnica
@@ -93,6 +96,7 @@
                 class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200">
                 Nueva Ev. Psicosocial
             </a>
+            {% endif %}
         </div>
     </div>
 
@@ -127,7 +131,9 @@
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.tiro }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.inteligencia_tactica }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm">
+                            {% if is_admin_total or is_coord_general or is_coord_deportivo or is_entrenador %}
                             <a href="{% url 'evaluacion_tecnica_update' eval.pk %}" class="text-blue-600 hover:text-blue-800 font-medium">Editar</a>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
@@ -168,7 +174,9 @@
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.respeto }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ eval.manejo_frustracion }}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm">
+                            {% if is_admin_total or is_coord_general or is_coord_deportivo or is_entrenador %}
                             <a href="{% url 'evaluacion_psicosocial_update' eval.pk %}" class="text-blue-600 hover:text-blue-800 font-medium">Editar</a>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}

@@ -5,9 +5,11 @@
 {% block content %}
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
     <h2 class="text-3xl font-bold text-slate-800 dark:text-slate-100">Representantes Registrados</h2>
+    {% if is_admin_total or is_coord_general %}
     <a href="{% url 'representante_create' %}" class="inline-block bg-emerald-500 text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-emerald-600 focus:outline-none transition-all duration-300">
         <span class="font-semibold">+ Nuevo Representante</span>
     </a>
+    {% endif %}
 </div>
 
 <div class="bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden border-t-4 border-fdm-red">
@@ -50,7 +52,9 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                         <a href="{% url 'representante_detail' rep.pk %}" class="text-fdm-blue hover:text-fdm-blue-dark font-semibold">Ver</a>
+                        {% if is_admin_total or is_coord_general %}
                         <a href="{% url 'representante_update' rep.pk %}" class="text-fdm-red hover:text-fdm-red-dark font-semibold">Editar</a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% empty %}

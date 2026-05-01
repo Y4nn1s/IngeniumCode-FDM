@@ -30,65 +30,98 @@
         <nav>
             <ul class="flex flex-wrap justify-center items-center gap-2 md:gap-4">
                 <li>
-                    <a href="{% url 'dashboard' %}" 
+                    <a href="{% url 'dashboard' %}"
                        class="text-white hover:text-fdm-red font-semibold transition duration-300 px-2 py-1 rounded hover:bg-white/10">
                         Inicio
                     </a>
                 </li>
+
+                {# === Atletas: visible para todos los autenticados === #}
                 <li>
-                    <a href="{% url 'atleta_list' %}" 
+                    <a href="{% url 'atleta_list' %}"
                        class="text-white hover:text-fdm-red font-semibold transition duration-300 px-2 py-1 rounded hover:bg-white/10">
-                        Atletas
+                        {% if is_representante and not is_admin_total and not is_tesoreria and not is_coord_general and not is_coord_deportivo and not is_entrenador %}
+                            Mi Atleta
+                        {% else %}
+                            Atletas
+                        {% endif %}
                     </a>
                 </li>
+
+                {# === Representantes: solo staff interno === #}
+                {% if is_admin_total or is_coord_general or is_coord_deportivo or is_tesoreria %}
                 <li>
-                    <a href="{% url 'representante_list' %}" 
+                    <a href="{% url 'representante_list' %}"
                        class="text-white hover:text-fdm-red font-semibold transition duration-300 px-2 py-1 rounded hover:bg-white/10">
                         Representantes
                     </a>
                 </li>
+                {% endif %}
+
+                {# === Partidos: visible para todos los autenticados === #}
                 <li>
-                    <a href="{% url 'partido_list' %}" 
+                    <a href="{% url 'partido_list' %}"
                        class="text-white hover:text-fdm-red font-semibold transition duration-300 px-2 py-1 rounded hover:bg-white/10">
                         Partidos
                     </a>
                 </li>
+
+                {# === Cuerpo Técnico: solo staff interno === #}
+                {% if is_admin_total or is_coord_general or is_coord_deportivo or is_entrenador %}
                 <li>
-                    <a href="{% url 'entrenador_list' %}" 
+                    <a href="{% url 'entrenador_list' %}"
                        class="text-white hover:text-fdm-red font-semibold transition duration-300 px-2 py-1 rounded hover:bg-white/10">
                         Cuerpo Técnico
                     </a>
                 </li>
-                {% if user.is_authenticated %}
+                {% endif %}
+
+                {# === Estadísticas: solo gestión deportiva === #}
+                {% if is_admin_total or is_coord_general or is_coord_deportivo or is_entrenador %}
                 <li>
-                    <a href="{% url 'finanzas:mis_pagos' %}" 
+                    <a href="{% url 'estadisticas_panel' %}"
+                       class="text-white hover:text-fdm-red font-semibold transition duration-300 px-2 py-1 rounded hover:bg-white/10">
+                        Estadísticas
+                    </a>
+                </li>
+                {% endif %}
+
+                {# === Mis Pagos: solo representantes === #}
+                {% if is_representante %}
+                <li>
+                    <a href="{% url 'finanzas:mis_pagos' %}"
                        class="text-white hover:text-fdm-red font-semibold transition duration-300 px-2 py-1 rounded hover:bg-white/10">
                         Mis Pagos
                     </a>
                 </li>
                 {% endif %}
-                {% if user.is_staff %}
+
+                {# === Bandeja Pagos: tesorería y coord general === #}
+                {% if is_admin_total or is_tesoreria or is_coord_general %}
                 <li>
-                    <a href="{% url 'finanzas:bandeja' %}" 
+                    <a href="{% url 'finanzas:bandeja' %}"
                        class="text-white hover:text-fdm-red font-semibold transition duration-300 px-2 py-1 rounded hover:bg-white/10">
                         Bandeja Pagos
                     </a>
                 </li>
                 {% endif %}
+
+                {# === Admin Django: solo superuser === #}
+                {% if is_admin_total %}
                 <li>
-                    <a href="/admin/" 
+                    <a href="/admin/"
                        class="bg-fdm-red text-white px-4 py-2 rounded-md hover:bg-fdm-red-dark transition duration-300 font-semibold shadow-md">
                         Admin
                     </a>
                 </li>
+                {% endif %}
+
                 {% if user.is_authenticated %}
                 <li>
-                    <!-- Botón de Cerrar Sesión (Django 5 - POST obligatorio) -->
                     <form method="post" action="{% url 'logout' %}" class="inline">
                         {% csrf_token %}
                         <button type="submit"
                                 class="flex items-center gap-1 text-white hover:text-red-200 font-semibold transition duration-300 px-2 py-1 rounded hover:bg-white/10">
-                            <!-- Icono logout (Heroicons) -->
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                       d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
@@ -98,6 +131,7 @@
                     </form>
                 </li>
                 {% endif %}
+
                 <li>
                     <button @click="darkMode = !darkMode; if(darkMode){ document.documentElement.classList.add('dark'); localStorage.theme = 'dark'; } else { document.documentElement.classList.remove('dark'); localStorage.theme = 'light'; }" class="p-2 rounded-lg hover:bg-white/10 dark:hover:bg-slate-800 transition-colors">
                         <span x-show="!darkMode">🌙</span>

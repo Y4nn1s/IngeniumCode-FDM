@@ -70,8 +70,69 @@ def representante_required(view_func):
     return _wrapped
 
 
-def cualquier_staff_required(view_func):
-    """Cualquier rol interno (no representantes)."""
+def staff_required(view_func):
+    """
+    Cualquier staff interno: Tesoreria, CoordinadorGeneral,
+    CoordinadorDeportivo o Entrenador.
+    NO permite representantes.
+    """
     return cualquier_grupo_requerido(
-        'Tesoreria', 'CoordinadorGeneral', 'CoordinadorDeportivo', 'Entrenador'
+        'Tesoreria',
+        'CoordinadorGeneral',
+        'CoordinadorDeportivo',
+        'Entrenador',
+    )(view_func)
+
+
+def lectura_atletas_required(view_func):
+    """
+    Quien puede VER atletas:
+    - Cualquier staff interno
+    - Representantes (pero verán solo los suyos vía queryset filtrado)
+    """
+    @wraps(view_func)
+    @login_required
+    def _wrapped(request, *args, **kwargs):
+        if request.user.is_superuser:
+            return view_func(request, *args, **kwargs)
+        es_staff = request.user.groups.filter(
+            name__in=['Tesoreria', 'CoordinadorGeneral',
+                      'CoordinadorDeportivo', 'Entrenador']
+        ).exists()
+        es_representante_obj = (
+            hasattr(request.user, 'representante') and
+            request.user.representante is not None
+        )
+        if es_staff or es_representante_obj:
+            return view_func(request, *args, **kwargs)
+        return _forbidden(request)
+    return _wrapped
+
+
+def edicion_atletas_required(view_func):
+    """
+    Quien puede CREAR/EDITAR/BORRAR atletas:
+    Solo CoordinadorGeneral, CoordinadorDeportivo y superuser.
+    """
+    return cualquier_grupo_requerido(
+        'CoordinadorGeneral', 'CoordinadorDeportivo'
+    )(view_func)
+
+
+def edicion_representantes_required(view_func):
+    """
+    Quien puede CREAR/EDITAR representantes desde el panel:
+    Solo CoordinadorGeneral y superuser.
+    (El signup público crea representantes vía RepresentanteSignUpForm.)
+    """
+    return grupo_requerido('CoordinadorGeneral')(view_func)
+
+
+def gestion_deportiva_required(view_func):
+    """
+    Quien puede gestionar partidos, evaluaciones, estadísticas:
+    CoordinadorGeneral, CoordinadorDeportivo, Entrenador.
+    """
+    return cualquier_grupo_requerido(
+        'CoordinadorGeneral', 'CoordinadorDeportivo', 'Entrenador'
     )(view_func)

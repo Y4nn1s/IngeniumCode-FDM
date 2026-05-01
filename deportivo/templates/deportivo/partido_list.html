@@ -5,6 +5,7 @@
 {% block content %}
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
     <h2 class="text-3xl font-bold text-fdm-blue dark:text-blue-400">Gestión de Partidos</h2>
+    {% if is_admin_total or is_coord_general or is_coord_deportivo or is_entrenador %}
     <div class="flex flex-wrap gap-3">
         <a href="{% url 'estadisticas_panel' %}" class="inline-block bg-fdm-blue text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-fdm-blue-dark focus:outline-none focus:ring-2 focus:ring-fdm-blue focus:ring-opacity-50 transition-all duration-300">
             <span class="font-semibold">📊 Estadísticas</span>
@@ -13,6 +14,7 @@
             <span class="font-semibold">+ Programar Partido</span>
         </a>
     </div>
+    {% endif %}
 </div>
 
 <!-- Partidos Pendientes -->
@@ -39,9 +41,11 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ partido.get_tipo_display }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ partido.get_condicion_display }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        {% if is_admin_total or is_coord_general or is_coord_deportivo or is_entrenador %}
                         <a href="{% url 'partido_resultado' partido.pk %}" class="inline-block bg-orange-400 text-white font-bold px-4 py-2 rounded-lg hover:bg-orange-500 transition-colors duration-300 text-xs">
                             Registrar Resultado
                         </a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% empty %}
