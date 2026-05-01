@@ -10,12 +10,14 @@
     <!-- Comprobante -->
     <div class="border rounded-lg p-4 dark:border-slate-700 dark:bg-slate-800/50">
       <h2 class="font-bold mb-3 dark:text-white">Comprobante</h2>
-      {% with ext=pago.comprobante.url|lower %}
-        {% if '.pdf' in ext %}
-          <embed src="{{ pago.comprobante.url }}" type="application/pdf" class="w-full h-96 rounded" />
-          <a href="{{ pago.comprobante.url }}" target="_blank" class="text-fdm-blue hover:underline mt-2 inline-block font-semibold">Abrir PDF</a>
+      {% with comprobante_nombre=pago.comprobante.name|lower %}
+        {% if '.pdf' in comprobante_nombre %}
+          <embed src="{% url 'finanzas:comprobante' pago.id %}" type="application/pdf" class="w-full h-96 rounded" />
+          <a href="{% url 'finanzas:comprobante' pago.id %}" target="_blank" class="text-fdm-blue hover:underline mt-2 inline-block font-semibold">
+            Abrir PDF
+          </a>
         {% else %}
-          <img src="{{ pago.comprobante.url }}" class="w-full border rounded dark:border-slate-600" alt="Comprobante" />
+          <img src="{% url 'finanzas:comprobante' pago.id %}" class="w-full border rounded dark:border-slate-600" alt="Comprobante" />
         {% endif %}
       {% endwith %}
       <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Hash: {{ pago.comprobante_hash|slice:":16" }}…</p>

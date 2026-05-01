@@ -338,3 +338,58 @@ def telegram_webhook(request):
         )
 
     return JsonResponse({'ok': True})
+
+
+import os
+import mimetypes
+from django.http import FileResponse, Http404
+
+
+@login_required
+def descargar_comprobante(request, pago_id):
+    """
+    Sirve el comprobante de un pago con verificación de permisos.
+    """
+    pago = get_object_or_404(Pago, pk=pago_id)
+    user = request.user
+
+    es_admin_total = user.is_superuser
+    es_tesoreria = user.groups.filter(name='Tesoreria').exists()
+    es_coord_general = user.groups.filter(name='CoordinadorGeneral').exists()
+    es_dueno = (
+        hasattr(user, 'representante') and
+        user.representante is not None and
+        pago.representante_id == user.representante.id
+    )
+
+    permitido = es_admin_total or es_tesoreria or es_coord_general or es_dueno
+
+    if not permitido:
+        return render(request, '403.html', status=403)
+
+    if not pago.comprobante or not os.path.exists(pago.comprobante.path):
+        raise Http404('Comprobante no encontrado.')
+
+    pago.registrar_audit(
+        accion='COMPROBANTE_DESCARGADO',
+        actor=user,
+        detalles={
+            'rol': (
+                'admin' if es_admin_total else
+                'tesoreria' if es_tesoreria else
+                'coord_general' if es_coord_general else
+                'representante_dueno'
+            ),
+            'ip': request.META.get('REMOTE_ADDR', 'unknown'),
+            'user_agent': request.META.get('HTTP_USER_AGENT', '')[:200],
+        }
+    )
+
+    filename = os.path.basename(pago.comprobante.name)
+    content_type, _ = mimetypes.guess_type(filename)
+    response = FileResponse(
+        pago.comprobante.open('rb'),
+        content_type=content_type or 'application/octet-stream',
+    )
+    response['Content-Disposition'] = f'inline; filename="{filename}"'
+    return response

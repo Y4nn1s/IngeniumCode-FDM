@@ -45,6 +45,7 @@ ACCION_AUDIT_CHOICES = [
     ('EDITADO',         'Editado'),
     ('ANULADO',         'Anulado'),
     ('MENSUALIDADES_VINCULADAS', 'Mensualidades vinculadas'),
+    ('COMPROBANTE_DESCARGADO', 'Comprobante descargado'),
 ]
 
 TIPO_ENTE_PATROCINANTE_CHOICES = [
