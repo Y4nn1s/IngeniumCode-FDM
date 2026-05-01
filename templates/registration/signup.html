@@ -1,162 +1,40 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="es"
-      x-data="{
-          darkMode: localStorage.getItem('darkMode') === 'true'
-                    || (localStorage.getItem('darkMode') === null
-                        && window.matchMedia('(prefers-color-scheme: dark)').matches)
-      }"
-      x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))"
-      :class="{ 'dark': darkMode }">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Representante - Ingenium Code FDM</title>
+{% extends 'base.html' %}
+{% block title %}Registro de Representante{% endblock %}
 
-    <!-- Tailwind compilado -->
-    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+{% block content %}
+<div class="max-w-2xl mx-auto p-6">
+  <h1 class="text-2xl font-bold mb-6">Registro de Representante</h1>
 
-    <!-- Prevenir flash de tema incorrecto -->
-    <script>
-        (function () {
-            const stored = localStorage.getItem('darkMode');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const isDark = stored === 'true' || (stored === null && prefersDark);
-            if (isDark) document.documentElement.classList.add('dark');
-        })();
-    </script>
+  <div class="p-3 mb-4 rounded bg-blue-50 text-blue-900 text-sm">
+    Solo representantes legales de atletas pueden registrarse aquí.
+    El personal de la escuela debe iniciar sesión directamente.
+  </div>
 
-    <!-- Alpine.js bundled (esbuild) -->
-    <script defer src="{% static 'js/bundle.js' %}"></script>
-</head>
-<body class="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-200">
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
 
-    <!-- Toggle modo oscuro -->
-    <button @click="darkMode = !darkMode"
-            class="fixed top-4 right-4 z-50 p-2 rounded-lg
-                   bg-white dark:bg-slate-800
-                   text-slate-700 dark:text-slate-200
-                   shadow-md hover:shadow-lg transition-shadow"
-            :aria-label="darkMode ? 'Activar modo claro' : 'Activar modo oscuro'">
-        <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor"
-             viewBox="0 0 24 24" x-cloak>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-        </svg>
-        <svg x-show="darkMode" class="w-5 h-5" fill="none" stroke="currentColor"
-             viewBox="0 0 24 24" x-cloak>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
-        </svg>
+    {% for field in form %}
+      <div>
+        <label class="block text-sm font-medium mb-1">
+          {{ field.label }}
+          {% if field.field.required %}<span class="text-red-600">*</span>{% endif %}
+        </label>
+        {{ field }}
+        {% if field.help_text %}
+          <p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>
+        {% endif %}
+        {% if field.errors %}
+          <p class="text-xs text-red-600 mt-1">{{ field.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+      Crear cuenta
     </button>
-
-    <div class="min-h-screen flex">
-
-        <!-- Columna formulario -->
-        <div class="w-full md:w-1/2 flex items-center justify-center px-6 py-12">
-            <div class="w-full max-w-md">
-
-                <div class="mb-8 text-center md:text-left">
-                    <h1 class="text-3xl font-bold text-slate-900 dark:text-white">
-                        Registro de Representante
-                    </h1>
-                    <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                        Crea tu cuenta para afiliar a tu atleta
-                    </p>
-                </div>
-
-                {% if form.non_field_errors %}
-                    <div class="mb-6 p-4 rounded-lg
-                                bg-red-50 dark:bg-red-900/30
-                                border border-red-200 dark:border-red-800
-                                text-red-700 dark:text-red-300 text-sm"
-                         role="alert">
-                        {% for error in form.non_field_errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-
-                <form method="post" class="space-y-4" novalidate>
-                    {% csrf_token %}
-
-                    {% for field in form %}
-                        <div>
-                            <label for="{{ field.id_for_label }}"
-                                   class="block text-sm font-medium
-                                          text-slate-700 dark:text-slate-300 mb-1">
-                                {{ field.label }}
-                            </label>
-                            <input type="{{ field.field.widget.input_type|default:'text' }}"
-                                   name="{{ field.name }}"
-                                   id="{{ field.id_for_label }}"
-                                   {% if field.value %}value="{{ field.value }}"{% endif %}
-                                   {% if field.field.required %}required{% endif %}
-                                   {% if field.errors %}aria-invalid="true"{% endif %}
-                                   class="w-full px-4 py-2.5 rounded-lg
-                                          bg-white dark:bg-slate-800
-                                          border {% if field.errors %}border-red-400{% else %}border-slate-300 dark:border-slate-600{% endif %}
-                                          text-slate-900 dark:text-white
-                                          placeholder-slate-400
-                                          focus:outline-none focus:ring-2 focus:ring-fdm-blue focus:border-transparent
-                                          transition">
-                            {% if field.errors %}
-                                <p class="mt-1 text-xs text-red-500 dark:text-red-400">
-                                    {{ field.errors.0 }}
-                                </p>
-                            {% endif %}
-                            {% if field.help_text %}
-                                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                                    {{ field.help_text }}
-                                </p>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-
-                    <button type="submit"
-                            class="w-full py-2.5 px-4 rounded-lg
-                                   bg-fdm-red hover:bg-fdm-red-dark
-                                   text-white font-semibold
-                                   focus:outline-none focus:ring-2 focus:ring-fdm-red focus:ring-offset-2
-                                   dark:focus:ring-offset-slate-900
-                                   transition-colors">
-                        Crear Cuenta
-                    </button>
-                </form>
-
-                <p class="mt-6 text-sm text-center text-slate-600 dark:text-slate-400">
-                    ¿Ya tienes cuenta?
-                    <a href="{% url 'login' %}"
-                       class="font-semibold text-fdm-blue hover:text-fdm-blue-dark
-                              dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
-                        Inicia sesión aquí
-                    </a>
-                </p>
-
-                <p class="mt-4 text-xs text-center text-slate-500 dark:text-slate-500">
-                    Registro exclusivo para representantes de atletas
-                </p>
-            </div>
-        </div>
-
-        <!-- Columna decorativa (solo desktop) -->
-        <div class="hidden md:flex md:w-1/2 relative overflow-hidden
-                    bg-gradient-to-br from-fdm-red via-fdm-red-dark to-fdm-blue-dark">
-            <div class="absolute inset-0 bg-black/10"></div>
-            <div class="relative z-10 flex flex-col justify-center items-center
-                        w-full px-12 text-white">
-                <h2 class="text-4xl font-bold mb-4 text-center">
-                    Únete a la Familia FDM
-                </h2>
-                <p class="text-lg text-white/90 text-center max-w-md">
-                    Registra tus datos para afiliar a tu atleta
-                    y acompañarlo en su desarrollo deportivo.
-                </p>
-            </div>
-        </div>
-
-    </div>
-
-    <style>[x-cloak] { display: none !important; }</style>
-</body>
-</html>
+    <a href="{% url 'login' %}" class="ml-2 text-blue-600 hover:underline">
+      ¿Ya tienes cuenta? Inicia sesión
+    </a>
+  </form>
+</div>
+{% endblock %}
