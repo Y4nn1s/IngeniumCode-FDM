@@ -16,9 +16,40 @@ class RepresentanteForm(forms.ModelForm):
         model = Representante
         fields = '__all__'
         widgets = {
-            'cedula_identidad': forms.TextInput(attrs={'inputmode': 'numeric', 'pattern': '[0-9]*', 'maxlength': '8', 'minlength': '8'}),
-            'telefono_principal': forms.TextInput(attrs={'inputmode': 'numeric', 'pattern': '[0-9]*', 'maxlength': '11', 'placeholder': '04141234567'}),
-            'direccion_habitacion': forms.Textarea(attrs={'rows': 3}),
+            'cedula_identidad': forms.TextInput(attrs={
+                'inputmode': 'numeric',
+                'pattern': '\\d{8}',
+                'maxlength': '8',
+                'minlength': '8',
+                'title': 'Exactamente 8 dígitos',
+                'oninput': "this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)",
+            }),
+            'telefono_principal': forms.TextInput(attrs={
+                'inputmode': 'numeric',
+                'pattern': '\\d{11}',
+                'maxlength': '11',
+                'minlength': '11',
+                'placeholder': '04141234567',
+                'title': 'Exactamente 11 dígitos',
+                'oninput': "this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)",
+            }),
+            'direccion_habitacion': forms.Textarea(attrs={
+                'rows': 3,
+                'maxlength': '500',
+                'oninput': "this.value = this.value.slice(0, 500)",
+            }),
+            'nombres': forms.TextInput(attrs={
+                'maxlength': '60',
+                'oninput': "this.value = this.value.slice(0, 60)",
+            }),
+            'apellidos': forms.TextInput(attrs={
+                'maxlength': '60',
+                'oninput': "this.value = this.value.slice(0, 60)",
+            }),
+            'correo_electronico': forms.EmailInput(attrs={
+                'maxlength': '120',
+                'oninput': "this.value = this.value.slice(0, 120)",
+            }),
         }
 
     def clean_cedula_identidad(self):
@@ -55,15 +86,37 @@ class AtletaForm(forms.ModelForm):
         fields = '__all__'
         widgets = {
             'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-            'cedula_escolar': forms.TextInput(attrs={'inputmode': 'numeric', 'pattern': '[0-9]*', 'maxlength': '8', 'minlength': '8'}),
-            'peso_kg': forms.NumberInput(attrs={
-                'step': '0.01', 
-                'min': '10', 
-                'max': '200',
-                'oninput': 'if(this.value.length > 3) this.value = this.value.slice(0, 3);'
+            'cedula_escolar': forms.TextInput(attrs={
+                'inputmode': 'numeric',
+                'pattern': '\\d{8}',
+                'maxlength': '8',
+                'minlength': '8',
+                'title': 'Exactamente 8 dígitos',
+                'oninput': "this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)",
             }),
-            'altura_mts': forms.NumberInput(attrs={'step': '0.01', 'min': '0.50', 'max': '2.50'}),
+            'peso_kg': forms.NumberInput(attrs={
+                'step': '0.01',
+                'min': '10',
+                'max': '200',
+                'inputmode': 'decimal',
+                'oninput': "if (this.value.length > 6) this.value = this.value.slice(0, 6)",
+            }),
+            'altura_mts': forms.NumberInput(attrs={
+                'step': '0.01',
+                'min': '0.50',
+                'max': '2.50',
+                'inputmode': 'decimal',
+                'oninput': "if (this.value.length > 4) this.value = this.value.slice(0, 4)",
+            }),
             'foto_perfil': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+            'nombres': forms.TextInput(attrs={
+                'maxlength': '60',
+                'oninput': "this.value = this.value.slice(0, 60)",
+            }),
+            'apellidos': forms.TextInput(attrs={
+                'maxlength': '60',
+                'oninput': "this.value = this.value.slice(0, 60)",
+            }),
         }
 
     def clean_cedula_escolar(self):

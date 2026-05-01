@@ -22,9 +22,25 @@ class EntrenadorForm(forms.ModelForm):
         model = Entrenador
         fields = ['nombres', 'apellidos', 'licencia', 'telefono', 'coordinador', 'activo']
         widgets = {
-            'nombres': forms.TextInput(attrs={'placeholder': 'Nombre del entrenador'}),
-            'apellidos': forms.TextInput(attrs={'placeholder': 'Apellido del entrenador'}),
-            'telefono': forms.TextInput(attrs={'inputmode': 'numeric', 'pattern': '[0-9]*', 'maxlength': '11', 'placeholder': '04141234567'}),
+            'nombres': forms.TextInput(attrs={
+                'placeholder': 'Nombre del entrenador',
+                'maxlength': '60',
+                'oninput': "this.value = this.value.slice(0, 60)",
+            }),
+            'apellidos': forms.TextInput(attrs={
+                'placeholder': 'Apellido del entrenador',
+                'maxlength': '60',
+                'oninput': "this.value = this.value.slice(0, 60)",
+            }),
+            'telefono': forms.TextInput(attrs={
+                'inputmode': 'numeric',
+                'pattern': '\\d{11}',
+                'maxlength': '11',
+                'minlength': '11',
+                'placeholder': '04141234567',
+                'title': 'Exactamente 11 dígitos',
+                'oninput': "this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)",
+            }),
         }
         labels = {
             'nombres': 'Nombres',
