@@ -160,6 +160,9 @@
 
         <!-- Navegación Móvil (colapsable con Alpine.js, visible en md:hidden) -->
         <nav x-show="mobileMenuOpen" 
+             @click.away="mobileMenuOpen = false"
+             @keydown.window.escape="mobileMenuOpen = false"
+             @click="mobileMenuOpen = false"
              x-transition:enter="transition ease-out duration-150"
              x-transition:enter-start="opacity-0 -translate-y-2"
              x-transition:enter-end="opacity-100 translate-y-0"
@@ -255,7 +258,7 @@
                 </li>
                 {% endif %}
                 <li>
-                    <button @click="darkMode = !darkMode; if(darkMode){ document.documentElement.classList.add('dark'); localStorage.theme = 'dark'; } else { document.documentElement.classList.remove('dark'); localStorage.theme = 'light'; }" 
+                    <button @click.stop="darkMode = !darkMode; if(darkMode){ document.documentElement.classList.add('dark'); localStorage.theme = 'dark'; } else { document.documentElement.classList.remove('dark'); localStorage.theme = 'light'; }" 
                             class="w-full flex items-center justify-start gap-2.5 px-4 py-3 rounded-md hover:bg-white/15 transition-colors text-white min-h-[44px]"
                             aria-label="Toggle theme">
                         <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
