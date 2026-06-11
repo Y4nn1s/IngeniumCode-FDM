@@ -31,7 +31,9 @@ docs
 .agent/
 .gemini
 .impeccable
+.agents
 docs
+skills-lock.json
 
 # Logs
 logs/*
