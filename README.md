@@ -212,3 +212,99 @@ Solo `is_staff` o miembros del grupo `Tesoreria` acceden a la bandeja administra
 2. Admin revisa en `/finanzas/admin/bandeja/`, ingresa tasa BCV y aprueba o rechaza.
 3. Al aprobar: se calcula USD, se marcan mensualidades como pagadas, se notifica por Telegram.
 4. Al rechazar: las mensualidades se liberan para otro pago, se notifica con motivo.
+
+---
+
+## 🌱 Datos de Prueba (Seed)
+
+> [!CAUTION]
+> **NUNCA ejecutar en producción.** El comando `seed_fdm` está diseñado exclusivamente para entornos de desarrollo local. El flag `--flush` está bloqueado automáticamente si `DEBUG=False`.
+
+El comando `seed_fdm` crea un conjunto completo de datos venezolanos realistas para visualizar y probar la plataforma sin necesidad de ingresar datos manualmente.
+
+### Qué crea el seed
+
+| Entidad | Cantidad |
+|---|---|
+| Superusuario (`admin_seed`) | 1 |
+| Coordinadores (General + Deportivo) | 2 |
+| Usuario Tesorería | 1 |
+| Entrenadores | 4 |
+| Delegados | 2 |
+| Categorías (Sub-5 a Sub-15, MASCULINAS) | 6 |
+| Representantes con usuario asociado | 30 (configurable) |
+| Atletas (~10% becados, ~5% inactivos) | 30 (configurable) |
+| Mensualidades (3 meses: actual + 2 anteriores) | ~60-90 |
+| Pagos (70% aprobados / 15% pendientes / 15% rechazados) | variable |
+| TasaBCV | 1 (36.50 Bs/USD) |
+| Partidos pasados con estadísticas | 5 partidos |
+| Evaluaciones técnicas | 10 |
+| Evaluaciones psicosociales | 10 |
+
+### Uso básico
+
+```bash
+# Activar entorno virtual primero
+.\\venv\\Scripts\\activate
+
+# Seed básico (idempotente — se puede correr múltiples veces sin duplicar)
+python manage.py seed_fdm
+
+# Con output detallado
+python manage.py seed_fdm --verbose
+
+# Número personalizado de atletas y representantes
+python manage.py seed_fdm --atletas 50 --verbose
+
+# Contraseña personalizada para los usuarios demo
+python manage.py seed_fdm --password MiClave2026!
+```
+
+### Limpiar y volver a crear (--reset)
+
+Borra **solo** las entidades creadas por el seed (identificadas por convenciones internas), sin tocar datos reales ni superusers manuales:
+
+```bash
+python manage.py seed_fdm --reset
+```
+
+### Limpieza total de BD + seed (--flush)
+
+Equivale a `python manage.py flush` seguido del seed completo. **Solo funciona si `DEBUG=True`.**
+
+```bash
+python manage.py seed_fdm --flush
+```
+
+### Flags disponibles
+
+| Flag | Tipo | Default | Descripción |
+|---|---|---|---|
+| `--reset` | bool | False | Borra entidades seed antes de recrear |
+| `--flush` | bool | False | Vacía toda la BD y re-seedea (solo `DEBUG=True`) |
+| `--atletas N` | int | 30 | Número total de atletas a crear |
+| `--password PWD` | str | `Demo1234*` | Contraseña para todos los usuarios demo |
+| `--verbose` | bool | False | Output detallado de cada entidad creada |
+
+### Credenciales demo
+
+Tras ejecutar el seed, puedes ingresar con:
+
+| Rol | Usuario | Contraseña (default) |
+|---|---|---|
+| Superuser / Directiva | `admin_seed` | `Demo1234*` |
+| Coordinador General | `seed_coord_general` | `Demo1234*` |
+| Coordinador Deportivo | `seed_coord_deportivo` | `Demo1234*` |
+| Tesorería | `seed_tesoreria` | `Demo1234*` |
+| Representante ejemplo | `seed_rep_001` | `Demo1234*` |
+
+### Convenciones de identificación seed
+
+El comando usa las siguientes convenciones para identificar sus datos y poder borrarlos con `--reset` sin afectar datos reales:
+
+- **Users seed**: `username` empieza con `seed_`
+- **Correos seed**: terminan en `@seed.fdm.local`
+- **Pagos seed**: campo `concepto` empieza con `[SEED]`
+- **Partidos seed**: campo `equipo_rival` empieza con `[SEED]`
+- **Entrenadores/Delegados seed**: `telefono` empieza con `SEED_`
+- **TasaBCV seed**: `fuente = 'seed'`
