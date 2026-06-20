@@ -1,5 +1,6 @@
 import os
 import dj_database_url
+import logging.handlers
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -192,6 +193,9 @@ WHITENOISE_AUTOREFRESH = DEBUG
 # ──────────────────────────────────────────────────────────────
 # LOGGING (Security & Finanzas Bot Integrados)
 # ──────────────────────────────────────────────────────────────
+LOGS_DIR = BASE_DIR / 'logs'
+LOGS_DIR.mkdir(parents=True, exist_ok=True)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -202,29 +206,31 @@ LOGGING = {
         },
     },
     'handlers': {
-
         'security_file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs' / 'security.log',
+            'filename': LOGS_DIR / 'security.log',
             'formatter': 'security',
         },
-
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'security',
         },
     },
     'loggers': {
-
         'security.ratelimit': {
-            'handlers': ['security_file'],
+            'handlers': ['security_file', 'console'],
             'level': 'INFO',
             'propagate': False,
         },
-
         'finanzas.telegram_bot': {
             'handlers': ['console'],
             'level': 'WARNING',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
             'propagate': False,
         },
     },
