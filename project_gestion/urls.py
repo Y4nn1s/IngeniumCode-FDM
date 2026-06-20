@@ -45,9 +45,6 @@ urlpatterns = [
     # Registro de representantes
     path('registro/', accounts_views.RepresentanteSignUpView.as_view(), name='registro'),
 
-    # Endpoint temporal para crear superuser (ELIMINAR DESPUÉS DE USAR)
-    path('setup-superuser-temp/', accounts_views.create_superuser_temp, name='setup_superuser_temp'),
-
     # Apps de negocio
     path('', include('core.urls')),
     path('', include('filiacion.urls')),
