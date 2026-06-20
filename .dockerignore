@@ -36,7 +36,11 @@ media/*
 logs/*
 !logs/.gitkeep
 staticfiles
+# Node modules — solo se excluye en el COPY, se instala dentro del contenedor
 node_modules
+# Output generado localmente — se regenera en el build de Docker
+core/static/css/output.css
+core/static/js/bundle.js
 
 # Documentation
 *.md
