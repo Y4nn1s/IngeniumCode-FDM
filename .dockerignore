@@ -1,0 +1,52 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info
+.pytest_cache
+.coverage
+htmlcov
+
+# Virtual environments
+venv
+env
+.venv
+.env
+
+# IDEs
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+db.sqlite3
+db.sqlite3-journal
+media/*
+logs/*
+!logs/.gitkeep
+staticfiles
+node_modules
+
+# Documentation
+*.md
+docs/
+
+# Tests
+tests/
+conftest.py
+
+# Build artifacts
+build/
+dist/
+*.egg
