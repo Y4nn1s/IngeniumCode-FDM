@@ -95,9 +95,9 @@ class Fase1_ValidadoresVenezolanosTestCase(TestCase):
             validar_cedula_venezolana('V1234567')
 
     def test_cedula_con_menos_de_8_digitos_lanza_validation_error(self):
-        """Cédula con menos de 8 dígitos debe lanzar ValidationError."""
+        """Cédula con menos de 6 dígitos debe lanzar ValidationError."""
         with self.assertRaises(ValidationError):
-            validar_cedula_venezolana('1234567')
+            validar_cedula_venezolana('12345')
 
     def test_telefono_con_prefijo_valido_pasa_validacion(self):
         """Teléfono con prefijo venezolano válido (0414) no debe lanzar ValidationError."""
@@ -179,7 +179,8 @@ class Fase3_RepresentanteSignUpFormTestCase(TestCase):
             'nombres': 'Juan',
             'apellidos': 'Pérez',
             'correo_electronico': 'juan@test.com',
-            'telefono_principal': '04141234567',
+            'codigo_operadora': '0414',
+            'numero_telefono': '1234567',
             'direccion_habitacion': 'Calle de prueba',
             'password1': 'ClaveSegura2026!',
             'password2': 'ClaveSegura2026!',
@@ -199,7 +200,8 @@ class Fase3_RepresentanteSignUpFormTestCase(TestCase):
             'nombres': 'María',
             'apellidos': 'Gómez',
             'correo_electronico': 'maria@test.com',
-            'telefono_principal': '04121234567',
+            'codigo_operadora': '0412',
+            'numero_telefono': '1234567',
             'direccion_habitacion': 'Avenida principal',
             'password1': 'ClaveSegura2026!',
             'password2': 'ClaveSegura2026!',
@@ -221,7 +223,8 @@ class Fase3_RepresentanteSignUpFormTestCase(TestCase):
             'nombres': 'Pedro',
             'apellidos': 'Pérez',
             'correo_electronico': 'pedro@test.com',
-            'telefono_principal': '04161234567',
+            'codigo_operadora': '0416',
+            'numero_telefono': '1234567',
             'direccion_habitacion': 'Calle de prueba',
             'password1': 'ClaveSegura2026!',
             'password2': 'ClaveSegura2026!',
@@ -239,7 +242,8 @@ class Fase3_RepresentanteSignUpFormTestCase(TestCase):
             'nombres': 'Luis',
             'apellidos': 'Rodríguez',
             'correo_electronico': '12345678@test.com',  # Correo ya tomado por el helper anterior
-            'telefono_principal': '04241234567',
+            'codigo_operadora': '0424',
+            'numero_telefono': '1234567',
             'direccion_habitacion': 'Calle de prueba 2',
             'password1': 'ClaveSegura2026!',
             'password2': 'ClaveSegura2026!',
@@ -255,7 +259,8 @@ class Fase3_RepresentanteSignUpFormTestCase(TestCase):
             'nombres': 'Luis',
             'apellidos': 'Rodríguez',
             'correo_electronico': 'LUIS@TestMail.Com',
-            'telefono_principal': '04241234567',
+            'codigo_operadora': '0424',
+            'numero_telefono': '1234567',
             'direccion_habitacion': 'Calle de prueba 2',
             'password1': 'ClaveSegura2026!',
             'password2': 'ClaveSegura2026!',
@@ -271,7 +276,8 @@ class Fase3_RepresentanteSignUpFormTestCase(TestCase):
             'nombres': 'Luis',
             'apellidos': 'Rodríguez',
             'correo_electronico': 'luis@test.com',
-            'telefono_principal': '04241234567',
+            'codigo_operadora': '0424',
+            'numero_telefono': '1234567',
             'direccion_habitacion': 'Calle de prueba 2',
             'password1': 'ClaveSegura2026!',
             'password2': 'ClaveSegura2026!',

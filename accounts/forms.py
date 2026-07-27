@@ -31,7 +31,7 @@ def validar_cedula_venezolana(value):
         )
 
 
-""" def validar_telefono_venezolano(value):
+def validar_telefono_venezolano(value):
     if not value.isdigit():
         raise ValidationError('El teléfono debe contener solo números.')
     if len(value) != 11:
@@ -39,7 +39,7 @@ def validar_cedula_venezolana(value):
     if not TELEFONO_REGEX.match(value):
         raise ValidationError(
             'Operadora inválida. Debe iniciar con 0412, 0414, 0416, 0424 o 0426.'
-        ) """
+        )
 
 
 OPERADORAS_VENEZOLANAS = [
