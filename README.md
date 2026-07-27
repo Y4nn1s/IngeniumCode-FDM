@@ -37,19 +37,19 @@ Para garantizar la compatibilidad entre todos los miembros del equipo, el proyec
 
 El sistema está organizado de manera modular en las siguientes aplicaciones de Django:
 
-* **[accounts](file:///c:/Users/yitur/Documents/UNETI/TRAYECTO%203/SEMESTRE%206%20%28Actual%29/Proyecto%20Sociotecnol%C3%B3gico%20III%20%28M2%29/IngeniumCode-FDM/accounts):** Autenticación de usuarios, registro público de representantes, decoradores de control de acceso por roles (RBAC) y registro de eventos en `logs/security.log`.
-* **[administracion](file:///c:/Users/yitur/Documents/UNETI/TRAYECTO%203/SEMESTRE%206%20%28Actual%29/Proyecto%20Sociotecnol%C3%B3gico%20III%20%28M2%29/IngeniumCode-FDM/administracion):** Configuración de periodos académicos, canchas, categorías, delegados, coordinadores y entrenadores.
-* **[filiacion](file:///c:/Users/yitur/Documents/UNETI/TRAYECTO%203/SEMESTRE%206%20%28Actual%29/Proyecto%20Sociotecnol%C3%B3gico%20III%20%28M2%29/IngeniumCode-FDM/filiacion):** Expedientes de representantes y atletas (ficha médica, documentos digitales, foto) y generación de fichas técnicas en formato PDF.
-* **[deportivo](file:///c:/Users/yitur/Documents/UNETI/TRAYECTO%203/SEMESTRE%206%20%28Actual%29/Proyecto%20Sociotecnol%C3%B3gico%20III%20%28M2%29/IngeniumCode-FDM/deportivo):** Registro de partidos, asistencia, estadísticas individuales de atletas, evaluaciones técnicas de entrenadores y evaluaciones psicosociales de coordinadores.
-* **[finanzas](file:///c:/Users/yitur/Documents/UNETI/TRAYECTO%203/SEMESTRE%206%20%28Actual%29/Proyecto%20Sociotecnol%C3%B3gico%20III%20%28M2%29/IngeniumCode-FDM/finanzas):** Control de mensualidades y becas, reporte de pagos para representantes, bandeja de validación en bolívares/dólares para Tesorería, actualización automática de tasa BCV y alertas a representantes vía Telegram.
-* **[core](file:///c:/Users/yitur/Documents/UNETI/TRAYECTO%203/SEMESTRE%206%20%28Actual%29/Proyecto%20Sociotecnol%C3%B3gico%20III%20%28M2%29/IngeniumCode-FDM/core):** Layout base, paneles compartidos, páginas de error e inicio, y compilación de recursos frontend (CSS/JS).
-* **[logistica](file:///c:/Users/yitur/Documents/UNETI/TRAYECTO%203/SEMESTRE%206%20%28Actual%29/Proyecto%20Sociotecnol%C3%B3gico%20III%20%28M2%29/IngeniumCode-FDM/logistica):** Carpeta reservada para la futura gestión de logística e inventarios (actualmente estructura inicial sin instalar).
+* **accounts:** Autenticación de usuarios, registro público de representantes, decoradores de control de acceso por roles (RBAC) y registro de eventos en `logs/security.log`.
+* **administracion:** Configuración de periodos académicos, canchas, categorías, delegados, coordinadores y entrenadores.
+* **filiacion:** Expedientes de representantes y atletas (ficha médica, documentos digitales, foto) y generación de fichas técnicas en formato PDF.
+* **deportivo:** Registro de partidos, asistencia, estadísticas individuales de atletas, evaluaciones técnicas de entrenadores y evaluaciones psicosociales de coordinadores.
+* **finanzas:** Control de mensualidades y becas, reporte de pagos para representantes, bandeja de validación en bolívares/dólares para Tesorería, actualización automática de tasa BCV y alertas a representantes vía Telegram.
+* **core:** Layout base, paneles compartidos, páginas de error e inicio, y compilación de recursos frontend (CSS/JS).
+* **logistica:** Carpeta reservada para la futura gestión de logística e inventarios (actualmente estructura inicial sin instalar).
 
 ---
 
 ## 🔐 Sistema de Autenticación y Control de Acceso (RBAC)
 
-El control de accesos e interactividad se maneja a través de roles y grupos de Django mediante decoradores dedicados ([accounts/decorators.py](file:///c:/Users/yitur/Documents/UNETI/TRAYECTO%203/SEMESTRE%206%20%28Actual%29/Proyecto%20Sociotecnol%C3%B3gico%20III%20%28M2%29/IngeniumCode-FDM/accounts/decorators.py)) y un procesador de contexto para templates ([accounts/context_processors.py](file:///c:/Users/yitur/Documents/UNETI/TRAYECTO%203/SEMESTRE%206%20%28Actual%29/Proyecto%20Sociotecnol%C3%B3gico%20III%20%28M2%29/IngeniumCode-FDM/accounts/context_processors.py)).
+El control de accesos e interactividad se maneja a través de roles y grupos de Django mediante decoradores dedicados (accounts/decorators.py) y un procesador de contexto para templates (accounts/context_processors.py).
 
 ### Matriz de Roles y Accesos
 
