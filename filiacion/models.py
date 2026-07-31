@@ -2,11 +2,12 @@ from datetime import date
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from core.models import CatPosicion, CatLateralidad
 
 User = get_user_model()
 
 
-# === Catálogos Base (3NF) ===
+# === Catálogos Base Locales (Se conservan por DATA PRESERVATION - no eliminar) ===
 
 class CAT_Posicion(models.Model):
     codigo = models.CharField(max_length=10, unique=True)
@@ -35,7 +36,10 @@ class CAT_Lateralidad(models.Model):
 
 class Representante(models.Model):
     usuario = models.OneToOneField(
-        User, on_delete=models.CASCADE, null=True, blank=True,
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name='representante',
         help_text="Cuenta de usuario asociada al representante"
     )
@@ -66,12 +70,13 @@ class Atleta(models.Model):
         'administracion.Categoria', on_delete=models.PROTECT,
         null=True, blank=True, related_name='atletas'
     )
+    # FK hacia catálogos centralizados de core (ERD V2.2)
     posicion = models.ForeignKey(
-        CAT_Posicion, on_delete=models.PROTECT,
+        CatPosicion, on_delete=models.PROTECT,
         null=True, blank=True, related_name='atletas'
     )
     lateralidad = models.ForeignKey(
-        CAT_Lateralidad, on_delete=models.PROTECT,
+        CatLateralidad, on_delete=models.PROTECT,
         null=True, blank=True, related_name='atletas'
     )
     numero_acta_nacimiento = models.CharField(
@@ -89,7 +94,7 @@ class Atleta(models.Model):
     peso_kg = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     altura_mts = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
     es_condicion_especial = models.BooleanField(default=False)
-    observacion_medica = models.TextField(blank=True)
+    observacion_medica = models.TextField(blank=True, null=True)
     activo = models.BooleanField(default=True)
     becado = models.BooleanField(default=False)
 
@@ -98,32 +103,58 @@ class Atleta(models.Model):
         verbose_name_plural = 'Atletas'
 
     def clean(self):
+        """
+        Matriz de Validación - Fat Model (PRD Fase 3 / ERD V2.2).
+        Centraliza las reglas de negocio: Ley SAIME + Biometría.
+        """
         super().clean()
-        hoy = date.today()
+        errores = {}
 
+        # --- Cálculo de Edad ---
+        hoy = date.today()
+        edad = None
         if self.fecha_nacimiento:
             if self.fecha_nacimiento >= hoy:
-                raise ValidationError({'fecha_nacimiento': 'La fecha de nacimiento no puede ser igual o posterior a la fecha actual.'})
+                errores['fecha_nacimiento'] = 'La fecha de nacimiento no puede ser igual o posterior a la fecha actual.'
+            else:
+                edad = hoy.year - self.fecha_nacimiento.year - (
+                    (hoy.month, hoy.day) < (self.fecha_nacimiento.month, self.fecha_nacimiento.day)
+                )
 
-            edad = hoy.year - self.fecha_nacimiento.year - (
-                (hoy.month, hoy.day) < (self.fecha_nacimiento.month, self.fecha_nacimiento.day)
+        # --- Ley SAIME (Venezuela) ---
+        # Regla 1: El acta de nacimiento es obligatoria para todos los atletas.
+        if not self.numero_acta_nacimiento or not self.numero_acta_nacimiento.strip():
+            errores['numero_acta_nacimiento'] = 'El número de acta de nacimiento es obligatorio (LOPNNA).'
+
+        # Regla 2: Cédula obligatoria a partir de los 9 años.
+        if edad is not None and edad >= 9 and not self.cedula_identidad:
+            errores['cedula_identidad'] = (
+                'La cédula de identidad es obligatoria para atletas de 9 años o más (normativa SAIME).'
             )
 
-            if edad >= 9 and not self.cedula_identidad:
-                raise ValidationError({
-                    'cedula_identidad': 'La cédula de identidad es obligatoria para atletas de 9 años o más (normativa SAIME).'
-                })
+        # --- Matriz Biométrica (Prevención de errores de tipeo) ---
+        if edad is not None and self.peso_kg is not None:
+            if not self.es_condicion_especial:
+                # Regla biométrica 1: Peso anómalo para menores de 5 años.
+                if edad <= 5 and self.peso_kg > 35:
+                    errores['peso_kg'] = (
+                        "Peso anómalo para la edad. Marque 'Condición Especial' si el dato es correcto."
+                    )
+                # Regla biométrica 2: Peso anómalo para menores de 10 años.
+                elif edad <= 10 and self.peso_kg > 60:
+                    errores['peso_kg'] = (
+                        "Peso anómalo para la edad. Marque 'Condición Especial' si el dato es correcto."
+                    )
 
-            if not self.es_condicion_especial and self.peso_kg is not None:
-                if self.peso_kg < 10.0 or self.peso_kg > 120.0:
-                    raise ValidationError({'peso_kg': 'El peso debe estar entre 10.0 kg y 120.0 kg.'})
-                if edad <= 6 and self.peso_kg > 35.0:
-                    raise ValidationError({'peso_kg': 'El peso no puede superar 35.0 kg para atletas de 6 años o menos.'})
+        # Regla de condición especial: exige justificación médica.
+        if self.es_condicion_especial:
+            if not self.observacion_medica or not self.observacion_medica.strip():
+                errores['observacion_medica'] = (
+                    'Debe justificar médicamente la condición especial.'
+                )
 
-        if self.es_condicion_especial and not (self.observacion_medica and self.observacion_medica.strip()):
-            raise ValidationError({
-                'observacion_medica': 'Debe especificar las observaciones médicas para atletas con condición especial.'
-            })
+        if errores:
+            raise ValidationError(errores)
 
     def __str__(self):
         return f"{self.nombres} {self.apellidos}"
