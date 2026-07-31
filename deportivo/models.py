@@ -3,7 +3,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from core.models import CatTipoPartido, CatCondicionPartido
 
 
-# === Catálogos Base Locales (Se conservan por DATA PRESERVATION - no eliminar) ===
+# === Catálogos Base Locales (se conservan para compatibilidad con datos históricos) ===
 
 class CAT_TipoPartido(models.Model):
     codigo = models.CharField(max_length=20, unique=True)
@@ -29,7 +29,7 @@ class CAT_CondicionPartido(models.Model):
         return self.nombre
 
 
-# === Modelos de Negocio ===
+
 
 class Partido(models.Model):
     categoria = models.ForeignKey(
@@ -42,7 +42,7 @@ class Partido(models.Model):
     fecha_hora = models.DateTimeField()
     equipo_rival = models.CharField(max_length=100)
 
-    # --- Campos legacy (catálogos locales, se conservan para no perder datos) ---
+    # Catálogos locales anteriores, conservados para datos históricos
     tipo_legacy = models.ForeignKey(
         CAT_TipoPartido,
         on_delete=models.PROTECT,
@@ -58,7 +58,7 @@ class Partido(models.Model):
         blank=True,
     )
 
-    # --- Nuevas FK hacia catálogos centralizados de core (ERD V2.2) ---
+    # Catálogos centralizados de la app core
     tipo = models.ForeignKey(
         CatTipoPartido,
         on_delete=models.PROTECT,
@@ -84,10 +84,7 @@ class Partido(models.Model):
 
     @property
     def resultado(self):
-        """
-        Propiedad calculada — NO es un campo de base de datos.
-        El resultado se infiere de goles_favor_escuela vs goles_contra_rival (3NF).
-        """
+        """Resultado calculado a partir de los goles. No es un campo de base de datos."""
         if self.goles_favor_escuela > self.goles_contra_rival:
             return 'VICTORIA'
         elif self.goles_favor_escuela < self.goles_contra_rival:

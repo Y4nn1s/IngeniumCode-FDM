@@ -7,7 +7,7 @@ from core.models import CatPosicion, CatLateralidad
 User = get_user_model()
 
 
-# === Catálogos Base Locales (Se conservan por DATA PRESERVATION - no eliminar) ===
+# === Catálogos Base Locales (se conservan para compatibilidad con datos históricos) ===
 
 class CAT_Posicion(models.Model):
     codigo = models.CharField(max_length=10, unique=True)
@@ -32,7 +32,7 @@ class CAT_Lateralidad(models.Model):
         return self.nombre
 
 
-# === Modelos de Negocio ===
+
 
 class Representante(models.Model):
     usuario = models.OneToOneField(
@@ -70,7 +70,7 @@ class Atleta(models.Model):
         'administracion.Categoria', on_delete=models.PROTECT,
         null=True, blank=True, related_name='atletas'
     )
-    # FK hacia catálogos centralizados de core (ERD V2.2)
+
     posicion = models.ForeignKey(
         CatPosicion, on_delete=models.PROTECT,
         null=True, blank=True, related_name='atletas'
@@ -104,8 +104,7 @@ class Atleta(models.Model):
 
     def clean(self):
         """
-        Matriz de Validación - Fat Model (PRD Fase 3 / ERD V2.2).
-        Centraliza las reglas de negocio: Ley SAIME + Biometría.
+        Validaciones de negocio: Ley SAIME (Venezuela) y controles biométricos.
         """
         super().clean()
         errores = {}

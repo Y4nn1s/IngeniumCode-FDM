@@ -5,7 +5,6 @@ from .models import (
     EvaluacionTecnica, EvaluacionPsicosocial,
 )
 
-# Catálogos locales (legados - se conservan)
 admin.site.register(CAT_TipoPartido)
 admin.site.register(CAT_CondicionPartido)
 admin.site.register(Estadistica)
@@ -17,15 +16,15 @@ admin.site.register(EvaluacionPsicosocial)
 class PartidoAdmin(admin.ModelAdmin):
     list_display = (
         '__str__', 'categoria',
-        'tipo', 'condicion',          # FK nuevas → core
-        'tipo_legacy', 'condicion_legacy',  # FK viejas → catálogos locales
+        'tipo', 'condicion',
+        'tipo_legacy', 'condicion_legacy',
         'goles_favor_escuela', 'goles_contra_rival',
-        'resultado',                   # Propiedad calculada (no campo de BD)
+        'resultado',
         'procesado',
     )
     list_filter = (
-        'tipo', 'condicion',          # Nuevas FK
-        'tipo_legacy', 'condicion_legacy',  # Legados
+        'tipo', 'condicion',
+        'tipo_legacy', 'condicion_legacy',
         'procesado',
     )
     search_fields = ('equipo_rival',)

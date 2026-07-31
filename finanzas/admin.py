@@ -56,9 +56,8 @@ class PagoAdmin(admin.ModelAdmin):
                 'fecha_pago',
             )
         }),
-        ('Montos (Inmutables - SENIAT)', {
+        ('Montos', {
             'fields': ('monto_bs', 'tasa_bcv', 'monto_usd'),
-            'description': 'Estos campos son históricos y no deben modificarse.',
         }),
         ('Estado y Comprobante', {
             'fields': ('estado', 'comprobante', 'comprobante_hash', 'motivo_rechazo'),

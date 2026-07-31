@@ -1,7 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import Personal, CAT_Cargo, CAT_Licencia
+from .models import Personal
+from core.models import CatCargo
 
 
 class EntrenadorForm(forms.ModelForm):
@@ -38,7 +39,7 @@ class EntrenadorForm(forms.ModelForm):
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        cargo_entrenador, _ = CAT_Cargo.objects.get_or_create(
+        cargo_entrenador, _ = CatCargo.objects.get_or_create(
             nombre='Entrenador',
             defaults={'descripcion': 'Personal técnico encargado del entrenamiento'}
         )

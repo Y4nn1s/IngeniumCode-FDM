@@ -2,7 +2,6 @@ from django.contrib import admin
 from .models import Atleta, Representante, CAT_Posicion, CAT_Lateralidad
 
 
-# Catálogos locales (legados - se conservan)
 admin.site.register(CAT_Posicion)
 admin.site.register(CAT_Lateralidad)
 

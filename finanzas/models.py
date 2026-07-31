@@ -11,7 +11,7 @@ from core.models import CatBanco, CatEstadoPago, CatMetodoPago
 User = get_user_model()
 
 
-# === Catálogos Base Locales (Se conservan por DATA PRESERVATION - no eliminar) ===
+# === Catálogos Base Locales (se conservan para compatibilidad con datos históricos) ===
 
 class CAT_Banco(models.Model):
     codigo_sudeban = models.CharField(max_length=4, unique=True)
@@ -90,7 +90,7 @@ class Pago(models.Model):
         help_text="Auto-generado desde mensualidades cubiertas, o texto libre"
     )
 
-    # --- Campos legacy (catálogos locales, conservados para no perder datos) ---
+    # Catálogos locales anteriores, conservados para datos históricos
     metodo_legacy = models.ForeignKey(
         CAT_MetodoPago, on_delete=models.PROTECT,
         related_name='pagos_legacy', null=True, blank=True,
@@ -104,7 +104,7 @@ class Pago(models.Model):
         related_name='pagos_legacy', null=True, blank=True,
     )
 
-    # --- Nuevas FK hacia catálogos centralizados de core (ERD V2.2) ---
+    # Catálogos centralizados de la app core
     metodo = models.ForeignKey(
         CatMetodoPago, on_delete=models.PROTECT,
         related_name='pagos', null=True, blank=True,
@@ -120,8 +120,7 @@ class Pago(models.Model):
 
     referencia = models.CharField(max_length=30, blank=True, db_index=True)
 
-    # --- INMUTABILIDAD FINANCIERA (LEY VENEZOLANA / SENIAT) ---
-    # Estos campos NO se normalizan: son snapshots históricos de auditoría.
+    # Campos de auditoría financiera (inmutables por normativa venezolana)
     monto_bs = models.DecimalField(max_digits=14, decimal_places=2)
     tasa_bcv = models.DecimalField(
         max_digits=12, decimal_places=4, null=True, blank=True
