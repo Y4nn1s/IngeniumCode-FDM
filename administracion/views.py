@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView
 
 from .forms import EntrenadorForm
-from .models import Entrenador
+from .models import Personal
 
 
 def es_staff_o_admin(user):
@@ -17,8 +17,11 @@ def es_staff_o_admin(user):
 @login_required
 @user_passes_test(es_staff_o_admin)
 def entrenador_list(request):
-    """Lista de entrenadores, solo visible para staff y administradores."""
-    entrenadores = Entrenador.objects.filter(activo=True).order_by('apellidos', 'nombres')
+    """Lista de entrenadores (Personal con cargo Entrenador)."""
+    entrenadores = Personal.objects.filter(
+        activo=True,
+        cargo__nombre__iexact='Entrenador'
+    ).order_by('apellidos', 'nombres')
     return render(request, 'administracion/entrenador_list.html', {
         'entrenadores': entrenadores,
     })
@@ -32,8 +35,7 @@ class SuperusuarioRequiredMixin(UserPassesTestMixin):
 
 
 class EntrenadorCreateView(LoginRequiredMixin, SuperusuarioRequiredMixin, CreateView):
-    """Vista para crear un nuevo entrenador (solo superusuarios)."""
-    model = Entrenador
+    model = Personal
     form_class = EntrenadorForm
     template_name = 'administracion/entrenador_form.html'
     success_url = reverse_lazy('entrenador_list')
@@ -49,8 +51,7 @@ class EntrenadorCreateView(LoginRequiredMixin, SuperusuarioRequiredMixin, Create
 
 
 class EntrenadorUpdateView(LoginRequiredMixin, SuperusuarioRequiredMixin, UpdateView):
-    """Vista para editar un entrenador existente (solo superusuarios)."""
-    model = Entrenador
+    model = Personal
     form_class = EntrenadorForm
     template_name = 'administracion/entrenador_form.html'
     success_url = reverse_lazy('entrenador_list')
@@ -66,12 +67,10 @@ class EntrenadorUpdateView(LoginRequiredMixin, SuperusuarioRequiredMixin, Update
 
 
 class EntrenadorDeleteView(LoginRequiredMixin, SuperusuarioRequiredMixin, DeleteView):
-    """Vista para eliminar un entrenador (solo superusuarios)."""
-    model = Entrenador
+    model = Personal
     template_name = 'administracion/entrenador_confirm_delete.html'
     success_url = reverse_lazy('entrenador_list')
 
     def delete(self, request, *args, **kwargs):
         messages.success(request, 'Entrenador eliminado exitosamente.')
         return super().delete(request, *args, **kwargs)
-

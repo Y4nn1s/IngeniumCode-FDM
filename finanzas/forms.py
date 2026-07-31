@@ -1,9 +1,7 @@
-# finanzas/forms.py
 from django import forms
 from django.utils import timezone
-from .models import Pago, Mensualidad
+from .models import Pago, Mensualidad, CAT_EstadoPago, CAT_Banco, CAT_MetodoPago
 
-# Clases Tailwind reutilizables para inputs del formulario
 INPUT_CSS = 'w-full px-3 py-2 border rounded-lg text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200 focus:ring-2 focus:ring-fdm-blue focus:border-fdm-blue'
 SELECT_CSS = INPUT_CSS
 TEXTAREA_CSS = INPUT_CSS
@@ -38,10 +36,9 @@ class ReportarPagoForm(forms.ModelForm):
         if representante:
             atletas = representante.atletas.filter(activo=True)
             qs = Mensualidad.objects.filter(
-                atleta__in=atletas, pagada=False
+                atleta__in=atletas, pago__isnull=True
             ).select_related('atleta').order_by('fecha_vencimiento')
             self.fields['mensualidades'].queryset = qs
-            # Etiqueta enriquecida con monto USD
             self.fields['mensualidades'].label_from_instance = (
                 lambda m: f"{m.atleta.nombres} {m.atleta.apellidos} — {m.etiqueta_periodo} (${m.monto_usd})"
             )
@@ -69,7 +66,7 @@ class ReportarPagoForm(forms.ModelForm):
             existe = Pago.objects.filter(
                 banco_emisor=banco,
                 referencia=ref,
-                estado__in=['PENDIENTE', 'APROBADO']
+                estado__codigo__in=['PENDIENTE', 'APROBADO']
             ).exists()
             if existe:
                 raise forms.ValidationError(

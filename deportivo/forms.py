@@ -14,9 +14,6 @@ TAILWIND_COMPACT_CHECKBOX = (
 )
 
 
-
-
-
 class PartidoProgramarForm(forms.ModelForm):
     """Formulario para programar un partido futuro (sin resultados)."""
     def __init__(self, *args, **kwargs):
@@ -66,7 +63,7 @@ class EvaluacionTecnicaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         input_classes = 'appearance-none block w-full bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-slate-600 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white dark:focus:bg-slate-600 focus:border-blue-500'
-        textarea_classes = input_classes + ' h-24' # Extend input for textarea
+        textarea_classes = input_classes + ' h-24'
         
         for field_name, field in self.fields.items():
             if isinstance(field.widget, forms.Textarea):
@@ -78,11 +75,11 @@ class EvaluacionTecnicaForm(forms.ModelForm):
         model = EvaluacionTecnica
         fields = [
             'atleta', 'entrenador', 'fecha_evaluacion',
-            'velocidad', 'resistencia', 'control_balon',
-            'pase_corto', 'tiro', 'inteligencia_tactica', 'observaciones'
+            'control_balon', 'conduccion', 'pase_corto',
+            'tiro', 'inteligencia_tactica', 'observaciones'
         ]
         widgets = {
-            'fecha_evaluacion': forms.DateInput(attrs={'type': 'date'}), # Type date preserved
+            'fecha_evaluacion': forms.DateInput(attrs={'type': 'date'}),
         }
 
 
@@ -91,7 +88,7 @@ class EvaluacionPsicosocialForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         input_classes = 'appearance-none block w-full bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-slate-600 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white dark:focus:bg-slate-600 focus:border-blue-500'
-        textarea_classes = input_classes + ' h-24' # Extend input for textarea
+        textarea_classes = input_classes + ' h-24'
 
         for field_name, field in self.fields.items():
             if isinstance(field.widget, forms.Textarea):
@@ -102,12 +99,12 @@ class EvaluacionPsicosocialForm(forms.ModelForm):
     class Meta:
         model = EvaluacionPsicosocial
         fields = [
-            'atleta', 'coordinador_evaluador', 'fecha_evaluacion',
+            'atleta', 'evaluador', 'fecha_evaluacion',
             'compromiso', 'puntualidad', 'companerismo',
             'respeto', 'manejo_frustracion', 'observaciones_conductuales'
         ]
         widgets = {
-            'fecha_evaluacion': forms.DateInput(attrs={'type': 'date'}), # Type date preserved
+            'fecha_evaluacion': forms.DateInput(attrs={'type': 'date'}),
         }
 
 

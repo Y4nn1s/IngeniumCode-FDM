@@ -2,29 +2,31 @@ import pytest
 from datetime import date
 from decimal import Decimal
 from django.urls import reverse
-from finanzas.models import Pago
+from finanzas.models import Pago, CAT_Banco, CAT_EstadoPago, CAT_MetodoPago
 
 
 @pytest.mark.integration
 def test_notificar_pago_aprobado_envia_mensaje_con_formato_correcto(
     representante_con_user, comprobante_pdf, mock_telegram
 ):
-    """El mensaje de aprobación debe incluir número de pago y montos formateados."""
     from finanzas.telegram_bot import notificar_pago_aprobado
     
+    banco, _ = CAT_Banco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
+    metodo, _ = CAT_MetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
+    est_apr, _ = CAT_EstadoPago.objects.get_or_create(codigo='APROBADO', defaults={'descripcion': 'Aprobado'})
+
     pago = Pago.objects.create(
         representante=representante_con_user,
         concepto='Pago de Junio 2026',
-        metodo='PAGO_MOVIL',
-        banco_emisor='0134',
+        metodo=metodo,
+        banco_emisor=banco,
         referencia='12345689',
         monto_bs=Decimal('500.00'),
         tasa_bcv=Decimal('50.0000'),
         fecha_pago='2026-06-08',
         comprobante=comprobante_pdf,
-        estado='APROBADO'
+        estado=est_apr
     )
-    # save() calcula el monto_usd en base a monto_bs y tasa_bcv
     pago.refresh_from_db()
     
     notificar_pago_aprobado(pago)
@@ -33,35 +35,37 @@ def test_notificar_pago_aprobado_envia_mensaje_con_formato_correcto(
     texto = mock_telegram[0]['texto']
     assert f'#{pago.id}' in texto
     assert 'APROBADO' in texto
-    assert 'Bs' in texto  # Formato Bs presente
-    assert '$' in texto   # Formato USD presente
+    assert 'Bs' in texto
+    assert '$' in texto
 
 
 @pytest.mark.integration
 def test_notificar_pago_sin_chat_id_no_lanza_error(
     representante_con_user, comprobante_pdf, mock_telegram
 ):
-    """Si representante.telegram_chat_id está vacío, no crashea."""
     from finanzas.telegram_bot import notificar_pago_aprobado
     
     representante_con_user.telegram_chat_id = ''
     representante_con_user.save()
     
+    banco, _ = CAT_Banco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
+    metodo, _ = CAT_MetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
+    est_apr, _ = CAT_EstadoPago.objects.get_or_create(codigo='APROBADO', defaults={'descripcion': 'Aprobado'})
+
     pago = Pago.objects.create(
         representante=representante_con_user,
         concepto='Pago de Junio 2026',
-        metodo='PAGO_MOVIL',
-        banco_emisor='0134',
+        metodo=metodo,
+        banco_emisor=banco,
         referencia='12345690',
         monto_bs=Decimal('500.00'),
         tasa_bcv=Decimal('50.0000'),
         fecha_pago='2026-06-08',
         comprobante=comprobante_pdf,
-        estado='APROBADO'
+        estado=est_apr
     )
     pago.refresh_from_db()
     
-    # No debe lanzar error/crashear
     success = notificar_pago_aprobado(pago)
     assert success is False
     assert len(mock_telegram) == 0
@@ -71,7 +75,6 @@ def test_notificar_pago_sin_chat_id_no_lanza_error(
 def test_descargar_ficha_tecnica_pdf_retorna_content_type_pdf(
     client_representante, atleta_de
 ):
-    """GET a DescargarFichaPDF retorna Content-Type: application/pdf."""
     url = reverse('atleta_ficha_pdf', args=[atleta_de.id])
     response = client_representante.get(url)
     assert response.status_code == 200
@@ -82,9 +85,8 @@ def test_descargar_ficha_tecnica_pdf_retorna_content_type_pdf(
 def test_representante_no_puede_descargar_ficha_de_atleta_ajeno(
     client_representante, categoria
 ):
-    """Representante intenta descargar PDF de atleta de otro -> 403."""
     from django.contrib.auth.models import User
-    from filiacion.models import Representante, Atleta
+    from filiacion.models import Representante, Atleta, CAT_Posicion, CAT_Lateralidad
     
     otro_user = User.objects.create_user(username='otherrep5', password='ClaveSegura123!')
     otro_rep = Representante.objects.create(
@@ -92,11 +94,14 @@ def test_representante_no_puede_descargar_ficha_de_atleta_ajeno(
         telefono_principal='04141112233', direccion_habitacion='Caracas',
         correo_electronico='other5@test.com', usuario=otro_user
     )
+    pos, _ = CAT_Posicion.objects.get_or_create(codigo='DEL', defaults={'nombre': 'Delantero'})
+    lat, _ = CAT_Lateralidad.objects.get_or_create(nombre='Derecho')
+
     atleta_ajeno = Atleta.objects.create(
         representante=otro_rep, categoria=categoria,
         nombres='Juan', apellidos='Gomez',
         fecha_nacimiento=date(2017, 5, 20),
-        lateralidad='DERECHO', posicion='DEL'
+        lateralidad=lat, posicion=pos
     )
     
     url = reverse('atleta_ficha_pdf', args=[atleta_ajeno.id])

@@ -1,7 +1,12 @@
 from django.contrib import admin
-from .models import Coordinador, Entrenador, Delegado, Categoria
+from .models import (
+    CAT_Cargo, CAT_Licencia, CAT_Genero,
+    Personal, Categoria, CategoriaEntrenadores
+)
 
-admin.site.register(Coordinador)
-admin.site.register(Entrenador)
-admin.site.register(Delegado)
+admin.site.register(CAT_Cargo)
+admin.site.register(CAT_Licencia)
+admin.site.register(CAT_Genero)
+admin.site.register(Personal)
 admin.site.register(Categoria)
+admin.site.register(CategoriaEntrenadores)

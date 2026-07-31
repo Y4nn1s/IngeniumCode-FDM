@@ -42,7 +42,7 @@
                     {% elif partido.resultado == 'DERROTA' %} bg-red-100 text-red-800
                     {% else %} bg-yellow-100 text-yellow-800
                     {% endif %}">
-                    {{ partido.get_resultado_display }}
+                    {{ partido.resultado }}
                 </span>
             </div>
         </div>
@@ -52,11 +52,11 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div class="bg-white rounded-lg shadow p-4 text-center">
             <p class="text-xs text-gray-500 uppercase tracking-wider">Tipo</p>
-            <p class="text-lg font-semibold text-gray-800">{{ partido.get_tipo_display }}</p>
+            <p class="text-lg font-semibold text-gray-800">{{ partido.tipo.nombre|default:"-" }}</p>
         </div>
         <div class="bg-white rounded-lg shadow p-4 text-center">
             <p class="text-xs text-gray-500 uppercase tracking-wider">Condición</p>
-            <p class="text-lg font-semibold text-gray-800">{{ partido.get_condicion_display }}</p>
+            <p class="text-lg font-semibold text-gray-800">{{ partido.condicion.nombre|default:"-" }}</p>
         </div>
         <div class="bg-white rounded-lg shadow p-4 text-center">
             <p class="text-xs text-gray-500 uppercase tracking-wider">Titulares</p>
@@ -110,7 +110,7 @@
                                         {{ est.atleta.apellidos }}, {{ est.atleta.nombres }}
                                     </a>
                                     <span class="ml-2 px-2 py-0.5 text-xs font-semibold rounded-full bg-fdm-blue/10 text-fdm-blue">
-                                        {{ est.atleta.get_posicion_display }}
+                                        {{ est.atleta.posicion.nombre|default:"-" }}
                                     </span>
                                 </div>
                             </div>
