@@ -6,11 +6,12 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from core.models import CatBanco, CatEstadoPago, CatMetodoPago
 
 User = get_user_model()
 
 
-# === Catálogos Base (3NF) ===
+# === Catálogos Base Locales (Se conservan por DATA PRESERVATION - no eliminar) ===
 
 class CAT_Banco(models.Model):
     codigo_sudeban = models.CharField(max_length=4, unique=True)
@@ -55,13 +56,17 @@ TOLERANCIA_COBERTURA_USD = Decimal('0.50')
 
 # === Modelo TasaBCV ===
 class TasaBCV(models.Model):
+    """
+    Registro histórico de la tasa BCV (Bolívares por USD).
+    Campos según ERD V2.2: fecha (UK), tasa, fuente.
+    """
     fecha = models.DateField(unique=True, db_index=True)
     tasa = models.DecimalField(
         max_digits=12, decimal_places=4,
         help_text="Bolívares por USD"
     )
     fuente = models.CharField(
-        max_length=20, default='dolarapi',
+        max_length=50, default='dolarapi',
         help_text="Origen: dolarapi, manual, etc."
     )
     capturada_en = models.DateTimeField(auto_now_add=True)
@@ -85,10 +90,38 @@ class Pago(models.Model):
         help_text="Auto-generado desde mensualidades cubiertas, o texto libre"
     )
 
-    metodo = models.ForeignKey(CAT_MetodoPago, on_delete=models.PROTECT, related_name='pagos')
-    banco_emisor = models.ForeignKey(CAT_Banco, on_delete=models.PROTECT, null=True, blank=True, related_name='pagos')
+    # --- Campos legacy (catálogos locales, conservados para no perder datos) ---
+    metodo_legacy = models.ForeignKey(
+        CAT_MetodoPago, on_delete=models.PROTECT,
+        related_name='pagos_legacy', null=True, blank=True,
+    )
+    banco_emisor_legacy = models.ForeignKey(
+        CAT_Banco, on_delete=models.PROTECT,
+        related_name='pagos_legacy', null=True, blank=True,
+    )
+    estado_legacy = models.ForeignKey(
+        CAT_EstadoPago, on_delete=models.PROTECT,
+        related_name='pagos_legacy', null=True, blank=True,
+    )
+
+    # --- Nuevas FK hacia catálogos centralizados de core (ERD V2.2) ---
+    metodo = models.ForeignKey(
+        CatMetodoPago, on_delete=models.PROTECT,
+        related_name='pagos', null=True, blank=True,
+    )
+    banco_emisor = models.ForeignKey(
+        CatBanco, on_delete=models.PROTECT,
+        related_name='pagos', null=True, blank=True,
+    )
+    estado = models.ForeignKey(
+        CatEstadoPago, on_delete=models.PROTECT,
+        related_name='pagos', null=True, blank=True,
+    )
+
     referencia = models.CharField(max_length=30, blank=True, db_index=True)
 
+    # --- INMUTABILIDAD FINANCIERA (LEY VENEZOLANA / SENIAT) ---
+    # Estos campos NO se normalizan: son snapshots históricos de auditoría.
     monto_bs = models.DecimalField(max_digits=14, decimal_places=2)
     tasa_bcv = models.DecimalField(
         max_digits=12, decimal_places=4, null=True, blank=True
@@ -103,7 +136,6 @@ class Pago(models.Model):
     comprobante = models.FileField(upload_to='pagos/%Y/%m/')
     comprobante_hash = models.CharField(max_length=64, blank=True, db_index=True)
 
-    estado = models.ForeignKey(CAT_EstadoPago, on_delete=models.PROTECT, related_name='pagos')
     motivo_rechazo = models.TextField(blank=True)
 
     revisado_por = models.ForeignKey(
@@ -158,6 +190,12 @@ class Pago(models.Model):
 
 # === Modelo Mensualidad ===
 class Mensualidad(models.Model):
+    """
+    Representa el compromiso de pago mensual de un atleta.
+    NOTA 3NF: No existe campo 'pagada: BOOLEAN' porque sería una dependencia
+    transitiva — la solvencia se calcula a través del estado del pago asociado.
+    Se expone como propiedad calculada 'esta_pagada'.
+    """
     atleta = models.ForeignKey(
         'filiacion.Atleta', on_delete=models.CASCADE, related_name='mensualidades'
     )
@@ -189,10 +227,12 @@ class Mensualidad(models.Model):
 
     @property
     def esta_pagada(self):
+        """Calcula si está pagada vía el estado del pago asociado (3NF)."""
         return self.pago is not None and self.pago.estado and self.pago.estado.codigo == 'APROBADO'
 
     @property
     def pagada(self):
+        """Alias de compatibilidad hacia esta_pagada."""
         return self.esta_pagada
 
     @property
@@ -209,16 +249,21 @@ class Mensualidad(models.Model):
         return f"{self.atleta} - {self.periodo_mes}/{self.periodo_anio}"
 
 
-# === Modelo PagoAuditLog ===
+# === Modelo PagoAuditLog (Event Sourcing) ===
 class PagoAuditLog(models.Model):
+    """
+    Registro inmutable de eventos sobre pagos (Event Sourcing).
+    NOTA ARQUITECTURAL: estado_anterior y estado_nuevo son CharField deliberadamente.
+    Garantizan inmutabilidad histórica (snapshots) aunque el catálogo cambie.
+    """
     pago = models.ForeignKey(Pago, on_delete=models.CASCADE, related_name='audit_log')
+    actor = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='pagos_audit'
+    )
     accion = models.CharField(max_length=50)
     estado_anterior = models.CharField(max_length=20, blank=True)
     estado_nuevo = models.CharField(max_length=20, blank=True)
-    actor = models.ForeignKey(
-        User, on_delete=models.PROTECT, null=True, blank=True,
-        related_name='pagos_audit'
-    )
     detalles = models.JSONField(default=dict, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
 

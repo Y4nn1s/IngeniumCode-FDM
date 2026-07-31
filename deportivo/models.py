@@ -1,8 +1,9 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from core.models import CatTipoPartido, CatCondicionPartido
 
 
-# === Catálogos Base (3NF) ===
+# === Catálogos Base Locales (Se conservan por DATA PRESERVATION - no eliminar) ===
 
 class CAT_TipoPartido(models.Model):
     codigo = models.CharField(max_length=20, unique=True)
@@ -40,8 +41,39 @@ class Partido(models.Model):
     )
     fecha_hora = models.DateTimeField()
     equipo_rival = models.CharField(max_length=100)
-    tipo = models.ForeignKey(CAT_TipoPartido, on_delete=models.PROTECT, related_name='partidos')
-    condicion = models.ForeignKey(CAT_CondicionPartido, on_delete=models.PROTECT, related_name='partidos')
+
+    # --- Campos legacy (catálogos locales, se conservan para no perder datos) ---
+    tipo_legacy = models.ForeignKey(
+        CAT_TipoPartido,
+        on_delete=models.PROTECT,
+        related_name='partidos_legacy',
+        null=True,
+        blank=True,
+    )
+    condicion_legacy = models.ForeignKey(
+        CAT_CondicionPartido,
+        on_delete=models.PROTECT,
+        related_name='partidos_legacy',
+        null=True,
+        blank=True,
+    )
+
+    # --- Nuevas FK hacia catálogos centralizados de core (ERD V2.2) ---
+    tipo = models.ForeignKey(
+        CatTipoPartido,
+        on_delete=models.PROTECT,
+        related_name='partidos',
+        null=True,
+        blank=True,
+    )
+    condicion = models.ForeignKey(
+        CatCondicionPartido,
+        on_delete=models.PROTECT,
+        related_name='partidos',
+        null=True,
+        blank=True,
+    )
+
     goles_favor_escuela = models.PositiveIntegerField(default=0)
     goles_contra_rival = models.PositiveIntegerField(default=0)
     procesado = models.BooleanField(default=False)
@@ -52,6 +84,10 @@ class Partido(models.Model):
 
     @property
     def resultado(self):
+        """
+        Propiedad calculada — NO es un campo de base de datos.
+        El resultado se infiere de goles_favor_escuela vs goles_contra_rival (3NF).
+        """
         if self.goles_favor_escuela > self.goles_contra_rival:
             return 'VICTORIA'
         elif self.goles_favor_escuela < self.goles_contra_rival:
