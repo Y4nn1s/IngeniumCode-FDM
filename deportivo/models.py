@@ -1,44 +1,66 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-# --- Choices ---
-TIPO_PARTIDO_CHOICES = [
-    ('AMISTOSO', 'Amistoso'),
-    ('OFICIAL', 'Oficial'),
-]
 
-CONDICION_PARTIDO_CHOICES = [
-    ('CASA', 'Casa'),
-    ('VISITANTE', 'Visitante'),
-]
+# === Catálogos Base (3NF) ===
 
-RESULTADO_PARTIDO_CHOICES = [
-    ('VICTORIA', 'Victoria'),
-    ('EMPATE', 'Empate'),
-    ('DERROTA', 'Derrota'),
-]
+class CAT_TipoPartido(models.Model):
+    codigo = models.CharField(max_length=20, unique=True)
+    nombre = models.CharField(max_length=50)
 
-# --- Modelos ---
+    class Meta:
+        verbose_name = 'Catálogo - Tipo de Partido'
+        verbose_name_plural = 'Catálogos - Tipos de Partidos'
+
+    def __str__(self):
+        return self.nombre
+
+
+class CAT_CondicionPartido(models.Model):
+    codigo = models.CharField(max_length=20, unique=True)
+    nombre = models.CharField(max_length=50)
+
+    class Meta:
+        verbose_name = 'Catálogo - Condición de Partido'
+        verbose_name_plural = 'Catálogos - Condiciones de Partidos'
+
+    def __str__(self):
+        return self.nombre
+
+
+# === Modelos de Negocio ===
 
 class Partido(models.Model):
     categoria = models.ForeignKey(
         'administracion.Categoria',
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='partidos',
-        null=True,  # Temporal: remover después de asignar categorías a partidos existentes
+        null=True,
         blank=True
     )
     fecha_hora = models.DateTimeField()
     equipo_rival = models.CharField(max_length=100)
-    tipo = models.CharField(max_length=10, choices=TIPO_PARTIDO_CHOICES)
-    condicion = models.CharField(max_length=10, choices=CONDICION_PARTIDO_CHOICES)
+    tipo = models.ForeignKey(CAT_TipoPartido, on_delete=models.PROTECT, related_name='partidos')
+    condicion = models.ForeignKey(CAT_CondicionPartido, on_delete=models.PROTECT, related_name='partidos')
     goles_favor_escuela = models.PositiveIntegerField(default=0)
     goles_contra_rival = models.PositiveIntegerField(default=0)
-    resultado = models.CharField(max_length=10, choices=RESULTADO_PARTIDO_CHOICES, blank=True)
     procesado = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = 'Partido'
+        verbose_name_plural = 'Partidos'
+
+    @property
+    def resultado(self):
+        if self.goles_favor_escuela > self.goles_contra_rival:
+            return 'VICTORIA'
+        elif self.goles_favor_escuela < self.goles_contra_rival:
+            return 'DERROTA'
+        return 'EMPATE'
 
     def __str__(self):
         return f"Partido vs {self.equipo_rival} el {self.fecha_hora.date()}"
+
 
 class Estadistica(models.Model):
     atleta = models.ForeignKey('filiacion.Atleta', on_delete=models.CASCADE, related_name='estadisticas')
@@ -49,38 +71,37 @@ class Estadistica(models.Model):
     asistencias = models.PositiveIntegerField(default=0)
     tarjetas_amarillas = models.PositiveIntegerField(default=0)
     tarjetas_rojas = models.PositiveIntegerField(default=0)
-    calificacion_dt = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])
+    calificacion_dt = models.DecimalField(
+        max_digits=3, decimal_places=1,
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
 
     class Meta:
+        verbose_name = 'Estadística'
+        verbose_name_plural = 'Estadísticas'
         unique_together = ('atleta', 'partido')
 
     def __str__(self):
         return f"Estadística de {self.atleta} en partido vs {self.partido.equipo_rival}"
 
-class Puntuacion(models.IntegerChoices):
-    UNO = 1, '1'
-    DOS = 2, '2'
-    TRES = 3, '3'
-    CUATRO = 4, '4'
-    CINCO = 5, '5'
-    SEIS = 6, '6'
-    SIETE = 7, '7'
-    OCHO = 8, '8'
-    NUEVE = 9, '9'
-    DIEZ = 10, '10'
-
 
 class EvaluacionTecnica(models.Model):
     atleta = models.ForeignKey('filiacion.Atleta', on_delete=models.CASCADE, related_name='evaluaciones_tecnicas')
-    entrenador = models.ForeignKey('administracion.Entrenador', on_delete=models.SET_NULL, null=True, related_name='evaluaciones_realizadas')
+    entrenador = models.ForeignKey(
+        'administracion.Personal', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='evaluaciones_tecnicas_realizadas'
+    )
     fecha_evaluacion = models.DateField()
-    velocidad = models.IntegerField(choices=Puntuacion.choices)
-    resistencia = models.IntegerField(choices=Puntuacion.choices)
-    control_balon = models.IntegerField(choices=Puntuacion.choices)
-    pase_corto = models.IntegerField(choices=Puntuacion.choices)
-    tiro = models.IntegerField(choices=Puntuacion.choices)
-    inteligencia_tactica = models.IntegerField(choices=Puntuacion.choices)
+    control_balon = models.DecimalField(max_digits=3, decimal_places=1, validators=[MinValueValidator(1), MaxValueValidator(10)])
+    conduccion = models.DecimalField(max_digits=3, decimal_places=1, validators=[MinValueValidator(1), MaxValueValidator(10)])
+    pase_corto = models.DecimalField(max_digits=3, decimal_places=1, validators=[MinValueValidator(1), MaxValueValidator(10)])
+    tiro = models.DecimalField(max_digits=3, decimal_places=1, validators=[MinValueValidator(1), MaxValueValidator(10)])
+    inteligencia_tactica = models.DecimalField(max_digits=3, decimal_places=1, validators=[MinValueValidator(1), MaxValueValidator(10)])
     observaciones = models.TextField(blank=True)
+
+    class Meta:
+        verbose_name = 'Evaluación Técnica'
+        verbose_name_plural = 'Evaluaciones Técnicas'
 
     def __str__(self):
         return f"Evaluación Técnica de {self.atleta} ({self.fecha_evaluacion})"
@@ -88,14 +109,21 @@ class EvaluacionTecnica(models.Model):
 
 class EvaluacionPsicosocial(models.Model):
     atleta = models.ForeignKey('filiacion.Atleta', on_delete=models.CASCADE, related_name='evaluaciones_psicosociales')
-    coordinador_evaluador = models.ForeignKey('administracion.Coordinador', on_delete=models.SET_NULL, null=True, related_name='evaluaciones_psicosociales_realizadas')
+    evaluador = models.ForeignKey(
+        'administracion.Personal', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='evaluaciones_psicosociales_realizadas'
+    )
     fecha_evaluacion = models.DateField()
-    compromiso = models.IntegerField(choices=Puntuacion.choices)
-    puntualidad = models.IntegerField(choices=Puntuacion.choices)
-    companerismo = models.IntegerField(choices=Puntuacion.choices)
-    respeto = models.IntegerField(choices=Puntuacion.choices)
-    manejo_frustracion = models.IntegerField(choices=Puntuacion.choices)
+    compromiso = models.DecimalField(max_digits=3, decimal_places=1, validators=[MinValueValidator(1), MaxValueValidator(10)])
+    puntualidad = models.DecimalField(max_digits=3, decimal_places=1, validators=[MinValueValidator(1), MaxValueValidator(10)])
+    companerismo = models.DecimalField(max_digits=3, decimal_places=1, validators=[MinValueValidator(1), MaxValueValidator(10)])
+    respeto = models.DecimalField(max_digits=3, decimal_places=1, validators=[MinValueValidator(1), MaxValueValidator(10)])
+    manejo_frustracion = models.DecimalField(max_digits=3, decimal_places=1, validators=[MinValueValidator(1), MaxValueValidator(10)])
     observaciones_conductuales = models.TextField(blank=True)
+
+    class Meta:
+        verbose_name = 'Evaluación Psicosocial'
+        verbose_name_plural = 'Evaluaciones Psicosociales'
 
     def __str__(self):
         return f"Evaluación Psicosocial de {self.atleta} ({self.fecha_evaluacion})"

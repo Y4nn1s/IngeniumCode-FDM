@@ -5,6 +5,7 @@ from django.contrib.auth.signals import (
     user_logged_out,
     user_login_failed,
 )
+from django.db.models.signals import post_migrate
 from django.dispatch import receiver
 
 logger = logging.getLogger('security.ratelimit')
@@ -46,3 +47,13 @@ def on_user_login_failed(sender, credentials, request, **kwargs):
         credentials.get('username', ''),
         get_client_ip(request),
     )
+
+
+@receiver(post_migrate)
+def crear_grupos_sistema(sender, **kwargs):
+    """Crea automáticamente los 4 grupos de roles del sistema al migrar."""
+    if sender.name == 'accounts':
+        from django.contrib.auth.models import Group
+        grupos = ['Tesoreria', 'CoordinadorGeneral', 'CoordinadorDeportivo', 'Entrenador']
+        for g in grupos:
+            Group.objects.get_or_create(name=g)

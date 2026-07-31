@@ -1,24 +1,27 @@
 import pytest
 from decimal import Decimal
 from django.urls import reverse
-from finanzas.models import Pago, PagoAuditLog, Mensualidad
+from finanzas.models import Pago, PagoAuditLog, Mensualidad, CAT_Banco, CAT_EstadoPago, CAT_MetodoPago
 
 
 @pytest.mark.integration
 def test_tesorero_rechaza_pago_cambia_estado_a_rechazado(
     client_tesorero, representante_con_user, mensualidad_pendiente, comprobante_pdf
 ):
-    """Estado pasa de PENDIENTE -> RECHAZADO."""
+    banco, _ = CAT_Banco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
+    metodo, _ = CAT_MetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
+    est_pen, _ = CAT_EstadoPago.objects.get_or_create(codigo='PENDIENTE', defaults={'descripcion': 'Pendiente'})
+
     pago = Pago.objects.create(
         representante=representante_con_user,
         concepto='Test',
-        metodo='PAGO_MOVIL',
-        banco_emisor='0134',
+        metodo=metodo,
+        banco_emisor=banco,
         referencia='12345685',
         monto_bs=Decimal('500.00'),
         fecha_pago='2026-06-08',
         comprobante=comprobante_pdf,
-        estado='PENDIENTE'
+        estado=est_pen
     )
     mensualidad_pendiente.pago = pago
     mensualidad_pendiente.save()
@@ -27,24 +30,27 @@ def test_tesorero_rechaza_pago_cambia_estado_a_rechazado(
     response = client_tesorero.post(url, {'motivo': 'Comprobante borroso.'})
     assert response.status_code == 302
     pago.refresh_from_db()
-    assert pago.estado == 'RECHAZADO'
+    assert pago.estado.codigo == 'RECHAZADO'
 
 
 @pytest.mark.integration
 def test_rechazar_pago_desvincula_mensualidades(
     client_tesorero, representante_con_user, mensualidad_pendiente, comprobante_pdf
 ):
-    """pago.mensualidades_cubiertas.count() == 0 después del rechazo."""
+    banco, _ = CAT_Banco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
+    metodo, _ = CAT_MetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
+    est_pen, _ = CAT_EstadoPago.objects.get_or_create(codigo='PENDIENTE', defaults={'descripcion': 'Pendiente'})
+
     pago = Pago.objects.create(
         representante=representante_con_user,
         concepto='Test',
-        metodo='PAGO_MOVIL',
-        banco_emisor='0134',
+        metodo=metodo,
+        banco_emisor=banco,
         referencia='12345686',
         monto_bs=Decimal('500.00'),
         fecha_pago='2026-06-08',
         comprobante=comprobante_pdf,
-        estado='PENDIENTE'
+        estado=est_pen
     )
     mensualidad_pendiente.pago = pago
     mensualidad_pendiente.save()
@@ -54,24 +60,27 @@ def test_rechazar_pago_desvincula_mensualidades(
     
     mensualidad_pendiente.refresh_from_db()
     assert mensualidad_pendiente.pago is None
-    assert mensualidad_pendiente.pagada is False
+    assert mensualidad_pendiente.esta_pagada is False
 
 
 @pytest.mark.integration
 def test_rechazar_pago_guarda_motivo_y_genera_audit_log(
     client_tesorero, representante_con_user, mensualidad_pendiente, comprobante_pdf
 ):
-    """motivo_rechazo se guarda + AuditLog accion='RECHAZADO'."""
+    banco, _ = CAT_Banco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
+    metodo, _ = CAT_MetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
+    est_pen, _ = CAT_EstadoPago.objects.get_or_create(codigo='PENDIENTE', defaults={'descripcion': 'Pendiente'})
+
     pago = Pago.objects.create(
         representante=representante_con_user,
         concepto='Test',
-        metodo='PAGO_MOVIL',
-        banco_emisor='0134',
+        metodo=metodo,
+        banco_emisor=banco,
         referencia='12345687',
         monto_bs=Decimal('500.00'),
         fecha_pago='2026-06-08',
         comprobante=comprobante_pdf,
-        estado='PENDIENTE'
+        estado=est_pen
     )
     mensualidad_pendiente.pago = pago
     mensualidad_pendiente.save()
@@ -91,17 +100,20 @@ def test_rechazar_pago_guarda_motivo_y_genera_audit_log(
 def test_rechazar_pago_dispara_notificacion_telegram_de_rechazo(
     client_tesorero, representante_con_user, mensualidad_pendiente, comprobante_pdf, mock_telegram
 ):
-    """Mock recibe llamada con texto que contiene 'RECHAZADO'."""
+    banco, _ = CAT_Banco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
+    metodo, _ = CAT_MetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
+    est_pen, _ = CAT_EstadoPago.objects.get_or_create(codigo='PENDIENTE', defaults={'descripcion': 'Pendiente'})
+
     pago = Pago.objects.create(
         representante=representante_con_user,
         concepto='Test',
-        metodo='PAGO_MOVIL',
-        banco_emisor='0134',
+        metodo=metodo,
+        banco_emisor=banco,
         referencia='12345688',
         monto_bs=Decimal('500.00'),
         fecha_pago='2026-06-08',
         comprobante=comprobante_pdf,
-        estado='PENDIENTE'
+        estado=est_pen
     )
     mensualidad_pendiente.pago = pago
     mensualidad_pendiente.save()

@@ -1,6 +1,12 @@
-# finanzas/admin.py
 from django.contrib import admin
-from .models import Pago, PagoAuditLog, Mensualidad, Patrocinante, Aporte, TasaBCV
+from .models import (
+    Pago, PagoAuditLog, Mensualidad, Patrocinante, Aporte, TasaBCV,
+    CAT_Banco, CAT_EstadoPago, CAT_MetodoPago
+)
+
+admin.site.register(CAT_Banco)
+admin.site.register(CAT_EstadoPago)
+admin.site.register(CAT_MetodoPago)
 
 
 class PagoAuditLogInline(admin.TabularInline):
@@ -38,9 +44,9 @@ class PagoAdmin(admin.ModelAdmin):
 
 @admin.register(Mensualidad)
 class MensualidadAdmin(admin.ModelAdmin):
-    list_display = ('atleta', 'periodo_mes', 'periodo_anio', 'monto_usd', 'fecha_vencimiento', 'pagada')
-    list_filter = ('pagada', 'periodo_anio', 'periodo_mes')
-    search_fields = ('atleta__nombres', 'atleta__apellidos', 'atleta__cedula_escolar')
+    list_display = ('atleta', 'periodo_mes', 'periodo_anio', 'monto_usd', 'fecha_vencimiento', 'esta_pagada')
+    list_filter = ('periodo_anio', 'periodo_mes')
+    search_fields = ('atleta__nombres', 'atleta__apellidos', 'atleta__cedula_identidad')
     date_hierarchy = 'fecha_vencimiento'
 
 

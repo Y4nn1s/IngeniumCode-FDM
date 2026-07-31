@@ -5,47 +5,28 @@ from django.contrib.auth.models import User, Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 
-from filiacion.models import Representante, Atleta
-from administracion.models import Categoria
+from filiacion.models import Representante, Atleta, CAT_Posicion, CAT_Lateralidad
+from administracion.models import Categoria, Personal, CAT_Cargo, CAT_Genero
 from finanzas.models import Mensualidad, Pago
 
 
-# ═══════════════════════════════════════════════════════════════
-# Mocks automáticos para servicios externos
-# ═══════════════════════════════════════════════════════════════
-
 @pytest.fixture
 def mock_telegram(monkeypatch):
-    """Mockea Telegram. Retorna lista de mensajes 'enviados' para inspección."""
     enviadas = []
-    
     def fake_enviar_mensaje(chat_id, texto):
         enviadas.append({'chat_id': chat_id, 'texto': texto})
         return True
-    
-    monkeypatch.setattr(
-        'finanzas.telegram_bot.enviar_mensaje',
-        fake_enviar_mensaje
-    )
+    monkeypatch.setattr('finanzas.telegram_bot.enviar_mensaje', fake_enviar_mensaje)
     return enviadas
 
 
 @pytest.fixture(autouse=True)
 def mock_tasa_bcv(monkeypatch):
-    """Retorna tasa BCV fija de 50.0000 Bs por USD en todos los tests."""
-    monkeypatch.setattr(
-        'finanzas.services.tasa_bcv.obtener_tasa',
-        lambda fecha=None: Decimal('50.0000')
-    )
+    monkeypatch.setattr('finanzas.services.tasa_bcv.obtener_tasa', lambda fecha=None: Decimal('50.0000'))
 
-
-# ═══════════════════════════════════════════════════════════════
-# Fixtures de usuarios y roles
-# ═══════════════════════════════════════════════════════════════
 
 @pytest.fixture
 def representante_con_user(db):
-    """Crea User + Representante asociado vía OneToOne."""
     user = User.objects.create_user(
         username='12345678',
         password='ClaveSegura123!',
@@ -66,12 +47,7 @@ def representante_con_user(db):
 
 @pytest.fixture
 def tesorero(db):
-    """Crea User en grupo Tesoreria."""
-    user = User.objects.create_user(
-        username='tesorero01',
-        password='ClaveSegura123!',
-        is_staff=True,
-    )
+    user = User.objects.create_user(username='tesorero01', password='ClaveSegura123!', is_staff=True)
     grupo, _ = Group.objects.get_or_create(name='Tesoreria')
     user.groups.add(grupo)
     return user
@@ -79,12 +55,7 @@ def tesorero(db):
 
 @pytest.fixture
 def coord_general(db):
-    """Crea User en grupo CoordinadorGeneral."""
-    user = User.objects.create_user(
-        username='coord01',
-        password='ClaveSegura123!',
-        is_staff=True,
-    )
+    user = User.objects.create_user(username='coord01', password='ClaveSegura123!', is_staff=True)
     grupo, _ = Group.objects.get_or_create(name='CoordinadorGeneral')
     user.groups.add(grupo)
     return user
@@ -92,94 +63,74 @@ def coord_general(db):
 
 @pytest.fixture
 def entrenador_user(db):
-    """Crea User en grupo Entrenador."""
-    user = User.objects.create_user(
-        username='entr01',
-        password='ClaveSegura123!',
-        is_staff=True,
-    )
+    user = User.objects.create_user(username='entr01', password='ClaveSegura123!', is_staff=True)
     grupo, _ = Group.objects.get_or_create(name='Entrenador')
     user.groups.add(grupo)
     return user
 
 
-# ═══════════════════════════════════════════════════════════════
-# Fixtures de dominio
-# ═══════════════════════════════════════════════════════════════
-
 @pytest.fixture
 def categoria(db):
-    """Crea una Categoria mínima."""
+    cargo, _ = CAT_Cargo.objects.get_or_create(nombre='Deportivo')
+    gen, _ = CAT_Genero.objects.get_or_create(nombre='Masculino')
+    pers = Personal.objects.create(cargo=cargo, cedula_identidad='V-55555555', nombres='Coord', apellidos='Sup', telefono='04141112233')
     return Categoria.objects.create(
         nombre='Sub-9',
         anio_nacimiento_min=2017,
         anio_nacimiento_max=2018,
-        genero='MASCULINO',
+        genero=gen,
+        coordinador_supervisor=pers,
     )
 
 
 @pytest.fixture
 def atleta_de(representante_con_user, categoria):
-    """Crea un Atleta asociado al representante y categoría."""
+    pos, _ = CAT_Posicion.objects.get_or_create(codigo='DEL', defaults={'nombre': 'Delantero'})
+    lat, _ = CAT_Lateralidad.objects.get_or_create(nombre='Derecho')
     return Atleta.objects.create(
         representante=representante_con_user,
         categoria=categoria,
         nombres='Pedro', apellidos='Pérez',
         fecha_nacimiento=date(2017, 3, 15),
-        lateralidad='DERECHO', posicion='DEL',
+        lateralidad=lat, posicion=pos,
     )
 
 
 @pytest.fixture
 def mensualidad_pendiente(atleta_de):
-    """Crea una Mensualidad pendiente de 10 USD para el atleta."""
     return Mensualidad.objects.create(
         atleta=atleta_de,
         periodo_mes=6,
         periodo_anio=2026,
         monto_usd=Decimal('10.00'),
         fecha_vencimiento=timezone.now().date() + timedelta(days=15),
-        pagada=False,
     )
 
 
 @pytest.fixture
 def comprobante_pdf():
-    """SimpleUploadedFile PDF mock para subir como comprobante."""
-    return SimpleUploadedFile(
-        'comprobante.pdf',
-        b'contenido_pdf_mock',
-        content_type='application/pdf',
-    )
+    return SimpleUploadedFile('comprobante.pdf', b'contenido_pdf_mock', content_type='application/pdf')
 
-
-# ═══════════════════════════════════════════════════════════════
-# Fixtures de clientes Django logueados
-# ═══════════════════════════════════════════════════════════════
 
 @pytest.fixture
 def client_representante(client, representante_con_user):
-    """Cliente Django logueado como representante."""
-    client.force_login(representante_con_user.usuario)
+    client.login(username='12345678', password='ClaveSegura123!')
     return client
 
 
 @pytest.fixture
 def client_tesorero(client, tesorero):
-    """Cliente Django logueado como tesorero."""
-    client.force_login(tesorero)
+    client.login(username='tesorero01', password='ClaveSegura123!')
     return client
 
 
 @pytest.fixture
 def client_coord_general(client, coord_general):
-    """Cliente Django logueado como CoordinadorGeneral."""
-    client.force_login(coord_general)
+    client.login(username='coord01', password='ClaveSegura123!')
     return client
 
 
 @pytest.fixture
 def client_entrenador(client, entrenador_user):
-    """Cliente Django logueado como Entrenador."""
-    client.force_login(entrenador_user)
+    client.login(username='entr01', password='ClaveSegura123!')
     return client

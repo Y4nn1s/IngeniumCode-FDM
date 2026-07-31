@@ -119,15 +119,6 @@ def partido_registrar_resultado(request, pk):
             # Calcular goles a favor desde las estadísticas individuales
             partido.goles_favor_escuela = total_goles_fdm
             
-            # Determinar resultado automáticamente
-            gf = partido.goles_favor_escuela
-            gc = partido.goles_contra_rival
-            if gf > gc:
-                partido.resultado = 'VICTORIA'
-            elif gf < gc:
-                partido.resultado = 'DERROTA'
-            else:
-                partido.resultado = 'EMPATE'
             partido.procesado = True
             partido.save()
             

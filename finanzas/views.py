@@ -1,4 +1,3 @@
-# finanzas/views.py
 import hashlib
 import json
 from decimal import Decimal, ROUND_HALF_UP
@@ -15,12 +14,11 @@ from accounts.decorators import (
     tesoreria_required, representante_required, cualquier_grupo_requerido
 )
 
-from .models import Pago, Mensualidad, PagoAuditLog, TOLERANCIA_COBERTURA_USD
+from filiacion.models import Representante
+from .models import Pago, Mensualidad, PagoAuditLog, TOLERANCIA_COBERTURA_USD, CAT_EstadoPago
 from .forms import ReportarPagoForm, AprobarPagoForm, RechazarPagoForm
 from .telegram_bot import notificar_representante, enviar_mensaje
 
-
-# === Vistas del representante ===
 
 @representante_required
 @ratelimit(key='user', rate='5/h', method='POST', block=True)
@@ -38,6 +36,12 @@ def reportar_pago(request):
                 pago = form.save(commit=False)
                 pago.representante = rep
 
+                estado_pendiente, _ = CAT_EstadoPago.objects.get_or_create(
+                    codigo='PENDIENTE',
+                    defaults={'descripcion': 'Pago reportado en espera de revisión'}
+                )
+                pago.estado = estado_pendiente
+
                 # Hash anti-duplicado
                 sha = hashlib.sha256()
                 for chunk in pago.comprobante.chunks():
@@ -51,7 +55,6 @@ def reportar_pago(request):
 
                 pago.comprobante_hash = comp_hash
 
-                # Construir concepto desde mensualidades seleccionadas
                 mensualidades = form.cleaned_data.get('mensualidades')
                 if mensualidades:
                     etiquetas = [f"{m.atleta.nombres} {m.etiqueta_periodo}" for m in mensualidades]
@@ -68,19 +71,17 @@ def reportar_pago(request):
                     )
                     return render(request, 'finanzas/reportar.html', {'form': form})
 
-                # AuditLog: creación
                 pago.registrar_audit(
                     accion='CREADO',
                     actor=request.user,
                     estado_nuevo='PENDIENTE',
                     detalles={
                         'monto_bs': str(pago.monto_bs),
-                        'metodo': pago.metodo,
+                        'metodo': pago.metodo.nombre if pago.metodo else '',
                         'mensualidades_ids': [m.id for m in mensualidades] if mensualidades else [],
                     }
                 )
 
-                # Vincular mensualidades (sin marcarlas pagadas hasta aprobación)
                 if mensualidades:
                     for m in mensualidades:
                         m.pago = pago
@@ -94,7 +95,6 @@ def reportar_pago(request):
     else:
         form = ReportarPagoForm(representante=rep)
 
-    # Tasa de hoy para mostrar referencia (no rompe si falla)
     from finanzas.services.tasa_bcv import obtener_tasa
     tasa_hoy = obtener_tasa()
 
@@ -112,9 +112,10 @@ def mis_pagos(request):
 
     rep = request.user.representante
     pagos = Pago.objects.filter(representante=rep)
-    mensualidades_pendientes = Mensualidad.objects.filter(
-        atleta__representante=rep, pagada=False
-    ).select_related('atleta')
+    mensualidades_pendientes = [
+        m for m in Mensualidad.objects.filter(atleta__representante=rep).select_related('atleta')
+        if not m.esta_pagada
+    ]
 
     return render(request, 'finanzas/mis_pagos.html', {
         'pagos': pagos,
@@ -122,22 +123,20 @@ def mis_pagos(request):
     })
 
 
-# === Vistas del administrador ===
-
 @cualquier_grupo_requerido('Tesoreria', 'CoordinadorGeneral')
 def bandeja_admin(request):
-    estado = request.GET.get('estado', 'PENDIENTE')
-    if estado not in ['PENDIENTE', 'APROBADO', 'RECHAZADO', 'TODOS']:
-        estado = 'PENDIENTE'
+    estado_cod = request.GET.get('estado', 'PENDIENTE')
+    if estado_cod not in ['PENDIENTE', 'APROBADO', 'RECHAZADO', 'TODOS']:
+        estado_cod = 'PENDIENTE'
 
-    if estado == 'TODOS':
-        pagos = Pago.objects.all().select_related('representante')
+    if estado_cod == 'TODOS':
+        pagos = Pago.objects.all().select_related('representante', 'estado', 'metodo', 'banco_emisor')
     else:
-        pagos = Pago.objects.filter(estado=estado).select_related('representante')
+        pagos = Pago.objects.filter(estado__codigo=estado_cod).select_related('representante', 'estado', 'metodo', 'banco_emisor')
 
     return render(request, 'finanzas/bandeja.html', {
         'pagos': pagos,
-        'estado_actual': estado,
+        'estado_actual': estado_cod,
     })
 
 
@@ -151,10 +150,9 @@ def detalle_admin(request, pk):
         Decimal('0.00')
     )
 
-    # Pre-cargar tasa BCV de la fecha del pago (no rompe si falla)
     tasa_sugerida = None
     fuente_tasa = None
-    if pago.estado == 'PENDIENTE':
+    if pago.estado and pago.estado.codigo == 'PENDIENTE':
         from finanzas.services.tasa_bcv import obtener_tasa
         tasa_sugerida = obtener_tasa(pago.fecha_pago)
         if tasa_sugerida is not None:
@@ -181,7 +179,7 @@ def detalle_admin(request, pk):
 @ratelimit(key='user', rate='30/m', method='POST', block=True)
 def aprobar(request, pk):
     pago = get_object_or_404(Pago, pk=pk)
-    if pago.estado != 'PENDIENTE':
+    if not (pago.estado and pago.estado.codigo == 'PENDIENTE'):
         messages.warning(request, 'Solo se pueden aprobar pagos pendientes.')
         return redirect('finanzas:detalle', pk=pk)
 
@@ -190,12 +188,10 @@ def aprobar(request, pk):
         if form.is_valid():
             tasa = form.cleaned_data['tasa_bcv']
 
-            # Calcular monto USD que se obtendría con esta tasa
             monto_usd_calculado = (pago.monto_bs / tasa).quantize(
                 Decimal('0.01'), rounding=ROUND_HALF_UP
             )
 
-            # Validar cobertura contra mensualidades vinculadas
             mensualidades = pago.mensualidades_cubiertas.all()
             total_esperado = sum(
                 (m.monto_usd for m in mensualidades),
@@ -213,19 +209,14 @@ def aprobar(request, pk):
                 return redirect('finanzas:detalle', pk=pk)
 
             with transaction.atomic():
-                estado_anterior = pago.estado
+                estado_anterior = pago.estado.codigo if pago.estado else ''
+                estado_aprobado, _ = CAT_EstadoPago.objects.get_or_create(codigo='APROBADO')
                 pago.tasa_bcv = tasa
-                pago.estado = 'APROBADO'
+                pago.estado = estado_aprobado
                 pago.revisado_por = request.user
                 pago.revisado_en = timezone.now()
                 pago.save()
 
-                # Marcar mensualidades vinculadas como pagadas (cobertura validada)
-                for m in mensualidades:
-                    m.pagada = True
-                    m.save()
-
-                # AuditLog
                 pago.registrar_audit(
                     accion='APROBADO',
                     actor=request.user,
@@ -260,7 +251,7 @@ def aprobar(request, pk):
 @ratelimit(key='user', rate='30/m', method='POST', block=True)
 def rechazar(request, pk):
     pago = get_object_or_404(Pago, pk=pk)
-    if pago.estado != 'PENDIENTE':
+    if not (pago.estado and pago.estado.codigo == 'PENDIENTE'):
         messages.warning(request, 'Solo se pueden rechazar pagos pendientes.')
         return redirect('finanzas:detalle', pk=pk)
 
@@ -268,14 +259,14 @@ def rechazar(request, pk):
         form = RechazarPagoForm(request.POST)
         if form.is_valid():
             with transaction.atomic():
-                estado_anterior = pago.estado
-                pago.estado = 'RECHAZADO'
+                estado_anterior = pago.estado.codigo if pago.estado else ''
+                estado_rechazado, _ = CAT_EstadoPago.objects.get_or_create(codigo='RECHAZADO')
+                pago.estado = estado_rechazado
                 pago.motivo_rechazo = form.cleaned_data['motivo']
                 pago.revisado_por = request.user
                 pago.revisado_en = timezone.now()
                 pago.save()
 
-                # Desvincular mensualidades (siguen disponibles para otro pago)
                 pago.mensualidades_cubiertas.update(pago=None)
 
                 pago.registrar_audit(
@@ -295,46 +286,29 @@ def rechazar(request, pk):
     return redirect('finanzas:bandeja')
 
 
-# === Webhook Telegram ===
-
 @csrf_exempt
-@ratelimit(key='ip', rate='60/m', block=True)
 def telegram_webhook(request):
-    if request.method != 'POST':
-        return JsonResponse({'ok': False})
-
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({'ok': False})
-
-    msg = data.get('message', {})
-    text = msg.get('text', '')
-    chat_id = msg.get('chat', {}).get('id')
-
-    if not chat_id:
-        return JsonResponse({'ok': True})
-
-    if text.startswith('/start '):
-        from filiacion.models import Representante
-        token = text.split(' ', 1)[1].strip()
+    if request.method == 'POST':
         try:
-            rep = Representante.objects.get(cedula_identidad=token)
-            rep.telegram_chat_id = str(chat_id)
-            rep.save()
-            enviar_mensaje(
-                chat_id,
-                f'✅ Listo, {rep.nombres}. Recibirás notificaciones aquí.'
-            )
-        except Representante.DoesNotExist:
-            enviar_mensaje(
-                chat_id,
-                '❌ Cédula no encontrada. Envía: /start TU_CEDULA'
-            )
-    elif text == '/start':
-        enviar_mensaje(
-            chat_id,
-            'Hola. Para asociar tu cuenta envía: /start TU_CEDULA'
-        )
+            data = json.loads(request.body.decode('utf-8'))
+            message = data.get('message', {})
+            chat_id = str(message.get('chat', {}).get('id', ''))
+            text = message.get('text', '').strip()
 
-    return JsonResponse({'ok': True})
+            if text.startswith('/start'):
+                partes = text.split()
+                if len(partes) > 1:
+                    token = partes[1]
+                    try:
+                        rep = Representante.objects.get(cedula_identidad=token)
+                        rep.telegram_chat_id = chat_id
+                        rep.save()
+                        enviar_mensaje(chat_id, f"✅ Hola {rep.nombres}, tu cuenta de Telegram ha sido vinculada exitosamente con FDM.")
+                    except Representante.DoesNotExist:
+                        enviar_mensaje(chat_id, "⚠️ El código/cédula de vinculación no fue encontrado.")
+                else:
+                    enviar_mensaje(chat_id, "Bienvenido al Bot de FDM. Para vincular tu cuenta, usa el enlace proporcionado en la plataforma.")
+            return JsonResponse({'status': 'ok'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'method not allowed'}, status=405)
