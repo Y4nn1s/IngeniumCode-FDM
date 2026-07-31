@@ -206,16 +206,21 @@ class Command(BaseCommand):
             self._run_seed()
 
     def _limpiar_datos_seed(self):
+        EvaluacionTecnica.objects.filter(entrenador__telefono__startswith='SEED_').delete()
+        EvaluacionPsicosocial.objects.filter(evaluador__telefono__startswith='SEED_').delete()
+        Estadistica.objects.filter(partido__equipo_rival__startswith='[SEED]').delete()
+        Partido.objects.filter(equipo_rival__startswith='[SEED]').delete()
         PagoAuditLog.objects.filter(pago__concepto__startswith='[SEED]').delete()
         Mensualidad.objects.filter(atleta__representante__correo_electronico__endswith='@seed.fdm.local').delete()
         Pago.objects.filter(concepto__startswith='[SEED]').delete()
         Atleta.objects.filter(representante__correo_electronico__endswith='@seed.fdm.local').delete()
         Representante.objects.filter(correo_electronico__endswith='@seed.fdm.local').delete()
+        CategoriaEntrenadores.objects.filter(personal__telefono__startswith='SEED_').delete()
+        Categoria.objects.filter(coordinador_supervisor__telefono__startswith='SEED_').delete()
+        Personal.objects.filter(telefono__startswith='SEED_').delete()
         User.objects.filter(username__startswith='seed_', is_superuser=False).delete()
         User.objects.filter(username='admin_seed').delete()
-        Personal.objects.filter(telefono__startswith='SEED_').delete()
         TasaBCV.objects.filter(fuente='seed').delete()
-        Partido.objects.filter(equipo_rival__startswith='[SEED]').delete()
 
     def _run_seed(self):
         hoy = timezone.now().date()

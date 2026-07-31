@@ -38,8 +38,8 @@
                 <tr class="hover:bg-fdm-blue/5 dark:hover:bg-slate-700/50 transition-colors duration-200">
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ partido.fecha_hora|date:"d/m/Y H:i" }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ partido.equipo_rival }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ partido.get_tipo_display }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ partido.get_condicion_display }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ partido.tipo.nombre|default:"-" }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ partido.condicion.nombre|default:"-" }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         {% if is_admin_total or is_coord_general or is_coord_deportivo or is_entrenador %}
                         <a href="{% url 'partido_resultado' partido.pk %}" class="inline-block bg-orange-400 text-white font-bold px-4 py-2 rounded-lg hover:bg-orange-500 transition-colors duration-300 text-xs">
@@ -84,14 +84,14 @@
                 <tr class="hover:bg-fdm-red/5 dark:hover:bg-slate-700/50 transition-colors duration-200">
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ partido.fecha_hora|date:"d/m/Y" }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ partido.equipo_rival }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ partido.get_tipo_display }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ partido.tipo.nombre|default:"-" }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
                             {% if partido.resultado == 'VICTORIA' %} bg-green-100 text-green-800
                             {% elif partido.resultado == 'DERROTA' %} bg-red-100 text-red-800
                             {% else %} bg-yellow-100 text-yellow-800
                             {% endif %}">
-                            {{ partido.get_resultado_display }}
+                            {{ partido.resultado }}
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-800 dark:text-gray-100">{{ partido.goles_favor_escuela }} - {{ partido.goles_contra_rival }}</td>

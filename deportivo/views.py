@@ -4,7 +4,7 @@ from accounts.decorators import (
     gestion_deportiva_required,
     lectura_atletas_required,
 )
-from django.db.models import Sum
+from django.db.models import Sum, F
 from django.forms import modelformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
@@ -289,15 +289,16 @@ class EstadisticasView(GestionDeportivaRequiredMixin, TemplateView):
         ).order_by('-total_rojas', '-total_amarillas')[:10]
         
         # Estadísticas generales
-        context['total_partidos'] = Partido.objects.filter(procesado=True).count()
-        context['total_victorias'] = Partido.objects.filter(
-            procesado=True, resultado='VICTORIA'
+        partidos_jugados = Partido.objects.filter(procesado=True)
+        context['total_partidos'] = partidos_jugados.count()
+        context['total_victorias'] = partidos_jugados.filter(
+            goles_favor_escuela__gt=F('goles_contra_rival')
         ).count()
-        context['total_empates'] = Partido.objects.filter(
-            procesado=True, resultado='EMPATE'
+        context['total_empates'] = partidos_jugados.filter(
+            goles_favor_escuela=F('goles_contra_rival')
         ).count()
-        context['total_derrotas'] = Partido.objects.filter(
-            procesado=True, resultado='DERROTA'
+        context['total_derrotas'] = partidos_jugados.filter(
+            goles_favor_escuela__lt=F('goles_contra_rival')
         ).count()
         
         return context

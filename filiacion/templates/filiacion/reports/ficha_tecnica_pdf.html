@@ -293,8 +293,16 @@
                             <div class="data-value">{{ atleta.nombres }} {{ atleta.apellidos }}</div>
                         </div>
                         <div class="data-row">
-                            <div class="data-label">Cédula Escolar:</div>
-                            <div class="data-value">{{ atleta.cedula_escolar|default:"-" }}</div>
+                            <div class="data-label">Cédula / Acta:</div>
+                            <div class="data-value">
+                                {% if atleta.cedula_identidad %}
+                                    C.I: {{ atleta.cedula_identidad }}
+                                {% elif atleta.numero_acta_nacimiento %}
+                                    Acta: {{ atleta.numero_acta_nacimiento }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </div>
                         </div>
                         <div class="data-row">
                             <div class="data-label">Fecha de Nacimiento:</div>
@@ -306,11 +314,11 @@
                         </div>
                         <div class="data-row">
                             <div class="data-label">Posición:</div>
-                            <div class="data-value">{{ atleta.get_posicion_display }}</div>
+                            <div class="data-value">{{ atleta.posicion.nombre|default:"-" }}</div>
                         </div>
                         <div class="data-row">
                             <div class="data-label">Lateralidad:</div>
-                            <div class="data-value">{{ atleta.get_lateralidad_display }}</div>
+                            <div class="data-value">{{ atleta.lateralidad.nombre|default:"-" }}</div>
                         </div>
                         <div class="data-row">
                             <div class="data-label">Peso / Altura:</div>
@@ -357,9 +365,8 @@
             <table class="eval-table">
                 <thead>
                     <tr>
-                        <th>Velocidad</th>
-                        <th>Resistencia</th>
                         <th>Control de Balón</th>
+                        <th>Conducción</th>
                         <th>Pase Corto</th>
                         <th>Tiro</th>
                         <th>Inteligencia Táctica</th>
@@ -367,9 +374,8 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="score-cell">{{ eval.velocidad }}/10</td>
-                        <td class="score-cell">{{ eval.resistencia }}/10</td>
                         <td class="score-cell">{{ eval.control_balon }}/10</td>
+                        <td class="score-cell">{{ eval.conduccion }}/10</td>
                         <td class="score-cell">{{ eval.pase_corto }}/10</td>
                         <td class="score-cell">{{ eval.tiro }}/10</td>
                         <td class="score-cell">{{ eval.inteligencia_tactica }}/10</td>
@@ -400,7 +406,7 @@
             
             <div class="eval-date">
                 Fecha de Evaluación: {{ eval.fecha_evaluacion|date:"d/m/Y" }} | 
-                Evaluador: {{ eval.coordinador_evaluador|default:"-" }}
+                Evaluador: {{ eval.evaluador|default:"-" }}
             </div>
             
             <table class="eval-table">
