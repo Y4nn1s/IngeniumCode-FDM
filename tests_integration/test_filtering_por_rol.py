@@ -2,7 +2,8 @@ import pytest
 from datetime import date
 from django.urls import reverse
 from django.contrib.auth.models import User
-from filiacion.models import Representante, Atleta, CAT_Posicion, CAT_Lateralidad
+from filiacion.models import Representante, Atleta
+from core.models import CatPosicion, CatLateralidad
 
 
 @pytest.mark.integration
@@ -15,8 +16,8 @@ def test_representante_solo_ve_sus_propios_atletas_en_lista(
         telefono_principal='04141112233', direccion_habitacion='Caracas',
         correo_electronico='other@test.com', usuario=otro_user
     )
-    pos, _ = CAT_Posicion.objects.get_or_create(codigo='DEL', defaults={'nombre': 'Delantero'})
-    lat, _ = CAT_Lateralidad.objects.get_or_create(nombre='Derecho')
+    pos, _ = CatPosicion.objects.get_or_create(codigo='DEL', defaults={'nombre': 'Delantero'})
+    lat, _ = CatLateralidad.objects.get_or_create(nombre='Derecho')
     otro_atleta = Atleta.objects.create(
         representante=otro_rep, categoria=categoria,
         nombres='Ajeno', apellidos='Atleta',
@@ -43,8 +44,8 @@ def test_representante_no_puede_ver_atleta_de_otro_representante(
         telefono_principal='04141112233', direccion_habitacion='Caracas',
         correo_electronico='other2@test.com', usuario=otro_user
     )
-    pos, _ = CAT_Posicion.objects.get_or_create(codigo='DEL', defaults={'nombre': 'Delantero'})
-    lat, _ = CAT_Lateralidad.objects.get_or_create(nombre='Derecho')
+    pos, _ = CatPosicion.objects.get_or_create(codigo='DEL', defaults={'nombre': 'Delantero'})
+    lat, _ = CatLateralidad.objects.get_or_create(nombre='Derecho')
     otro_atleta = Atleta.objects.create(
         representante=otro_rep, categoria=categoria,
         nombres='Ajeno', apellidos='Atleta',
@@ -67,8 +68,8 @@ def test_staff_interno_ve_todos_los_atletas_en_lista(
         telefono_principal='04141112233', direccion_habitacion='Caracas',
         correo_electronico='other3@test.com', usuario=otro_user
     )
-    pos, _ = CAT_Posicion.objects.get_or_create(codigo='DEL', defaults={'nombre': 'Delantero'})
-    lat, _ = CAT_Lateralidad.objects.get_or_create(nombre='Derecho')
+    pos, _ = CatPosicion.objects.get_or_create(codigo='DEL', defaults={'nombre': 'Delantero'})
+    lat, _ = CatLateralidad.objects.get_or_create(nombre='Derecho')
     otro_atleta = Atleta.objects.create(
         representante=otro_rep, categoria=categoria,
         nombres='Ajeno', apellidos='Atleta',
@@ -98,8 +99,8 @@ def test_representante_no_puede_crear_atleta(
 def test_coord_general_puede_crear_atleta(
     client_coord_general, representante_con_user, categoria
 ):
-    pos, _ = CAT_Posicion.objects.get_or_create(codigo='DEL', defaults={'nombre': 'Delantero'})
-    lat, _ = CAT_Lateralidad.objects.get_or_create(nombre='Derecho')
+    pos, _ = CatPosicion.objects.get_or_create(codigo='DEL', defaults={'nombre': 'Delantero'})
+    lat, _ = CatLateralidad.objects.get_or_create(nombre='Derecho')
     url = reverse('atleta_create')
     data = {
         'representante': representante_con_user.id,
@@ -108,6 +109,7 @@ def test_coord_general_puede_crear_atleta(
         'apellidos': 'Gomez',
         'fecha_nacimiento': '2017-03-15',
         'cedula_identidad': 'V-34567890',
+        'numero_acta_nacimiento': 'ACTA-999',
         'lateralidad': lat.id,
         'posicion': pos.id,
         'activo': True,

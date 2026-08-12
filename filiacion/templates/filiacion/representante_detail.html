@@ -95,7 +95,7 @@
                                     {{ atleta.categoria|default:"Sin Categoría" }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ atleta.get_posicion_display }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ atleta.posicion.nombre|default:"-" }}</td>
                             <td class="px-4 py-3 whitespace-nowrap">
                                 {% if atleta.activo %}
                                 <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Activo</span>

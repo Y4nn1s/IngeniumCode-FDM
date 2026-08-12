@@ -21,7 +21,7 @@
                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Nombre</th>
                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Licencia</th>
                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Teléfono</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Coordinador</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Cargo</th>
                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Estado</th>
                     {% if request.user.is_superuser %}
                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Acciones</th>
@@ -36,11 +36,11 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-fdm-blue/10 text-fdm-blue">
-                            {{ entrenador.get_licencia_display }}
+                            {{ entrenador.licencia.nombre|default:"Sin licencia" }}
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ entrenador.telefono }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ entrenador.coordinador|default:"-" }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ entrenador.cargo.nombre|default:"-" }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         {% if entrenador.activo %}
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Activo</span>

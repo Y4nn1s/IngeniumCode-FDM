@@ -1,5 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from core.models import CatEstadoPartido
 from .models import Estadistica, Partido, EvaluacionTecnica, EvaluacionPsicosocial
 
 
@@ -20,6 +21,8 @@ class PartidoProgramarForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         input_classes = 'appearance-none block w-full bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-slate-600 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white dark:focus:bg-slate-600 focus:border-blue-500'
         for field_name, field in self.fields.items():
+            if isinstance(field, forms.ModelChoiceField):
+                field.empty_label = 'Seleccione una opción...'
             field.widget.attrs.update({'class': input_classes})
 
     class Meta:
@@ -35,6 +38,17 @@ class PartidoProgramarForm(forms.ModelForm):
         if len(rival) < 3:
             raise ValidationError("El nombre del equipo debe tener al menos 3 caracteres.")
         return rival
+
+    def save(self, commit=True):
+        partido = super().save(commit=False)
+        if partido.estado_id is None:
+            estado_programado, _ = CatEstadoPartido.objects.get_or_create(
+                codigo='PROGRAMADO', defaults={'nombre': 'Programado'}
+            )
+            partido.estado = estado_programado
+        if commit:
+            partido.save()
+        return partido
 
 
 class PartidoResultadoForm(forms.ModelForm):

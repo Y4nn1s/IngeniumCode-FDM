@@ -19,20 +19,23 @@ from django.utils import timezone
 
 from PIL import Image
 
+from core.models import (
+    CatCargo, CatLicencia, CatGenero,
+    CatPosicion, CatLateralidad,
+    CatTipoPartido, CatCondicionPartido,
+    CatBanco, CatEstadoPago, CatMetodoPago,
+    CatEstadoPartido, CatTipoPatrocinante, CatFuenteTasaBCV,
+)
 from administracion.models import (
-    CAT_Cargo, CAT_Licencia, CAT_Genero,
     Personal, Categoria, CategoriaEntrenadores
 )
 from deportivo.models import (
-    CAT_TipoPartido, CAT_CondicionPartido,
     Partido, Estadistica, EvaluacionTecnica, EvaluacionPsicosocial
 )
 from filiacion.models import (
-    CAT_Posicion, CAT_Lateralidad,
     Representante, Atleta
 )
 from finanzas.models import (
-    CAT_Banco, CAT_EstadoPago, CAT_MetodoPago,
     TasaBCV, Mensualidad, Pago, PagoAuditLog
 )
 
@@ -164,6 +167,44 @@ def _fecha_pasada(dias_min=1, dias_max=180):
     return timezone.now().date() - datetime.timedelta(days=delta)
 
 
+def _peso_para_edad(edad):
+    """Peso (kg) biológicamente coherente con la edad (curva FDM)."""
+    if edad <= 5:
+        minimo, maximo = 15.0, 32.0
+    elif edad <= 7:
+        minimo, maximo = 18.0, 38.0
+    elif edad <= 9:
+        minimo, maximo = 22.0, 43.0
+    elif edad <= 11:
+        minimo, maximo = 27.0, 52.0
+    elif edad <= 13:
+        minimo, maximo = 32.0, 62.0
+    elif edad <= 15:
+        minimo, maximo = 40.0, 72.0
+    else:
+        minimo, maximo = 45.0, 85.0
+    return Decimal(str(round(random.uniform(minimo, maximo), 1)))
+
+
+def _altura_para_edad(edad):
+    """Altura (mts) biológicamente coherente con la edad (curva FDM)."""
+    if edad <= 5:
+        minimo, maximo = 1.00, 1.20
+    elif edad <= 7:
+        minimo, maximo = 1.10, 1.30
+    elif edad <= 9:
+        minimo, maximo = 1.18, 1.42
+    elif edad <= 11:
+        minimo, maximo = 1.28, 1.55
+    elif edad <= 13:
+        minimo, maximo = 1.38, 1.70
+    elif edad <= 15:
+        minimo, maximo = 1.48, 1.80
+    else:
+        minimo, maximo = 1.55, 1.95
+    return Decimal(str(round(random.uniform(minimo, maximo), 2)))
+
+
 def _datetime_pasado(dias_min=1, dias_max=180):
     delta = random.randint(dias_min, dias_max)
     return timezone.now() - datetime.timedelta(days=delta)
@@ -220,7 +261,7 @@ class Command(BaseCommand):
         Personal.objects.filter(telefono__startswith='SEED_').delete()
         User.objects.filter(username__startswith='seed_', is_superuser=False).delete()
         User.objects.filter(username='admin_seed').delete()
-        TasaBCV.objects.filter(fuente='seed').delete()
+        TasaBCV.objects.filter(fuente__codigo='SEED').delete()
 
     def _run_seed(self):
         hoy = timezone.now().date()
@@ -229,59 +270,69 @@ class Command(BaseCommand):
         n_atletas = self._n_atletas
 
         # ── 1. Sembrar Catálogos Base (3NF) ──────────────────────────────
-        cargo_gen, _ = CAT_Cargo.objects.get_or_create(nombre='General', defaults={'descripcion': 'Coordinación General'})
-        cargo_dep, _ = CAT_Cargo.objects.get_or_create(nombre='Deportivo', defaults={'descripcion': 'Coordinación Deportiva'})
-        cargo_tes, _ = CAT_Cargo.objects.get_or_create(nombre='Tesoreria', defaults={'descripcion': 'Personal de Tesorería'})
-        cargo_ent, _ = CAT_Cargo.objects.get_or_create(nombre='Entrenador', defaults={'descripcion': 'Personal Técnico'})
-        cargo_del, _ = CAT_Cargo.objects.get_or_create(nombre='Delegado', defaults={'descripcion': 'Delegado de Categoría'})
+        cargo_gen, _ = CatCargo.objects.get_or_create(nombre='General', defaults={'descripcion': 'Coordinación General'})
+        cargo_dep, _ = CatCargo.objects.get_or_create(nombre='Deportivo', defaults={'descripcion': 'Coordinación Deportiva'})
+        cargo_tes, _ = CatCargo.objects.get_or_create(nombre='Tesoreria', defaults={'descripcion': 'Personal de Tesorería'})
+        cargo_ent, _ = CatCargo.objects.get_or_create(nombre='Entrenador', defaults={'descripcion': 'Personal Técnico'})
+        cargo_del, _ = CatCargo.objects.get_or_create(nombre='Delegado', defaults={'descripcion': 'Delegado de Categoría'})
 
-        lic_fvf, _ = CAT_Licencia.objects.get_or_create(nombre='Licencia FVF')
-        lic_conmebol, _ = CAT_Licencia.objects.get_or_create(nombre='Licencia CONMEBOL')
+        lic_fvf, _ = CatLicencia.objects.get_or_create(nombre='Licencia FVF')
+        lic_conmebol, _ = CatLicencia.objects.get_or_create(nombre='Licencia CONMEBOL')
 
-        gen_masc, _ = CAT_Genero.objects.get_or_create(nombre='Masculino')
-        gen_fem, _ = CAT_Genero.objects.get_or_create(nombre='Femenino')
-        gen_mix, _ = CAT_Genero.objects.get_or_create(nombre='Mixto')
+        gen_masc, _ = CatGenero.objects.get_or_create(nombre='Masculino')
+        gen_fem, _ = CatGenero.objects.get_or_create(nombre='Femenino')
+        gen_mix, _ = CatGenero.objects.get_or_create(nombre='Mixto')
 
-        pos_por, _ = CAT_Posicion.objects.get_or_create(codigo='POR', defaults={'nombre': 'Portero'})
-        pos_def, _ = CAT_Posicion.objects.get_or_create(codigo='DEF', defaults={'nombre': 'Defensa'})
-        pos_med, _ = CAT_Posicion.objects.get_or_create(codigo='MED', defaults={'nombre': 'Mediocampista'})
-        pos_del, _ = CAT_Posicion.objects.get_or_create(codigo='DEL', defaults={'nombre': 'Delantero'})
+        pos_por, _ = CatPosicion.objects.get_or_create(codigo='POR', defaults={'nombre': 'Portero'})
+        pos_def, _ = CatPosicion.objects.get_or_create(codigo='DEF', defaults={'nombre': 'Defensa'})
+        pos_med, _ = CatPosicion.objects.get_or_create(codigo='MED', defaults={'nombre': 'Mediocampista'})
+        pos_del, _ = CatPosicion.objects.get_or_create(codigo='DEL', defaults={'nombre': 'Delantero'})
         posiciones_list = [pos_por, pos_def, pos_med, pos_del]
 
-        lat_der, _ = CAT_Lateralidad.objects.get_or_create(nombre='Derecho')
-        lat_izq, _ = CAT_Lateralidad.objects.get_or_create(nombre='Izquierdo')
-        lat_amb, _ = CAT_Lateralidad.objects.get_or_create(nombre='Ambidiestro')
+        lat_der, _ = CatLateralidad.objects.get_or_create(nombre='Derecho')
+        lat_izq, _ = CatLateralidad.objects.get_or_create(nombre='Izquierdo')
+        lat_amb, _ = CatLateralidad.objects.get_or_create(nombre='Ambidiestro')
         lateralidades_list = [lat_der, lat_izq, lat_amb]
 
-        tipo_am, _ = CAT_TipoPartido.objects.get_or_create(codigo='AMISTOSO', defaults={'nombre': 'Amistoso'})
-        tipo_of, _ = CAT_TipoPartido.objects.get_or_create(codigo='OFICIAL', defaults={'nombre': 'Oficial'})
+        tipo_am, _ = CatTipoPartido.objects.get_or_create(codigo='AMISTOSO', defaults={'nombre': 'Amistoso'})
+        tipo_of, _ = CatTipoPartido.objects.get_or_create(codigo='OFICIAL', defaults={'nombre': 'Oficial'})
 
-        cond_casa, _ = CAT_CondicionPartido.objects.get_or_create(codigo='CASA', defaults={'nombre': 'Casa'})
-        cond_vis, _ = CAT_CondicionPartido.objects.get_or_create(codigo='VISITANTE', defaults={'nombre': 'Visitante'})
+        cond_casa, _ = CatCondicionPartido.objects.get_or_create(codigo='CASA', defaults={'nombre': 'Casa'})
+        cond_vis, _ = CatCondicionPartido.objects.get_or_create(codigo='VISITANTE', defaults={'nombre': 'Visitante'})
 
         bancos_dict = {}
         for cod, nom in BANCOS_SUDEBAN:
-            b_obj, _ = CAT_Banco.objects.get_or_create(codigo_sudeban=cod, defaults={'nombre': nom, 'activo': True})
+            b_obj, _ = CatBanco.objects.get_or_create(codigo_sudeban=cod, defaults={'nombre': nom, 'activo': True})
             bancos_dict[cod] = b_obj
 
-        est_pen, _ = CAT_EstadoPago.objects.get_or_create(codigo='PENDIENTE', defaults={'descripcion': 'Pago reportado'})
-        est_apr, _ = CAT_EstadoPago.objects.get_or_create(codigo='APROBADO', defaults={'descripcion': 'Pago verificado'})
-        est_rec, _ = CAT_EstadoPago.objects.get_or_create(codigo='RECHAZADO', defaults={'descripcion': 'Pago rechazado'})
+        est_pen, _ = CatEstadoPago.objects.get_or_create(codigo='PENDIENTE', defaults={'descripcion': 'Pago reportado'})
+        est_apr, _ = CatEstadoPago.objects.get_or_create(codigo='APROBADO', defaults={'descripcion': 'Pago verificado'})
+        est_rec, _ = CatEstadoPago.objects.get_or_create(codigo='RECHAZADO', defaults={'descripcion': 'Pago rechazado'})
 
-        met_pm, _ = CAT_MetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
-        met_tr, _ = CAT_MetodoPago.objects.get_or_create(codigo='TRANSFERENCIA', defaults={'nombre': 'Transferencia'})
-        met_eb, _ = CAT_MetodoPago.objects.get_or_create(codigo='EFECTIVO_BS', defaults={'nombre': 'Efectivo Bs'})
-        met_eu, _ = CAT_MetodoPago.objects.get_or_create(codigo='EFECTIVO_USD', defaults={'nombre': 'Efectivo USD'})
+        met_pm, _ = CatMetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
+        met_tr, _ = CatMetodoPago.objects.get_or_create(codigo='TRANSFERENCIA', defaults={'nombre': 'Transferencia'})
+        met_eb, _ = CatMetodoPago.objects.get_or_create(codigo='EFECTIVO_BS', defaults={'nombre': 'Efectivo Bs'})
+        met_eu, _ = CatMetodoPago.objects.get_or_create(codigo='EFECTIVO_USD', defaults={'nombre': 'Efectivo USD'})
         metodos_list = [met_pm, met_tr, met_eb, met_eu]
+
+        est_prog, _ = CatEstadoPartido.objects.get_or_create(codigo='PROGRAMADO', defaults={'nombre': 'Programado'})
+        est_fin, _ = CatEstadoPartido.objects.get_or_create(codigo='FINALIZADO', defaults={'nombre': 'Finalizado'})
+
+        tipo_pat_emp, _ = CatTipoPatrocinante.objects.get_or_create(codigo='EMPRESA', defaults={'nombre': 'Empresa'})
+        tipo_pat_pn, _ = CatTipoPatrocinante.objects.get_or_create(codigo='PERSONA_NATURAL', defaults={'nombre': 'Persona Natural'})
+        tipo_pat_ip, _ = CatTipoPatrocinante.objects.get_or_create(codigo='INSTITUCION_PUBLICA', defaults={'nombre': 'Institución Pública'})
+
+        fuente_dolarapi, _ = CatFuenteTasaBCV.objects.get_or_create(codigo='DOLARAPI', defaults={'nombre': 'DolarAPI'})
+        fuente_seed, _ = CatFuenteTasaBCV.objects.get_or_create(codigo='SEED', defaults={'nombre': 'Seed'})
 
         # ── 2. TasaBCV ───────────────────────────────────────────────────
         tasa_bcv, _ = TasaBCV.objects.get_or_create(
             fecha=hoy,
-            defaults={'tasa': Decimal('36.50'), 'fuente': 'seed'},
+            defaults={'tasa': Decimal('36.50'), 'fuente': fuente_seed},
         )
 
         # ── 3. Superusuario admin_seed ───────────────────────────────────
-        if not User.objects.filter(username='admin_fdm').exists():
+        if not User.objects.filter(username='admin_seed').exists():
             admin, creado = User.objects.get_or_create(
                 username='admin_seed',
                 defaults={
@@ -451,8 +502,8 @@ class Command(BaseCommand):
                     'lateralidad': random.choice(lateralidades_list),
                     'numero_acta_nacimiento': f"ACTA-{idx+1000}",
                     'cedula_identidad': ci_atleta,
-                    'peso_kg': Decimal(str(round(random.uniform(20, 65), 1))),
-                    'altura_mts': Decimal(str(round(random.uniform(1.10, 1.70), 2))),
+                    'peso_kg': _peso_para_edad(edad),
+                    'altura_mts': _altura_para_edad(edad),
                     'activo': not inactivo,
                     'becado': becado,
                 }
@@ -512,7 +563,7 @@ class Command(BaseCommand):
                 fecha_hora=_datetime_pasado(5, 60),
                 goles_favor_escuela=random.randint(1, 4),
                 goles_contra_rival=random.randint(0, 2),
-                procesado=True
+                estado=est_fin
             )
             atletas_cat = [a for a in atletas if a.categoria_id == cat.id]
             for atl in atletas_cat[:5]:

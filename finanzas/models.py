@@ -6,48 +6,11 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from core.models import CatBanco, CatEstadoPago, CatMetodoPago
+from core.models import (
+    CatBanco, CatEstadoPago, CatMetodoPago, CatTipoPatrocinante, CatFuenteTasaBCV,
+)
 
 User = get_user_model()
-
-
-# === Catálogos Base Locales (se conservan para compatibilidad con datos históricos) ===
-
-class CAT_Banco(models.Model):
-    codigo_sudeban = models.CharField(max_length=4, unique=True)
-    nombre = models.CharField(max_length=100, unique=True)
-    activo = models.BooleanField(default=True)
-
-    class Meta:
-        verbose_name = 'Catálogo - Banco'
-        verbose_name_plural = 'Catálogos - Bancos'
-
-    def __str__(self):
-        return f"{self.codigo_sudeban} - {self.nombre}"
-
-
-class CAT_EstadoPago(models.Model):
-    codigo = models.CharField(max_length=20, unique=True)
-    descripcion = models.TextField(blank=True)
-
-    class Meta:
-        verbose_name = 'Catálogo - Estado de Pago'
-        verbose_name_plural = 'Catálogos - Estados de Pago'
-
-    def __str__(self):
-        return self.codigo
-
-
-class CAT_MetodoPago(models.Model):
-    codigo = models.CharField(max_length=20, unique=True)
-    nombre = models.CharField(max_length=50)
-
-    class Meta:
-        verbose_name = 'Catálogo - Método de Pago'
-        verbose_name_plural = 'Catálogos - Métodos de Pago'
-
-    def __str__(self):
-        return self.nombre
 
 
 # === Constantes de negocio ===
@@ -65,9 +28,13 @@ class TasaBCV(models.Model):
         max_digits=12, decimal_places=4,
         help_text="Bolívares por USD"
     )
-    fuente = models.CharField(
-        max_length=50, default='dolarapi',
-        help_text="Origen: dolarapi, manual, etc."
+    fuente = models.ForeignKey(
+        CatFuenteTasaBCV,
+        on_delete=models.PROTECT,
+        related_name='tasas_bcv',
+        null=True,
+        blank=True,
+        help_text="Origen de la tasa (DOLARAPI, MANUAL, SEED)"
     )
     capturada_en = models.DateTimeField(auto_now_add=True)
 
@@ -77,7 +44,8 @@ class TasaBCV(models.Model):
         verbose_name_plural = 'Tasas BCV'
 
     def __str__(self):
-        return f"{self.fecha}: {self.tasa} Bs/USD ({self.fuente})"
+        fuente_cod = self.fuente.codigo if self.fuente else '-'
+        return f"{self.fecha}: {self.tasa} Bs/USD ({fuente_cod})"
 
 
 # === Modelo Pago ===
@@ -88,20 +56,6 @@ class Pago(models.Model):
     concepto = models.CharField(
         max_length=200,
         help_text="Auto-generado desde mensualidades cubiertas, o texto libre"
-    )
-
-    # Catálogos locales anteriores, conservados para datos históricos
-    metodo_legacy = models.ForeignKey(
-        CAT_MetodoPago, on_delete=models.PROTECT,
-        related_name='pagos_legacy', null=True, blank=True,
-    )
-    banco_emisor_legacy = models.ForeignKey(
-        CAT_Banco, on_delete=models.PROTECT,
-        related_name='pagos_legacy', null=True, blank=True,
-    )
-    estado_legacy = models.ForeignKey(
-        CAT_EstadoPago, on_delete=models.PROTECT,
-        related_name='pagos_legacy', null=True, blank=True,
     )
 
     # Catálogos centralizados de la app core
@@ -279,7 +233,14 @@ class PagoAuditLog(models.Model):
 # === Modelos de Patrocinio ===
 class Patrocinante(models.Model):
     nombre_empresa = models.CharField(max_length=200)
-    tipo_ente = models.CharField(max_length=20)
+    tipo_ente = models.ForeignKey(
+        CatTipoPatrocinante,
+        on_delete=models.PROTECT,
+        related_name='patrocinantes',
+        null=True,
+        blank=True,
+        help_text="Tipo de ente patrocinante (EMPRESA, PERSONA_NATURAL, INSTITUCION_PUBLICA)"
+    )
     persona_contacto = models.CharField(max_length=200)
 
     def __str__(self):
@@ -289,7 +250,14 @@ class Patrocinante(models.Model):
 class Aporte(models.Model):
     patrocinante = models.ForeignKey(Patrocinante, on_delete=models.CASCADE, related_name='aportes')
     fecha_aporte = models.DateField()
-    tipo = models.CharField(max_length=20)
+    tipo = models.ForeignKey(
+        CatTipoPatrocinante,
+        on_delete=models.PROTECT,
+        related_name='aportes',
+        null=True,
+        blank=True,
+        help_text="Tipo de aporte (EMPRESA, PERSONA_NATURAL, INSTITUCION_PUBLICA)"
+    )
     descripcion = models.TextField()
     valor_estimado_usd = models.DecimalField(max_digits=12, decimal_places=2)
 

@@ -1,7 +1,7 @@
 from datetime import date
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Atleta, Representante, CAT_Posicion, CAT_Lateralidad
+from .models import Atleta, Representante
 
 
 class RepresentanteForm(forms.ModelForm):
@@ -41,6 +41,18 @@ class AtletaForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         input_classes = 'appearance-none block w-full bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-slate-600 rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white dark:focus:bg-slate-600 focus:border-blue-500'
         file_input_classes = 'block w-full text-sm text-gray-900 dark:text-gray-200 border border-gray-200 dark:border-slate-600 rounded-lg cursor-pointer bg-white dark:bg-slate-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500'
+
+        # FKs a catálogos: UX limpia con empty_label en español.
+        empty_labels = {
+            'representante': 'Seleccione un representante...',
+            'categoria': 'Seleccione una categoría...',
+            'posicion': 'Seleccione una posición...',
+            'lateralidad': 'Seleccione la lateralidad...',
+        }
+        for field_name, label in empty_labels.items():
+            field = self.fields.get(field_name)
+            if isinstance(field, forms.ModelChoiceField):
+                field.empty_label = label
 
         for field_name, field in self.fields.items():
             if isinstance(field.widget, forms.ClearableFileInput):

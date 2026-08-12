@@ -2,13 +2,7 @@ from django.contrib import admin
 from .models import (
     Pago, PagoAuditLog, Mensualidad,
     Patrocinante, Aporte, TasaBCV,
-    CAT_Banco, CAT_EstadoPago, CAT_MetodoPago,
 )
-
-# Catálogos locales (legados - se conservan)
-admin.site.register(CAT_Banco)
-admin.site.register(CAT_EstadoPago)
-admin.site.register(CAT_MetodoPago)
 
 
 class PagoAuditLogInline(admin.TabularInline):
@@ -30,8 +24,7 @@ class PagoAdmin(admin.ModelAdmin):
         'fecha_pago', 'fecha_reporte',
     )
     list_filter = (
-        'estado', 'metodo', 'banco_emisor',     # Nuevas FK → core
-        'estado_legacy', 'metodo_legacy', 'banco_emisor_legacy',  # Legados
+        'estado', 'metodo', 'banco_emisor',     # Catálogos core
         'fecha_pago',
     )
     search_fields = (
@@ -64,11 +57,6 @@ class PagoAdmin(admin.ModelAdmin):
         }),
         ('Revisión', {
             'fields': ('revisado_por', 'revisado_en', 'fecha_reporte'),
-        }),
-        ('Campos Legados (no usar)', {
-            'fields': ('metodo_legacy', 'banco_emisor_legacy', 'estado_legacy'),
-            'classes': ('collapse',),
-            'description': 'Campos del catálogo local anterior. Conservados para preservación de datos.',
         }),
     )
 

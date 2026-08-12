@@ -45,7 +45,7 @@ class CatGenero(models.Model):
 class CatPosicion(models.Model):
     """Catálogo de posiciones de juego."""
     id = models.AutoField(primary_key=True)
-    codigo = models.CharField(max_length=10)
+    codigo = models.CharField(max_length=10, unique=True)
     nombre = models.CharField(max_length=100)
 
     class Meta:
@@ -72,7 +72,7 @@ class CatLateralidad(models.Model):
 class CatTipoPartido(models.Model):
     """Catálogo de tipos de partido."""
     id = models.AutoField(primary_key=True)
-    codigo = models.CharField(max_length=10)
+    codigo = models.CharField(max_length=10, unique=True)
     nombre = models.CharField(max_length=100)
 
     class Meta:
@@ -86,7 +86,7 @@ class CatTipoPartido(models.Model):
 class CatCondicionPartido(models.Model):
     """Catálogo de condición del partido (local, visitante, neutral)."""
     id = models.AutoField(primary_key=True)
-    codigo = models.CharField(max_length=10)
+    codigo = models.CharField(max_length=10, unique=True)
     nombre = models.CharField(max_length=100)
 
     class Meta:
@@ -115,7 +115,7 @@ class CatBanco(models.Model):
 class CatEstadoPago(models.Model):
     """Catálogo de estados de un pago."""
     id = models.AutoField(primary_key=True)
-    codigo = models.CharField(max_length=20)
+    codigo = models.CharField(max_length=20, unique=True)
     descripcion = models.TextField()
 
     class Meta:
@@ -129,12 +129,54 @@ class CatEstadoPago(models.Model):
 class CatMetodoPago(models.Model):
     """Catálogo de métodos de pago aceptados."""
     id = models.AutoField(primary_key=True)
-    codigo = models.CharField(max_length=10)
+    codigo = models.CharField(max_length=20, unique=True)
     nombre = models.CharField(max_length=100)
 
     class Meta:
         verbose_name = "Método de Pago"
         verbose_name_plural = "Métodos de Pago"
+
+    def __str__(self):
+        return f"{self.codigo} - {self.nombre}"
+
+
+class CatEstadoPartido(models.Model):
+    """Catálogo de estados de un partido (workflow deportivo)."""
+    id = models.AutoField(primary_key=True)
+    codigo = models.CharField(max_length=20, unique=True)
+    nombre = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name = "Estado de Partido"
+        verbose_name_plural = "Estados de Partido"
+
+    def __str__(self):
+        return f"{self.codigo} - {self.nombre}"
+
+
+class CatTipoPatrocinante(models.Model):
+    """Catálogo de tipos de ente patrocinante (empresa, persona natural, etc.)."""
+    id = models.AutoField(primary_key=True)
+    codigo = models.CharField(max_length=20, unique=True)
+    nombre = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name = "Tipo de Patrocinante"
+        verbose_name_plural = "Tipos de Patrocinante"
+
+    def __str__(self):
+        return f"{self.codigo} - {self.nombre}"
+
+
+class CatFuenteTasaBCV(models.Model):
+    """Catálogo de fuentes de origen de la tasa BCV (DolarAPI, manual, seed)."""
+    id = models.AutoField(primary_key=True)
+    codigo = models.CharField(max_length=20, unique=True)
+    nombre = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name = "Fuente de Tasa BCV"
+        verbose_name_plural = "Fuentes de Tasa BCV"
 
     def __str__(self):
         return f"{self.codigo} - {self.nombre}"

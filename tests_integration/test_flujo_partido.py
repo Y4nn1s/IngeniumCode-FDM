@@ -2,15 +2,16 @@ import pytest
 from datetime import date, timedelta
 from django.urls import reverse
 from django.utils import timezone
-from deportivo.models import Partido, Estadistica, CAT_TipoPartido, CAT_CondicionPartido
+from deportivo.models import Partido, Estadistica
+from core.models import CatTipoPartido, CatCondicionPartido, CatEstadoPartido
 
 
 @pytest.mark.integration
 def test_gestion_deportiva_puede_crear_partido_programado(
     client_coord_general, categoria
 ):
-    tipo_am, _ = CAT_TipoPartido.objects.get_or_create(codigo='AMISTOSO', defaults={'nombre': 'Amistoso'})
-    cond_casa, _ = CAT_CondicionPartido.objects.get_or_create(codigo='CASA', defaults={'nombre': 'Casa'})
+    tipo_am, _ = CatTipoPartido.objects.get_or_create(codigo='AMISTOSO', defaults={'nombre': 'Amistoso'})
+    cond_casa, _ = CatCondicionPartido.objects.get_or_create(codigo='CASA', defaults={'nombre': 'Casa'})
     url = reverse('partido_create')
     fecha = timezone.now() + timedelta(days=7)
     data = {
@@ -23,6 +24,8 @@ def test_gestion_deportiva_puede_crear_partido_programado(
     response = client_coord_general.post(url, data)
     assert response.status_code == 302
     partido = Partido.objects.latest('id')
+    assert partido.estado is not None
+    assert partido.estado.codigo == 'PROGRAMADO'
     assert partido.procesado is False
     assert partido.equipo_rival == 'Deportivo Lara'
 
@@ -31,8 +34,8 @@ def test_gestion_deportiva_puede_crear_partido_programado(
 def test_registrar_resultado_marca_partido_como_procesado(
     client_coord_general, categoria, atleta_de
 ):
-    tipo_am, _ = CAT_TipoPartido.objects.get_or_create(codigo='AMISTOSO', defaults={'nombre': 'Amistoso'})
-    cond_casa, _ = CAT_CondicionPartido.objects.get_or_create(codigo='CASA', defaults={'nombre': 'Casa'})
+    tipo_am, _ = CatTipoPartido.objects.get_or_create(codigo='AMISTOSO', defaults={'nombre': 'Amistoso'})
+    cond_casa, _ = CatCondicionPartido.objects.get_or_create(codigo='CASA', defaults={'nombre': 'Casa'})
     partido = Partido.objects.create(
         categoria=categoria,
         fecha_hora=timezone.now(),
@@ -58,6 +61,8 @@ def test_registrar_resultado_marca_partido_como_procesado(
     response = client_coord_general.post(url, data)
     assert response.status_code == 302
     partido.refresh_from_db()
+    assert partido.estado is not None
+    assert partido.estado.codigo == 'FINALIZADO'
     assert partido.procesado is True
 
 
@@ -66,15 +71,16 @@ def test_registrar_resultado_calcula_goles_totales_desde_estadisticas(
     client_coord_general, categoria, atleta_de
 ):
     from django.contrib.auth.models import User
-    from filiacion.models import Representante, Atleta, CAT_Posicion, CAT_Lateralidad
+    from filiacion.models import Representante, Atleta
+    from core.models import CatPosicion, CatLateralidad
     otro_user = User.objects.create_user(username='otherrep4', password='ClaveSegura123!')
     otro_rep = Representante.objects.create(
         cedula_identidad='22222225', nombres='Otro', apellidos='Rep',
         telefono_principal='04141112233', direccion_habitacion='Caracas',
         correo_electronico='other4@test.com', usuario=otro_user
     )
-    pos, _ = CAT_Posicion.objects.get_or_create(codigo='DEL', defaults={'nombre': 'Delantero'})
-    lat, _ = CAT_Lateralidad.objects.get_or_create(nombre='Derecho')
+    pos, _ = CatPosicion.objects.get_or_create(codigo='DEL', defaults={'nombre': 'Delantero'})
+    lat, _ = CatLateralidad.objects.get_or_create(nombre='Derecho')
     atleta2 = Atleta.objects.create(
         representante=otro_rep, categoria=categoria,
         nombres='Juan', apellidos='Gomez',
@@ -82,8 +88,8 @@ def test_registrar_resultado_calcula_goles_totales_desde_estadisticas(
         lateralidad=lat, posicion=pos
     )
 
-    tipo_am, _ = CAT_TipoPartido.objects.get_or_create(codigo='AMISTOSO', defaults={'nombre': 'Amistoso'})
-    cond_casa, _ = CAT_CondicionPartido.objects.get_or_create(codigo='CASA', defaults={'nombre': 'Casa'})
+    tipo_am, _ = CatTipoPartido.objects.get_or_create(codigo='AMISTOSO', defaults={'nombre': 'Amistoso'})
+    cond_casa, _ = CatCondicionPartido.objects.get_or_create(codigo='CASA', defaults={'nombre': 'Casa'})
     partido = Partido.objects.create(
         categoria=categoria,
         fecha_hora=timezone.now(),
@@ -123,8 +129,8 @@ def test_registrar_resultado_calcula_goles_totales_desde_estadisticas(
 def test_registrar_resultado_asigna_victoria_cuando_goles_favor_mayores(
     client_coord_general, categoria, atleta_de
 ):
-    tipo_am, _ = CAT_TipoPartido.objects.get_or_create(codigo='AMISTOSO', defaults={'nombre': 'Amistoso'})
-    cond_casa, _ = CAT_CondicionPartido.objects.get_or_create(codigo='CASA', defaults={'nombre': 'Casa'})
+    tipo_am, _ = CatTipoPartido.objects.get_or_create(codigo='AMISTOSO', defaults={'nombre': 'Amistoso'})
+    cond_casa, _ = CatCondicionPartido.objects.get_or_create(codigo='CASA', defaults={'nombre': 'Casa'})
     partido = Partido.objects.create(
         categoria=categoria,
         fecha_hora=timezone.now(),
@@ -156,15 +162,16 @@ def test_registrar_resultado_asigna_victoria_cuando_goles_favor_mayores(
 def test_partido_procesado_no_se_puede_volver_a_editar(
     client_coord_general, categoria
 ):
-    tipo_am, _ = CAT_TipoPartido.objects.get_or_create(codigo='AMISTOSO', defaults={'nombre': 'Amistoso'})
-    cond_casa, _ = CAT_CondicionPartido.objects.get_or_create(codigo='CASA', defaults={'nombre': 'Casa'})
+    tipo_am, _ = CatTipoPartido.objects.get_or_create(codigo='AMISTOSO', defaults={'nombre': 'Amistoso'})
+    cond_casa, _ = CatCondicionPartido.objects.get_or_create(codigo='CASA', defaults={'nombre': 'Casa'})
+    finalizado, _ = CatEstadoPartido.objects.get_or_create(codigo='FINALIZADO', defaults={'nombre': 'Finalizado'})
     partido = Partido.objects.create(
         categoria=categoria,
         fecha_hora=timezone.now(),
         equipo_rival='Deportivo Lara',
         tipo=tipo_am,
         condicion=cond_casa,
-        procesado=True
+        estado=finalizado
     )
     url = reverse('partido_resultado', args=[partido.id])
     response = client_coord_general.get(url)

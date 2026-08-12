@@ -4,9 +4,9 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 
 from administracion.models import (
-    Personal, Categoria, CategoriaEntrenadores,
-    CAT_Cargo, CAT_Licencia, CAT_Genero
+    Personal, Categoria, CategoriaEntrenadores
 )
+from core.models import CatCargo, CatLicencia, CatGenero
 
 
 def crear_usuario(username='admin01', password='ClaveSegura123!'):
@@ -14,17 +14,17 @@ def crear_usuario(username='admin01', password='ClaveSegura123!'):
 
 
 def crear_cargo(nombre='General'):
-    cargo, _ = CAT_Cargo.objects.get_or_create(nombre=nombre)
+    cargo, _ = CatCargo.objects.get_or_create(nombre=nombre)
     return cargo
 
 
 def crear_licencia(nombre='Licencia FVF'):
-    lic, _ = CAT_Licencia.objects.get_or_create(nombre=nombre)
+    lic, _ = CatLicencia.objects.get_or_create(nombre=nombre)
     return lic
 
 
 def crear_genero(nombre='Masculino'):
-    gen, _ = CAT_Genero.objects.get_or_create(nombre=nombre)
+    gen, _ = CatGenero.objects.get_or_create(nombre=nombre)
     return gen
 
 

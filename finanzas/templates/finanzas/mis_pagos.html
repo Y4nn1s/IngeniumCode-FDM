@@ -40,13 +40,13 @@
           <tr class="border-t dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800/50">
             <td class="p-3 dark:text-gray-300">{{ p.id }}</td>
             <td class="p-3 dark:text-gray-300">{{ p.concepto|truncatechars:50 }}</td>
-            <td class="p-3 dark:text-gray-300">{{ p.get_metodo_display }}</td>
+            <td class="p-3 dark:text-gray-300">{{ p.metodo.nombre|default:"-" }}</td>
             <td class="p-3 text-right dark:text-gray-300">{{ p.monto_bs|bs }}</td>
             <td class="p-3 text-right dark:text-gray-300">{{ p.monto_usd|usd }}</td>
             <td class="p-3 dark:text-gray-300">{{ p.fecha_pago }}</td>
             <td class="p-3">
-              {% if p.estado == 'APROBADO' %}<span class="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 rounded text-xs font-semibold">Aprobado</span>
-              {% elif p.estado == 'RECHAZADO' %}<span class="px-2 py-1 bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300 rounded text-xs font-semibold">Rechazado</span>
+              {% if p.estado.codigo == 'APROBADO' %}<span class="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 rounded text-xs font-semibold">Aprobado</span>
+              {% elif p.estado.codigo == 'RECHAZADO' %}<span class="px-2 py-1 bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300 rounded text-xs font-semibold">Rechazado</span>
               {% else %}<span class="px-2 py-1 bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300 rounded text-xs font-semibold">Pendiente</span>
               {% endif %}
             </td>

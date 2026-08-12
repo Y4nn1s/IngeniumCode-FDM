@@ -12,6 +12,7 @@ from django.utils import timezone
 from django.views.generic import CreateView, UpdateView, TemplateView
 
 from filiacion.models import Atleta
+from core.models import CatEstadoPartido
 from .forms import (
     EvaluacionPsicosocialForm,
     EvaluacionTecnicaForm,
@@ -24,8 +25,12 @@ from .models import Estadistica, EvaluacionPsicosocial, EvaluacionTecnica, Parti
 
 @login_required  # Permite a representantes ver el calendario
 def partido_list(request):
-    partidos_pendientes = Partido.objects.filter(procesado=False).order_by('fecha_hora')
-    partidos_jugados = Partido.objects.filter(procesado=True).order_by('-fecha_hora')
+    partidos_pendientes = Partido.objects.filter(
+        estado__codigo__in=['PROGRAMADO', 'EN_JUEGO', 'SUSPENDIDO']
+    ).order_by('fecha_hora')
+    partidos_jugados = Partido.objects.filter(
+        estado__codigo__in=['FINALIZADO', 'CANCELADO']
+    ).order_by('-fecha_hora')
     return render(request, 'deportivo/partido_list.html', {
         'partidos_pendientes': partidos_pendientes,
         'partidos_jugados': partidos_jugados,
@@ -76,8 +81,8 @@ def partido_create(request):
 def partido_registrar_resultado(request, pk):
     """Registrar el resultado de un partido con estadísticas individuales por atleta."""
     partido = get_object_or_404(Partido, pk=pk)
-    
-    if partido.procesado:
+
+    if partido.estado and partido.estado.codigo in ('FINALIZADO', 'CANCELADO'):
         return redirect('partido_list')
     
     # Obtener atletas activos de la categoría del partido
@@ -118,8 +123,11 @@ def partido_registrar_resultado(request, pk):
             partido = form.save(commit=False)
             # Calcular goles a favor desde las estadísticas individuales
             partido.goles_favor_escuela = total_goles_fdm
-            
-            partido.procesado = True
+
+            estado_finalizado, _ = CatEstadoPartido.objects.get_or_create(
+                codigo='FINALIZADO', defaults={'nombre': 'Finalizado'}
+            )
+            partido.estado = estado_finalizado
             partido.save()
             
             return redirect('partido_list')
@@ -289,7 +297,7 @@ class EstadisticasView(GestionDeportivaRequiredMixin, TemplateView):
         ).order_by('-total_rojas', '-total_amarillas')[:10]
         
         # Estadísticas generales
-        partidos_jugados = Partido.objects.filter(procesado=True)
+        partidos_jugados = Partido.objects.filter(estado__codigo='FINALIZADO')
         context['total_partidos'] = partidos_jugados.count()
         context['total_victorias'] = partidos_jugados.filter(
             goles_favor_escuela__gt=F('goles_contra_rival')

@@ -15,7 +15,8 @@ from accounts.decorators import (
 )
 
 from filiacion.models import Representante
-from .models import Pago, Mensualidad, PagoAuditLog, TOLERANCIA_COBERTURA_USD, CAT_EstadoPago
+from core.models import CatEstadoPago
+from .models import Pago, Mensualidad, PagoAuditLog, TOLERANCIA_COBERTURA_USD
 from .forms import ReportarPagoForm, AprobarPagoForm, RechazarPagoForm
 from .telegram_bot import notificar_representante, enviar_mensaje
 
@@ -36,7 +37,7 @@ def reportar_pago(request):
                 pago = form.save(commit=False)
                 pago.representante = rep
 
-                estado_pendiente, _ = CAT_EstadoPago.objects.get_or_create(
+                estado_pendiente, _ = CatEstadoPago.objects.get_or_create(
                     codigo='PENDIENTE',
                     defaults={'descripcion': 'Pago reportado en espera de revisión'}
                 )
@@ -158,7 +159,7 @@ def detalle_admin(request, pk):
         if tasa_sugerida is not None:
             from .models import TasaBCV
             cache_obj = TasaBCV.objects.filter(fecha=pago.fecha_pago).first()
-            fuente_tasa = cache_obj.fuente if cache_obj else 'dolarapi'
+            fuente_tasa = cache_obj.fuente.codigo if cache_obj and cache_obj.fuente else 'dolarapi'
 
     aprobar_form = AprobarPagoForm(
         initial={'tasa_bcv': tasa_sugerida} if tasa_sugerida else None
@@ -210,7 +211,7 @@ def aprobar(request, pk):
 
             with transaction.atomic():
                 estado_anterior = pago.estado.codigo if pago.estado else ''
-                estado_aprobado, _ = CAT_EstadoPago.objects.get_or_create(codigo='APROBADO')
+                estado_aprobado, _ = CatEstadoPago.objects.get_or_create(codigo='APROBADO')
                 pago.tasa_bcv = tasa
                 pago.estado = estado_aprobado
                 pago.revisado_por = request.user
@@ -260,7 +261,7 @@ def rechazar(request, pk):
         if form.is_valid():
             with transaction.atomic():
                 estado_anterior = pago.estado.codigo if pago.estado else ''
-                estado_rechazado, _ = CAT_EstadoPago.objects.get_or_create(codigo='RECHAZADO')
+                estado_rechazado, _ = CatEstadoPago.objects.get_or_create(codigo='RECHAZADO')
                 pago.estado = estado_rechazado
                 pago.motivo_rechazo = form.cleaned_data['motivo']
                 pago.revisado_por = request.user

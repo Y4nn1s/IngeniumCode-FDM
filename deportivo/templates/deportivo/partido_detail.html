@@ -9,6 +9,11 @@
         <div>
             <h2 class="text-3xl font-bold text-fdm-blue">FDM vs {{ partido.equipo_rival }}</h2>
             <p class="text-gray-600 mt-1">{{ partido.fecha_hora|date:"d/m/Y H:i" }} · {{ partido.categoria }}</p>
+            {% if partido.estado %}
+            <p class="mt-1 inline-block px-3 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-700">
+                Estado: {{ partido.estado.nombre }}
+            </p>
+            {% endif %}
         </div>
         <a href="{% url 'partido_list' %}" 
            class="inline-block text-fdm-blue hover:text-fdm-blue-dark font-semibold transition-colors duration-200">

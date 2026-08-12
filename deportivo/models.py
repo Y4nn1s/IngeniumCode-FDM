@@ -1,34 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-from core.models import CatTipoPartido, CatCondicionPartido
-
-
-# === Catálogos Base Locales (se conservan para compatibilidad con datos históricos) ===
-
-class CAT_TipoPartido(models.Model):
-    codigo = models.CharField(max_length=20, unique=True)
-    nombre = models.CharField(max_length=50)
-
-    class Meta:
-        verbose_name = 'Catálogo - Tipo de Partido'
-        verbose_name_plural = 'Catálogos - Tipos de Partidos'
-
-    def __str__(self):
-        return self.nombre
-
-
-class CAT_CondicionPartido(models.Model):
-    codigo = models.CharField(max_length=20, unique=True)
-    nombre = models.CharField(max_length=50)
-
-    class Meta:
-        verbose_name = 'Catálogo - Condición de Partido'
-        verbose_name_plural = 'Catálogos - Condiciones de Partidos'
-
-    def __str__(self):
-        return self.nombre
-
-
+from core.models import CatTipoPartido, CatCondicionPartido, CatEstadoPartido
 
 
 class Partido(models.Model):
@@ -41,22 +13,6 @@ class Partido(models.Model):
     )
     fecha_hora = models.DateTimeField()
     equipo_rival = models.CharField(max_length=100)
-
-    # Catálogos locales anteriores, conservados para datos históricos
-    tipo_legacy = models.ForeignKey(
-        CAT_TipoPartido,
-        on_delete=models.PROTECT,
-        related_name='partidos_legacy',
-        null=True,
-        blank=True,
-    )
-    condicion_legacy = models.ForeignKey(
-        CAT_CondicionPartido,
-        on_delete=models.PROTECT,
-        related_name='partidos_legacy',
-        null=True,
-        blank=True,
-    )
 
     # Catálogos centralizados de la app core
     tipo = models.ForeignKey(
@@ -76,11 +32,25 @@ class Partido(models.Model):
 
     goles_favor_escuela = models.PositiveIntegerField(default=0)
     goles_contra_rival = models.PositiveIntegerField(default=0)
-    procesado = models.BooleanField(default=False)
+
+    # Workflow del partido (3NF): estado es FK a catálogo, no booleano procesado.
+    estado = models.ForeignKey(
+        CatEstadoPartido,
+        on_delete=models.PROTECT,
+        related_name='partidos',
+        null=True,
+        blank=True,
+        help_text="Estado del partido (PROGRAMADO, EN_JUEGO, FINALIZADO, SUSPENDIDO, CANCELADO)"
+    )
 
     class Meta:
         verbose_name = 'Partido'
         verbose_name_plural = 'Partidos'
+
+    @property
+    def procesado(self):
+        """Compatibilidad: un partido está 'procesado' cuando está FINALIZADO."""
+        return self.estado is not None and self.estado.codigo == 'FINALIZADO'
 
     @property
     def resultado(self):

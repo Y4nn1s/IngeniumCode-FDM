@@ -1,9 +1,5 @@
 from django.contrib import admin
-from .models import Atleta, Representante, CAT_Posicion, CAT_Lateralidad
-
-
-admin.site.register(CAT_Posicion)
-admin.site.register(CAT_Lateralidad)
+from .models import Atleta, Representante
 
 
 @admin.register(Atleta)

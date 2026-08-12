@@ -1,15 +1,16 @@
 import pytest
 from decimal import Decimal
 from django.urls import reverse
-from finanzas.models import Pago, PagoAuditLog, Mensualidad, CAT_EstadoPago, CAT_Banco, CAT_MetodoPago
+from finanzas.models import Pago, PagoAuditLog, Mensualidad
+from core.models import CatBanco, CatEstadoPago, CatMetodoPago
 
 
 @pytest.mark.integration
 def test_representante_reporta_pago_y_se_crea_en_estado_pendiente(
     client_representante, mensualidad_pendiente, comprobante_pdf
 ):
-    banco, _ = CAT_Banco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
-    metodo, _ = CAT_MetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
+    banco, _ = CatBanco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
+    metodo, _ = CatMetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
 
     url = reverse('finanzas:reportar')
     data = {
@@ -32,8 +33,8 @@ def test_representante_reporta_pago_y_se_crea_en_estado_pendiente(
 def test_pago_creado_genera_audit_log_con_accion_creado(
     client_representante, mensualidad_pendiente, comprobante_pdf
 ):
-    banco, _ = CAT_Banco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
-    metodo, _ = CAT_MetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
+    banco, _ = CatBanco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
+    metodo, _ = CatMetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
 
     url = reverse('finanzas:reportar')
     data = {
@@ -56,8 +57,8 @@ def test_pago_creado_genera_audit_log_con_accion_creado(
 def test_mensualidades_seleccionadas_quedan_vinculadas_al_pago_pero_no_pagadas(
     client_representante, mensualidad_pendiente, comprobante_pdf
 ):
-    banco, _ = CAT_Banco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
-    metodo, _ = CAT_MetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
+    banco, _ = CatBanco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
+    metodo, _ = CatMetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
 
     url = reverse('finanzas:reportar')
     data = {
@@ -80,9 +81,9 @@ def test_mensualidades_seleccionadas_quedan_vinculadas_al_pago_pero_no_pagadas(
 def test_tesorero_aprueba_pago_marca_mensualidades_pagadas(
     client_tesorero, representante_con_user, mensualidad_pendiente, comprobante_pdf
 ):
-    banco, _ = CAT_Banco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
-    metodo, _ = CAT_MetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
-    est_pen, _ = CAT_EstadoPago.objects.get_or_create(codigo='PENDIENTE', defaults={'descripcion': 'Pendiente'})
+    banco, _ = CatBanco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
+    metodo, _ = CatMetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
+    est_pen, _ = CatEstadoPago.objects.get_or_create(codigo='PENDIENTE', defaults={'descripcion': 'Pendiente'})
 
     pago = Pago.objects.create(
         representante=representante_con_user,
@@ -112,9 +113,9 @@ def test_tesorero_aprueba_pago_marca_mensualidades_pagadas(
 def test_aprobar_pago_con_cobertura_insuficiente_no_marca_mensualidades_pagadas(
     client_tesorero, representante_con_user, atleta_de, comprobante_pdf
 ):
-    banco, _ = CAT_Banco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
-    metodo, _ = CAT_MetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
-    est_pen, _ = CAT_EstadoPago.objects.get_or_create(codigo='PENDIENTE', defaults={'descripcion': 'Pendiente'})
+    banco, _ = CatBanco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
+    metodo, _ = CatMetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
+    est_pen, _ = CatEstadoPago.objects.get_or_create(codigo='PENDIENTE', defaults={'descripcion': 'Pendiente'})
 
     mensualidad_cara = Mensualidad.objects.create(
         atleta=atleta_de,

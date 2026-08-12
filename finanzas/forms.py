@@ -1,6 +1,6 @@
 from django import forms
 from django.utils import timezone
-from .models import Pago, Mensualidad, CAT_EstadoPago, CAT_Banco, CAT_MetodoPago
+from .models import Pago, Mensualidad
 
 INPUT_CSS = 'w-full px-3 py-2 border rounded-lg text-sm dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200 focus:ring-2 focus:ring-fdm-blue focus:border-fdm-blue'
 SELECT_CSS = INPUT_CSS
@@ -33,6 +33,14 @@ class ReportarPagoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         representante = kwargs.pop('representante', None)
         super().__init__(*args, **kwargs)
+        empty_labels = {
+            'metodo': 'Seleccione el método de pago...',
+            'banco_emisor': 'Seleccione un banco...',
+        }
+        for field_name, label in empty_labels.items():
+            field = self.fields.get(field_name)
+            if isinstance(field, forms.ModelChoiceField):
+                field.empty_label = label
         if representante:
             atletas = representante.atletas.filter(activo=True)
             qs = Mensualidad.objects.filter(

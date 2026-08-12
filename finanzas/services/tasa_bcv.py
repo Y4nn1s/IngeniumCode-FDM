@@ -8,6 +8,7 @@ from datetime import date, datetime
 from decimal import Decimal
 import requests
 from django.utils import timezone
+from core.models import CatFuenteTasaBCV
 from finanzas.models import TasaBCV
 
 logger = logging.getLogger(__name__)
@@ -16,6 +17,14 @@ API_BASE = 'https://ve.dolarapi.com/v1'
 ENDPOINT_ACTUAL = f'{API_BASE}/dolares/oficial'
 ENDPOINT_HISTORICO = f'{API_BASE}/historicos/dolares/oficial'
 TIMEOUT_SEGUNDOS = 5
+
+
+def _fuente_dolarapi():
+    """Devuelve la instancia del catálogo DOLARAPI (creándola si falta)."""
+    fuente, _ = CatFuenteTasaBCV.objects.get_or_create(
+        codigo='DOLARAPI', defaults={'nombre': 'DolarAPI'}
+    )
+    return fuente
 
 
 def obtener_tasa(fecha_objetivo=None):
@@ -61,7 +70,7 @@ def obtener_tasa(fecha_objetivo=None):
     # 3. Guardar en cache (idempotente)
     TasaBCV.objects.update_or_create(
         fecha=fecha_objetivo,
-        defaults={'tasa': tasa, 'fuente': 'dolarapi'}
+        defaults={'tasa': tasa, 'fuente': _fuente_dolarapi()}
     )
     logger.info(f'TasaBCV API HIT para {fecha_objetivo}: {tasa}')
     return tasa
@@ -127,6 +136,6 @@ def refrescar_tasa_actual():
 
     TasaBCV.objects.update_or_create(
         fecha=fecha_hoy,
-        defaults={'tasa': tasa, 'fuente': 'dolarapi'}
+        defaults={'tasa': tasa, 'fuente': _fuente_dolarapi()}
     )
     return tasa

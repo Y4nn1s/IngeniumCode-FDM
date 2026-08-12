@@ -1,16 +1,17 @@
 import pytest
 from decimal import Decimal
 from django.urls import reverse
-from finanzas.models import Pago, PagoAuditLog, Mensualidad, CAT_Banco, CAT_EstadoPago, CAT_MetodoPago
+from finanzas.models import Pago, PagoAuditLog, Mensualidad
+from core.models import CatBanco, CatEstadoPago, CatMetodoPago
 
 
 @pytest.mark.integration
 def test_tesorero_rechaza_pago_cambia_estado_a_rechazado(
     client_tesorero, representante_con_user, mensualidad_pendiente, comprobante_pdf
 ):
-    banco, _ = CAT_Banco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
-    metodo, _ = CAT_MetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
-    est_pen, _ = CAT_EstadoPago.objects.get_or_create(codigo='PENDIENTE', defaults={'descripcion': 'Pendiente'})
+    banco, _ = CatBanco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
+    metodo, _ = CatMetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
+    est_pen, _ = CatEstadoPago.objects.get_or_create(codigo='PENDIENTE', defaults={'descripcion': 'Pendiente'})
 
     pago = Pago.objects.create(
         representante=representante_con_user,
@@ -37,9 +38,9 @@ def test_tesorero_rechaza_pago_cambia_estado_a_rechazado(
 def test_rechazar_pago_desvincula_mensualidades(
     client_tesorero, representante_con_user, mensualidad_pendiente, comprobante_pdf
 ):
-    banco, _ = CAT_Banco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
-    metodo, _ = CAT_MetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
-    est_pen, _ = CAT_EstadoPago.objects.get_or_create(codigo='PENDIENTE', defaults={'descripcion': 'Pendiente'})
+    banco, _ = CatBanco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
+    metodo, _ = CatMetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
+    est_pen, _ = CatEstadoPago.objects.get_or_create(codigo='PENDIENTE', defaults={'descripcion': 'Pendiente'})
 
     pago = Pago.objects.create(
         representante=representante_con_user,
@@ -67,9 +68,9 @@ def test_rechazar_pago_desvincula_mensualidades(
 def test_rechazar_pago_guarda_motivo_y_genera_audit_log(
     client_tesorero, representante_con_user, mensualidad_pendiente, comprobante_pdf
 ):
-    banco, _ = CAT_Banco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
-    metodo, _ = CAT_MetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
-    est_pen, _ = CAT_EstadoPago.objects.get_or_create(codigo='PENDIENTE', defaults={'descripcion': 'Pendiente'})
+    banco, _ = CatBanco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
+    metodo, _ = CatMetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
+    est_pen, _ = CatEstadoPago.objects.get_or_create(codigo='PENDIENTE', defaults={'descripcion': 'Pendiente'})
 
     pago = Pago.objects.create(
         representante=representante_con_user,
@@ -100,9 +101,9 @@ def test_rechazar_pago_guarda_motivo_y_genera_audit_log(
 def test_rechazar_pago_dispara_notificacion_telegram_de_rechazo(
     client_tesorero, representante_con_user, mensualidad_pendiente, comprobante_pdf, mock_telegram
 ):
-    banco, _ = CAT_Banco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
-    metodo, _ = CAT_MetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
-    est_pen, _ = CAT_EstadoPago.objects.get_or_create(codigo='PENDIENTE', defaults={'descripcion': 'Pendiente'})
+    banco, _ = CatBanco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
+    metodo, _ = CatMetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
+    est_pen, _ = CatEstadoPago.objects.get_or_create(codigo='PENDIENTE', defaults={'descripcion': 'Pendiente'})
 
     pago = Pago.objects.create(
         representante=representante_con_user,

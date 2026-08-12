@@ -2,7 +2,8 @@ import pytest
 from datetime import date
 from decimal import Decimal
 from django.urls import reverse
-from finanzas.models import Pago, CAT_Banco, CAT_EstadoPago, CAT_MetodoPago
+from finanzas.models import Pago
+from core.models import CatBanco, CatEstadoPago, CatMetodoPago
 
 
 @pytest.mark.integration
@@ -11,9 +12,9 @@ def test_notificar_pago_aprobado_envia_mensaje_con_formato_correcto(
 ):
     from finanzas.telegram_bot import notificar_pago_aprobado
     
-    banco, _ = CAT_Banco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
-    metodo, _ = CAT_MetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
-    est_apr, _ = CAT_EstadoPago.objects.get_or_create(codigo='APROBADO', defaults={'descripcion': 'Aprobado'})
+    banco, _ = CatBanco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
+    metodo, _ = CatMetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
+    est_apr, _ = CatEstadoPago.objects.get_or_create(codigo='APROBADO', defaults={'descripcion': 'Aprobado'})
 
     pago = Pago.objects.create(
         representante=representante_con_user,
@@ -48,9 +49,9 @@ def test_notificar_pago_sin_chat_id_no_lanza_error(
     representante_con_user.telegram_chat_id = ''
     representante_con_user.save()
     
-    banco, _ = CAT_Banco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
-    metodo, _ = CAT_MetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
-    est_apr, _ = CAT_EstadoPago.objects.get_or_create(codigo='APROBADO', defaults={'descripcion': 'Aprobado'})
+    banco, _ = CatBanco.objects.get_or_create(codigo_sudeban='0134', defaults={'nombre': 'Banesco'})
+    metodo, _ = CatMetodoPago.objects.get_or_create(codigo='PAGO_MOVIL', defaults={'nombre': 'Pago Móvil'})
+    est_apr, _ = CatEstadoPago.objects.get_or_create(codigo='APROBADO', defaults={'descripcion': 'Aprobado'})
 
     pago = Pago.objects.create(
         representante=representante_con_user,
@@ -86,7 +87,8 @@ def test_representante_no_puede_descargar_ficha_de_atleta_ajeno(
     client_representante, categoria
 ):
     from django.contrib.auth.models import User
-    from filiacion.models import Representante, Atleta, CAT_Posicion, CAT_Lateralidad
+    from filiacion.models import Representante, Atleta
+    from core.models import CatPosicion, CatLateralidad
     
     otro_user = User.objects.create_user(username='otherrep5', password='ClaveSegura123!')
     otro_rep = Representante.objects.create(
@@ -94,8 +96,8 @@ def test_representante_no_puede_descargar_ficha_de_atleta_ajeno(
         telefono_principal='04141112233', direccion_habitacion='Caracas',
         correo_electronico='other5@test.com', usuario=otro_user
     )
-    pos, _ = CAT_Posicion.objects.get_or_create(codigo='DEL', defaults={'nombre': 'Delantero'})
-    lat, _ = CAT_Lateralidad.objects.get_or_create(nombre='Derecho')
+    pos, _ = CatPosicion.objects.get_or_create(codigo='DEL', defaults={'nombre': 'Delantero'})
+    lat, _ = CatLateralidad.objects.get_or_create(nombre='Derecho')
 
     atleta_ajeno = Atleta.objects.create(
         representante=otro_rep, categoria=categoria,

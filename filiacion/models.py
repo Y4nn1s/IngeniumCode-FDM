@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -7,31 +8,34 @@ from core.models import CatPosicion, CatLateralidad
 User = get_user_model()
 
 
-# === Catálogos Base Locales (se conservan para compatibilidad con datos históricos) ===
+# Curvas biológicas FDM (prevención de errores de tipeo; se omiten con
+# es_condicion_especial=True). Los valores son máximos tolerados por edad.
+MAX_PESO_KG_POR_EDAD = [
+    (5, Decimal('35.00')),   # <= 5 años
+    (7, Decimal('40.00')),   # Sub-7
+    (9, Decimal('45.00')),   # Sub-9
+    (11, Decimal('55.00')),  # Sub-11
+    (13, Decimal('65.00')),  # Sub-13
+    (15, Decimal('75.00')),  # Sub-15
+    (99, Decimal('90.00')),  # > 15 años
+]
+PESO_MINIMO_KG = Decimal('10.00')
 
-class CAT_Posicion(models.Model):
-    codigo = models.CharField(max_length=10, unique=True)
-    nombre = models.CharField(max_length=50)
-
-    class Meta:
-        verbose_name = 'Catálogo - Posición'
-        verbose_name_plural = 'Catálogos - Posiciones'
-
-    def __str__(self):
-        return f"{self.nombre} ({self.codigo})"
-
-
-class CAT_Lateralidad(models.Model):
-    nombre = models.CharField(max_length=30, unique=True)
-
-    class Meta:
-        verbose_name = 'Catálogo - Lateralidad'
-        verbose_name_plural = 'Catálogos - Lateralidades'
-
-    def __str__(self):
-        return self.nombre
+MAX_ALTURA_MTS_POR_EDAD = [
+    (8, Decimal('1.60')),    # <= 8 años
+    (10, Decimal('1.70')),   # Sub-10
+    (12, Decimal('1.80')),   # Sub-12
+    (14, Decimal('1.90')),   # Sub-14
+    (99, Decimal('2.10')),   # > 14 años
+]
 
 
+def _limite_por_edad(edad, tabla):
+    """Devuelve el límite de la banda que corresponde a la edad."""
+    for tope, limite in tabla:
+        if edad <= tope:
+            return limite
+    return tabla[-1][1]
 
 
 class Representante(models.Model):
@@ -131,18 +135,45 @@ class Atleta(models.Model):
                 'La cédula de identidad es obligatoria para atletas de 9 años o más (normativa SAIME).'
             )
 
-        # --- Matriz Biométrica (Prevención de errores de tipeo) ---
-        if edad is not None and self.peso_kg is not None:
-            if not self.es_condicion_especial:
-                # Regla biométrica 1: Peso anómalo para menores de 5 años.
-                if edad <= 5 and self.peso_kg > 35:
-                    errores['peso_kg'] = (
-                        "Peso anómalo para la edad. Marque 'Condición Especial' si el dato es correcto."
+        # --- Regla 3: Coherencia fecha de nacimiento ↔ categoría (FVF) ---
+        if edad is not None and self.categoria_id is not None:
+            anio_nacimiento = self.fecha_nacimiento.year
+            try:
+                anio_min = self.categoria.anio_nacimiento_min
+                anio_max = self.categoria.anio_nacimiento_max
+            except Exception:
+                anio_min = anio_max = None
+            if anio_min is not None and anio_max is not None:
+                if not (anio_min <= anio_nacimiento <= anio_max):
+                    errores['categoria'] = (
+                        f"El año de nacimiento ({anio_nacimiento}) no coincide con la categoría "
+                        f"{self.categoria.nombre} (años {anio_min}-{anio_max})."
                     )
-                # Regla biométrica 2: Peso anómalo para menores de 10 años.
-                elif edad <= 10 and self.peso_kg > 60:
+
+        # --- Matriz Biométrica (Prevención de errores de tipeo) ---
+        # Se omite por completo si el atleta tiene condición especial (datos
+        # médicamente justificados en observacion_medica).
+        if edad is not None and not self.es_condicion_especial:
+            if self.peso_kg is not None:
+                if self.peso_kg < PESO_MINIMO_KG:
                     errores['peso_kg'] = (
-                        "Peso anómalo para la edad. Marque 'Condición Especial' si el dato es correcto."
+                        f"Peso anómalo para un atleta ({self.peso_kg} kg). Marque "
+                        "'Condición Especial' si el dato es correcto."
+                    )
+                else:
+                    peso_max = _limite_por_edad(edad, MAX_PESO_KG_POR_EDAD)
+                    if self.peso_kg > peso_max:
+                        errores['peso_kg'] = (
+                            f"Peso anómalo para la edad ({self.peso_kg} kg, máx. {peso_max} kg). "
+                            "Marque 'Condición Especial' si el dato es correcto."
+                        )
+
+            if self.altura_mts is not None:
+                altura_max = _limite_por_edad(edad, MAX_ALTURA_MTS_POR_EDAD)
+                if self.altura_mts > altura_max:
+                    errores['altura_mts'] = (
+                        f"Altura anómala para la edad ({self.altura_mts} mts, máx. {altura_max} mts). "
+                        "Marque 'Condición Especial' si el dato es correcto."
                     )
 
         # Regla de condición especial: exige justificación médica.

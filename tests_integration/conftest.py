@@ -5,9 +5,10 @@ from django.contrib.auth.models import User, Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 
-from filiacion.models import Representante, Atleta, CAT_Posicion, CAT_Lateralidad
-from administracion.models import Categoria, Personal, CAT_Cargo, CAT_Genero
+from filiacion.models import Representante, Atleta
+from administracion.models import Categoria, Personal
 from finanzas.models import Mensualidad, Pago
+from core.models import CatPosicion, CatLateralidad, CatCargo, CatGenero
 
 
 @pytest.fixture
@@ -71,8 +72,8 @@ def entrenador_user(db):
 
 @pytest.fixture
 def categoria(db):
-    cargo, _ = CAT_Cargo.objects.get_or_create(nombre='Deportivo')
-    gen, _ = CAT_Genero.objects.get_or_create(nombre='Masculino')
+    cargo, _ = CatCargo.objects.get_or_create(nombre='Deportivo')
+    gen, _ = CatGenero.objects.get_or_create(nombre='Masculino')
     pers = Personal.objects.create(cargo=cargo, cedula_identidad='V-55555555', nombres='Coord', apellidos='Sup', telefono='04141112233')
     return Categoria.objects.create(
         nombre='Sub-9',
@@ -85,8 +86,8 @@ def categoria(db):
 
 @pytest.fixture
 def atleta_de(representante_con_user, categoria):
-    pos, _ = CAT_Posicion.objects.get_or_create(codigo='DEL', defaults={'nombre': 'Delantero'})
-    lat, _ = CAT_Lateralidad.objects.get_or_create(nombre='Derecho')
+    pos, _ = CatPosicion.objects.get_or_create(codigo='DEL', defaults={'nombre': 'Delantero'})
+    lat, _ = CatLateralidad.objects.get_or_create(nombre='Derecho')
     return Atleta.objects.create(
         representante=representante_con_user,
         categoria=categoria,

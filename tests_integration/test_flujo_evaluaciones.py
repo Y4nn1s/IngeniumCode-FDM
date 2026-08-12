@@ -2,15 +2,16 @@ import pytest
 from datetime import date
 from django.urls import reverse
 from deportivo.models import EvaluacionTecnica, EvaluacionPsicosocial
-from administracion.models import Personal, CAT_Cargo, CAT_Licencia
+from administracion.models import Personal
+from core.models import CatCargo, CatLicencia
 
 
 @pytest.mark.integration
 def test_entrenador_puede_crear_evaluacion_tecnica(
     client_entrenador, atleta_de
 ):
-    cargo_ent, _ = CAT_Cargo.objects.get_or_create(nombre='Entrenador')
-    lic_fvf, _ = CAT_Licencia.objects.get_or_create(nombre='Licencia FVF')
+    cargo_ent, _ = CatCargo.objects.get_or_create(nombre='Entrenador')
+    lic_fvf, _ = CatLicencia.objects.get_or_create(nombre='Licencia FVF')
     ent = Personal.objects.create(
         cargo=cargo_ent, licencia=lic_fvf, cedula_identidad='V-99001122',
         nombres='Carlos', apellidos='Entrena', telefono='04141234567'
@@ -36,8 +37,8 @@ def test_entrenador_puede_crear_evaluacion_tecnica(
 def test_evaluacion_tecnica_vincula_correctamente_atleta_y_entrenador(
     client_entrenador, atleta_de
 ):
-    cargo_ent, _ = CAT_Cargo.objects.get_or_create(nombre='Entrenador')
-    lic_fvf, _ = CAT_Licencia.objects.get_or_create(nombre='Licencia FVF')
+    cargo_ent, _ = CatCargo.objects.get_or_create(nombre='Entrenador')
+    lic_fvf, _ = CatLicencia.objects.get_or_create(nombre='Licencia FVF')
     ent = Personal.objects.create(
         cargo=cargo_ent, licencia=lic_fvf, cedula_identidad='V-99001123',
         nombres='Carlos', apellidos='Entrena', telefono='04141234567'
@@ -64,7 +65,7 @@ def test_evaluacion_tecnica_vincula_correctamente_atleta_y_entrenador(
 def test_coord_deportivo_puede_crear_evaluacion_psicosocial(
     client_coord_general, coord_general, atleta_de
 ):
-    cargo_dep, _ = CAT_Cargo.objects.get_or_create(nombre='Deportivo')
+    cargo_dep, _ = CatCargo.objects.get_or_create(nombre='Deportivo')
     coord_profile = Personal.objects.create(
         usuario=coord_general,
         cargo=cargo_dep,
