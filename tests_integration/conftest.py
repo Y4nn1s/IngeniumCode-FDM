@@ -74,7 +74,7 @@ def entrenador_user(db):
 def categoria(db):
     cargo, _ = CatCargo.objects.get_or_create(nombre='Deportivo')
     gen, _ = CatGenero.objects.get_or_create(nombre='Masculino')
-    pers = Personal.objects.create(cargo=cargo, cedula_identidad='V-55555555', nombres='Coord', apellidos='Sup', telefono='04141112233')
+    pers = Personal.objects.create(cargo=cargo, cedula_identidad='55555555', nombres='Coord', apellidos='Sup', telefono='04141112233')
     return Categoria.objects.create(
         nombre='Sub-9',
         anio_nacimiento_min=2017,

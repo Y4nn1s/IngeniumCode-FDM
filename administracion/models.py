@@ -6,6 +6,7 @@ from core.models import (
     CatLicencia,
     CatGenero,
 )
+from core.validators import validar_cedula_venezolana
 
 User = get_user_model()
 
@@ -31,7 +32,10 @@ class Personal(models.Model):
         blank=True,
         related_name='personal'
     )
-    cedula_identidad = models.CharField(max_length=15, unique=True, db_index=True)
+    cedula_identidad = models.CharField(
+        max_length=15, unique=True, db_index=True,
+        validators=[validar_cedula_venezolana]
+    )
     nombres = models.CharField(max_length=100)
     apellidos = models.CharField(max_length=100)
     telefono = models.CharField(max_length=20)

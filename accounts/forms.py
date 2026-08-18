@@ -4,6 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from core.validators import validar_cedula_venezolana, normalizar_cedula
 from filiacion.models import Representante
 
 
@@ -19,16 +20,9 @@ INPUT_CSS = (
 
 
 # === Validadores ===
-CEDULA_REGEX = re.compile(r'^\d{6,9}$')
+# La cédula se valida con el validador compartido del sistema (core.validators):
+# solo dígitos, máximo 8 (norma venezolana).
 TELEFONO_REGEX = re.compile(r'^0(412|414|416|424|426)\d{7}$')
-
-
-def validar_cedula_venezolana(value):
-    """6 a 9 dígitos numéricos."""
-    if not CEDULA_REGEX.match(value):
-        raise ValidationError(
-            'La cédula debe tener entre 6 y 9 dígitos. Ej: 1234567'
-        )
 
 
 def validar_telefono_venezolano(value):
@@ -101,20 +95,19 @@ class RepresentanteSignUpForm(UserCreationForm):
         self.fields['password2'].help_text = 'Repite la misma contraseña para confirmar.'
 
     cedula_identidad = forms.CharField(
-        max_length=9, min_length=6, required=True,
+        max_length=8, required=True,
         label='Cédula de Identidad',
-        help_text='Entre 6 y 9 dígitos numéricos.',
+        help_text='Solo dígitos (máximo 8). Ej: 12345678',
         validators=[validar_cedula_venezolana],
         widget=forms.TextInput(attrs={
             'class': INPUT_CSS,
             'placeholder': '12345678',
             'autocomplete': 'username',
-            'maxlength': '9',
-            'minlength': '6',
-            'pattern': r'\d{6,9}',
+            'maxlength': '8',
+            'pattern': r'\d{1,8}',
             'inputmode': 'numeric',
-            'title': 'Entre 6 y 9 dígitos numéricos',
-            'oninput': "this.value = this.value.replace(/[^0-9]/g, '').slice(0, 9)",
+            'title': 'Solo dígitos, máximo 8',
+            'oninput': "this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8)",
         }),
     )
     nombres = forms.CharField(
@@ -187,7 +180,8 @@ class RepresentanteSignUpForm(UserCreationForm):
         )
 
     def clean_cedula_identidad(self):
-        cedula = self.cleaned_data['cedula_identidad']
+        cedula = normalizar_cedula(self.cleaned_data['cedula_identidad'])
+        validar_cedula_venezolana(cedula)
         if User.objects.filter(username=cedula).exists():
             raise ValidationError('Ya existe una cuenta con esta cédula.')
         if Representante.objects.filter(cedula_identidad=cedula).exists():

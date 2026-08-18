@@ -16,6 +16,7 @@ from accounts.decorators import (
 
 from filiacion.models import Representante
 from core.models import CatEstadoPago
+from core.validators import normalizar_cedula
 from .models import Pago, Mensualidad, PagoAuditLog, TOLERANCIA_COBERTURA_USD
 from .forms import ReportarPagoForm, AprobarPagoForm, RechazarPagoForm
 from .telegram_bot import notificar_representante, enviar_mensaje
@@ -301,7 +302,9 @@ def telegram_webhook(request):
                 if len(partes) > 1:
                     token = partes[1]
                     try:
-                        rep = Representante.objects.get(cedula_identidad=token)
+                        rep = Representante.objects.get(
+                            cedula_identidad=normalizar_cedula(token)
+                        )
                         rep.telegram_chat_id = chat_id
                         rep.save()
                         enviar_mensaje(chat_id, f"✅ Hola {rep.nombres}, tu cuenta de Telegram ha sido vinculada exitosamente con FDM.")

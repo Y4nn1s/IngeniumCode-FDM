@@ -123,7 +123,7 @@ EQUIPOS_RIVALES = [
 def _cedula_al_azar(cedulas_existentes):
     while True:
         num = random.randint(10000000, 32000000)
-        ci = f"V-{num}"
+        ci = f"{num}"
         if ci not in cedulas_existentes:
             cedulas_existentes.add(ci)
             return ci
@@ -362,7 +362,7 @@ class Command(BaseCommand):
         user_cg.groups.add(grupo_cg)
 
         coord_general, _ = Personal.objects.get_or_create(
-            cedula_identidad='V-SEED-001',
+            cedula_identidad='10000001',
             defaults={'usuario': user_cg, 'cargo': cargo_gen, 'nombres': 'Roberto Carlos', 'apellidos': 'Medina Pérez', 'telefono': 'SEED_0412001', 'activo': True}
         )
 
@@ -375,7 +375,7 @@ class Command(BaseCommand):
         user_cde.groups.add(grupo_cd)
 
         coord_deportivo, _ = Personal.objects.get_or_create(
-            cedula_identidad='V-SEED-002',
+            cedula_identidad='10000002',
             defaults={'usuario': user_cde, 'cargo': cargo_dep, 'nombres': 'Andrés Felipe', 'apellidos': 'Villalobos Torres', 'telefono': 'SEED_0412002', 'activo': True}
         )
 
@@ -388,16 +388,16 @@ class Command(BaseCommand):
         user_tes.groups.add(grupo_tes)
 
         personal_tesoreria, _ = Personal.objects.get_or_create(
-            cedula_identidad='V-SEED-003',
+            cedula_identidad='10000003',
             defaults={'usuario': user_tes, 'cargo': cargo_tes, 'nombres': 'Luisa', 'apellidos': 'Ferrer', 'telefono': 'SEED_0412003', 'activo': True}
         )
 
         # ── 6. Entrenadores y Delegados (Personal) ───────────────────────
         entrenadores_data = [
-            ('Freddy', 'Urdaneta Morales', lic_fvf, 'SEED_0412000001', 'V-SEED-101'),
-            ('Héctor', 'Bracho Sánchez', lic_conmebol, 'SEED_0416000002', 'V-SEED-102'),
-            ('Wilmer', 'Chirinos Díaz', lic_fvf, 'SEED_0424000003', 'V-SEED-103'),
-            ('José Luis', 'Rincón González', lic_conmebol, 'SEED_0414000004', 'V-SEED-104'),
+            ('Freddy', 'Urdaneta Morales', lic_fvf, 'SEED_0412000001', '10000101'),
+            ('Héctor', 'Bracho Sánchez', lic_conmebol, 'SEED_0416000002', '10000102'),
+            ('Wilmer', 'Chirinos Díaz', lic_fvf, 'SEED_0424000003', '10000103'),
+            ('José Luis', 'Rincón González', lic_conmebol, 'SEED_0414000004', '10000104'),
         ]
         entrenadores = []
         for nombres, apellidos, licencia, tel, ci in entrenadores_data:
@@ -408,12 +408,12 @@ class Command(BaseCommand):
             entrenadores.append(p_ent)
 
         delegados_data = [
-            ('Carmen', 'Fuenmayor López', 'SEED_0412000005', 'V-SEED-201'),
-            ('Xiomara', 'Palmar Ríos', 'SEED_0424000006', 'V-SEED-202'),
-            ('Gladys', 'Pérez Marín', 'SEED_0416000007', 'V-SEED-203'),
-            ('Teresa', 'Méndez Bravo', 'SEED_0414000008', 'V-SEED-204'),
-            ('Beatriz', 'Salazar Orozco', 'SEED_0426000009', 'V-SEED-205'),
-            ('Victoria', 'Giménez Paz', 'SEED_0412000010', 'V-SEED-206'),
+            ('Carmen', 'Fuenmayor López', 'SEED_0412000005', '10000201'),
+            ('Xiomara', 'Palmar Ríos', 'SEED_0424000006', '10000202'),
+            ('Gladys', 'Pérez Marín', 'SEED_0416000007', '10000203'),
+            ('Teresa', 'Méndez Bravo', 'SEED_0414000008', '10000204'),
+            ('Beatriz', 'Salazar Orozco', 'SEED_0426000009', '10000205'),
+            ('Victoria', 'Giménez Paz', 'SEED_0412000010', '10000206'),
         ]
         delegados = []
         for nombres, apellidos, tel, ci in delegados_data:
@@ -489,7 +489,7 @@ class Command(BaseCommand):
             inactivo = (idx % 20 == 0)
 
             edad = hoy.year - fecha_nac.year - ((hoy.month, hoy.day) < (fecha_nac.month, fecha_nac.day))
-            ci_atleta = f"V-{random.randint(33000000, 39000000)}" if edad >= 9 else None
+            ci_atleta = f"{random.randint(33000000, 39000000)}" if edad >= 9 else None
 
             atleta, _ = Atleta.objects.get_or_create(
                 representante=rep,

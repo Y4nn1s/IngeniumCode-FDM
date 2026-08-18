@@ -1,6 +1,7 @@
 from datetime import date
 from django import forms
 from django.core.exceptions import ValidationError
+from core.validators import validar_cedula_venezolana, normalizar_cedula
 from .models import Atleta, Representante
 
 
@@ -16,15 +17,16 @@ class RepresentanteForm(forms.ModelForm):
         model = Representante
         fields = '__all__'
         widgets = {
-            'cedula_identidad': forms.TextInput(attrs={'inputmode': 'numeric', 'pattern': '[0-9]*', 'maxlength': '9', 'minlength': '6'}),
+            'cedula_identidad': forms.TextInput(attrs={'inputmode': 'numeric', 'pattern': '[0-9]*', 'maxlength': '8', 'placeholder': '12345678'}),
             'telefono_principal': forms.TextInput(attrs={'inputmode': 'numeric', 'pattern': '[0-9]*', 'maxlength': '11', 'placeholder': '04141234567'}),
             'direccion_habitacion': forms.Textarea(attrs={'rows': 3}),
         }
 
     def clean_cedula_identidad(self):
         ci = self.cleaned_data.get('cedula_identidad', '')
-        if ci and not ci.isdigit():
-            raise ValidationError("La cédula debe contener solo números.")
+        if ci:
+            ci = normalizar_cedula(ci)
+            validar_cedula_venezolana(ci)
         return ci
 
     def clean_telefono_principal(self):
@@ -60,12 +62,21 @@ class AtletaForm(forms.ModelForm):
             elif not isinstance(field.widget, forms.CheckboxInput):
                 field.widget.attrs.update({'class': input_classes})
 
+    def clean_cedula_identidad(self):
+        # Campo opcional (obligatorio desde los 9 años por normativa SAIME,
+        # regla impuesta en Atleta.clean()); solo se valida si trae dato.
+        ci = self.cleaned_data.get('cedula_identidad', '')
+        if ci:
+            ci = normalizar_cedula(ci)
+            validar_cedula_venezolana(ci)
+        return ci
+
     class Meta:
         model = Atleta
         fields = '__all__'
         widgets = {
             'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-            'cedula_identidad': forms.TextInput(attrs={'inputmode': 'numeric', 'pattern': '[0-9]*', 'maxlength': '9'}),
+            'cedula_identidad': forms.TextInput(attrs={'inputmode': 'numeric', 'pattern': '[0-9]*', 'maxlength': '8', 'placeholder': 'Opcional (SAIME ≥ 9 años)'}),
             'peso_kg': forms.NumberInput(attrs={'step': '0.01', 'min': '10', 'max': '120'}),
             'altura_mts': forms.NumberInput(attrs={'step': '0.01', 'min': '0.50', 'max': '2.50'}),
             'foto_perfil': forms.ClearableFileInput(attrs={'accept': 'image/*'}),

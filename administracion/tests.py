@@ -28,7 +28,7 @@ def crear_genero(nombre='Masculino'):
     return gen
 
 
-def crear_personal(usuario=None, cargo=None, cedula='V-11223344', nombres='María', apellidos='Coordina'):
+def crear_personal(usuario=None, cargo=None, cedula='11223344', nombres='María', apellidos='Coordina'):
     if cargo is None:
         cargo = crear_cargo()
     return Personal.objects.create(
@@ -46,7 +46,7 @@ def crear_categoria(nombre='Sub-9', genero=None, anio_min=2017, anio_max=2018, s
     if genero is None:
         genero = crear_genero()
     if supervisor is None:
-        supervisor = crear_personal(cedula='V-99999999')
+        supervisor = crear_personal(cedula='99999999')
     cat = Categoria(
         nombre=nombre,
         anio_nacimiento_min=anio_min,
@@ -73,7 +73,7 @@ class PersonalTestCase(TestCase):
             anio_nacimiento_min=2020,
             anio_nacimiento_max=2015,
             genero=crear_genero(),
-            coordinador_supervisor=crear_personal(cedula='V-88888888')
+            coordinador_supervisor=crear_personal(cedula='88888888')
         )
         with self.assertRaises(ValidationError):
             cat.full_clean()

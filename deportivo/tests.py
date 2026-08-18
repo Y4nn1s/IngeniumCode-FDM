@@ -15,7 +15,7 @@ def crear_partido(rival="Rayo Zuliano", gf=2, gc=1):
     cargo, _ = CatCargo.objects.get_or_create(nombre='Deportivo')
     gen, _ = CatGenero.objects.get_or_create(nombre='Masculino')
     pers, _ = Personal.objects.get_or_create(
-        cedula_identidad='V-66666666',
+        cedula_identidad='66666666',
         defaults={'cargo': cargo, 'nombres': 'Coord', 'apellidos': 'Sup', 'telefono': '04141112233'}
     )
     cat, _ = Categoria.objects.get_or_create(

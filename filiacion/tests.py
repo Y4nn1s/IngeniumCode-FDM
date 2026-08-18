@@ -28,7 +28,7 @@ def crear_categoria(nombre='Sub-9'):
     cargo, _ = CatCargo.objects.get_or_create(nombre='Deportivo')
     gen, _ = CatGenero.objects.get_or_create(nombre='Masculino')
     pers = Personal.objects.create(
-        cargo=cargo, cedula_identidad='V-77777777', nombres='Coord', apellidos='Sup', telefono='04141112233'
+        cargo=cargo, cedula_identidad='77777777', nombres='Coord', apellidos='Sup', telefono='04141112233'
     )
     return Categoria.objects.create(
         nombre=nombre,

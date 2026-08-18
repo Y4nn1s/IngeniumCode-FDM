@@ -108,7 +108,7 @@ def test_coord_general_puede_crear_atleta(
         'nombres': 'Pedro',
         'apellidos': 'Gomez',
         'fecha_nacimiento': '2017-03-15',
-        'cedula_identidad': 'V-34567890',
+        'cedula_identidad': '34567890',
         'numero_acta_nacimiento': 'ACTA-999',
         'lateralidad': lat.id,
         'posicion': pos.id,

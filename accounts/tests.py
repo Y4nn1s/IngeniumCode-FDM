@@ -94,10 +94,17 @@ class Fase1_ValidadoresVenezolanosTestCase(TestCase):
         with self.assertRaises(ValidationError):
             validar_cedula_venezolana('V1234567')
 
-    def test_cedula_con_menos_de_8_digitos_lanza_validation_error(self):
-        """Cédula con menos de 6 dígitos debe lanzar ValidationError."""
+    def test_cedula_con_mas_de_8_digitos_lanza_validation_error(self):
+        """Cédula con más de 8 dígitos debe lanzar ValidationError."""
         with self.assertRaises(ValidationError):
+            validar_cedula_venezolana('123456789')
+
+    def test_cedula_corta_valida_pasa_validacion(self):
+        """Cédulas cortas (1-8 dígitos) son válidas conforme a la norma venezolana."""
+        try:
             validar_cedula_venezolana('12345')
+        except ValidationError:
+            self.fail('validar_cedula_venezolana() lanzó ValidationError inesperadamente.')
 
     def test_telefono_con_prefijo_valido_pasa_validacion(self):
         """Teléfono con prefijo venezolano válido (0414) no debe lanzar ValidationError."""
@@ -272,7 +279,7 @@ class Fase3_RepresentanteSignUpFormTestCase(TestCase):
     def test_signup_form_con_cedula_invalida_no_crea_user(self):
         """Un formulario con formato de cédula inválido debe fallar en validación y no crear registros."""
         data = {
-            'cedula_identidad': 'V1234567',  # Formato incorrecto
+            'cedula_identidad': '123456789',  # 9 dígitos: excede el máximo de 8
             'nombres': 'Luis',
             'apellidos': 'Rodríguez',
             'correo_electronico': 'luis@test.com',

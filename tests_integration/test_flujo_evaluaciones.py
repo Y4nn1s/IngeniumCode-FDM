@@ -13,7 +13,7 @@ def test_entrenador_puede_crear_evaluacion_tecnica(
     cargo_ent, _ = CatCargo.objects.get_or_create(nombre='Entrenador')
     lic_fvf, _ = CatLicencia.objects.get_or_create(nombre='Licencia FVF')
     ent = Personal.objects.create(
-        cargo=cargo_ent, licencia=lic_fvf, cedula_identidad='V-99001122',
+        cargo=cargo_ent, licencia=lic_fvf, cedula_identidad='99001122',
         nombres='Carlos', apellidos='Entrena', telefono='04141234567'
     )
     url = reverse('evaluacion_tecnica_create')
@@ -40,7 +40,7 @@ def test_evaluacion_tecnica_vincula_correctamente_atleta_y_entrenador(
     cargo_ent, _ = CatCargo.objects.get_or_create(nombre='Entrenador')
     lic_fvf, _ = CatLicencia.objects.get_or_create(nombre='Licencia FVF')
     ent = Personal.objects.create(
-        cargo=cargo_ent, licencia=lic_fvf, cedula_identidad='V-99001123',
+        cargo=cargo_ent, licencia=lic_fvf, cedula_identidad='99001123',
         nombres='Carlos', apellidos='Entrena', telefono='04141234567'
     )
     url = reverse('evaluacion_tecnica_create')
@@ -69,7 +69,7 @@ def test_coord_deportivo_puede_crear_evaluacion_psicosocial(
     coord_profile = Personal.objects.create(
         usuario=coord_general,
         cargo=cargo_dep,
-        cedula_identidad='V-99001124',
+        cedula_identidad='99001124',
         nombres='Maria', apellidos='Coordina', telefono='04141112233'
     )
     url = reverse('evaluacion_psicosocial_create')

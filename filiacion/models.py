@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from core.models import CatPosicion, CatLateralidad
+from core.validators import validar_cedula_venezolana
 
 User = get_user_model()
 
@@ -47,7 +48,10 @@ class Representante(models.Model):
         related_name='representante',
         help_text="Cuenta de usuario asociada al representante"
     )
-    cedula_identidad = models.CharField(max_length=15, unique=True, db_index=True)
+    cedula_identidad = models.CharField(
+        max_length=15, unique=True, db_index=True,
+        validators=[validar_cedula_venezolana]
+    )
     nombres = models.CharField(max_length=100)
     apellidos = models.CharField(max_length=100)
     telefono_principal = models.CharField(max_length=20)
@@ -89,6 +93,7 @@ class Atleta(models.Model):
     )
     cedula_identidad = models.CharField(
         max_length=15, unique=True, null=True, blank=True, db_index=True,
+        validators=[validar_cedula_venezolana],
         help_text="Obligatorio SAIME >= 9 años"
     )
     nombres = models.CharField(max_length=100)

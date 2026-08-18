@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 
 from .models import Personal
 from core.models import CatCargo
+from core.validators import validar_cedula_venezolana, normalizar_cedula
 
 
 class EntrenadorForm(forms.ModelForm):
@@ -27,7 +28,7 @@ class EntrenadorForm(forms.ModelForm):
         model = Personal
         fields = ['cedula_identidad', 'nombres', 'apellidos', 'licencia', 'telefono', 'activo']
         widgets = {
-            'cedula_identidad': forms.TextInput(attrs={'placeholder': 'V-12345678'}),
+            'cedula_identidad': forms.TextInput(attrs={'placeholder': '12345678', 'inputmode': 'numeric', 'pattern': '[0-9]*', 'maxlength': '8'}),
             'nombres': forms.TextInput(attrs={'placeholder': 'Nombre del entrenador'}),
             'apellidos': forms.TextInput(attrs={'placeholder': 'Apellido del entrenador'}),
             'telefono': forms.TextInput(attrs={'inputmode': 'numeric', 'pattern': '[0-9]*', 'maxlength': '11', 'placeholder': '04141234567'}),
@@ -51,6 +52,13 @@ class EntrenadorForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
+    def clean_cedula_identidad(self):
+        ci = self.cleaned_data.get('cedula_identidad', '')
+        if ci:
+            ci = normalizar_cedula(ci)
+            validar_cedula_venezolana(ci)
+        return ci
 
     def clean_telefono(self):
         tel = self.cleaned_data.get('telefono', '')
